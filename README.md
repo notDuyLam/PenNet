@@ -42,7 +42,7 @@ Chứa mã nguồn chính của ứng dụng, bao gồm các thành phần UI, c
 - **styles/**: Chứa các file CSS hoặc SCSS cho ứng dụng. Có thể chia nhỏ theo trang hoặc thành phần UI để dễ quản lý.
 - **utils/**: Chứa các hàm hỗ trợ dùng chung trong ứng dụng, như `formatDate.js` để định dạng ngày tháng hoặc `validation.js` cho các quy tắc kiểm tra dữ liệu.
 
-#### `backend/` (nếu có phần backend)
+#### `backend/`
 
 - **routes/**: Định nghĩa các route API cho từng chức năng của backend, ví dụ `userRoutes.js`, `postRoutes.js`.
 - **controllers/**: Chứa các controller xử lý logic cho từng route, như `userController.js`, `postController.js`. Các controller này sẽ quản lý luồng dữ liệu và thao tác với cơ sở dữ liệu (nếu có).
