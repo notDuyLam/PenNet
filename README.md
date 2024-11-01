@@ -1,6 +1,6 @@
 # Social Media Project
 
-Đây là dự án social media đơn giản, phục vụ mục đích học tập và thực hành. Dự án bao gồm cả phần frontend và backend (nếu cần thiết), được tổ chức theo cấu trúc thư mục dễ quản lý và bảo trì.
+Đây là dự án social media đơn giản, phục vụ mục đích học tập và thực hành. Dự án bao gồm cả phần frontend và backend, được tổ chức theo cấu trúc thư mục như sau:
 
 ## Cấu trúc thư mục
 
@@ -20,6 +20,7 @@ project/
 │   └── controllers/
 ├── .env
 └── README.md
+```
 
 
 ### Chi tiết các thư mục
