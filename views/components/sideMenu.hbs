@@ -1,0 +1,39 @@
+<div class="flex flex-col border rounded-lg overflow-hidden">
+    <img class="h-32 w-full object-cover" src={{user.cover_photo}} alt="cover-photo"></img>
+    <img class="h-16 w-16 rounded-full -mt-8 ml-8" src={{user.avatar}}></img>
+    <div class="ml-8 mt-4 font-medium">
+        {{user.name}}
+    </div>
+    <div class="flex flex-col justify-between mt-8 ml-8 mb-4">
+        <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+            <div class="w-4">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <div class="ml-4">Home</div>
+        </div>
+        <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+            <div class="w-4">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="ml-4">Profile</div>
+        </div>
+        <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+            <div class="w-4">
+                <i class="fa-solid fa-comment"></i>
+            </div>
+            <div class="ml-4">Message</div>
+        </div>
+        <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+            <div class="w-4">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <div class="ml-4">Notification</div>
+        </div>
+        <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+            <div class="w-4">
+                <i class="fa-solid fa-user-group"></i>
+            </div>
+            <div class="ml-4">Friends</div>
+        </div>
+    </div>
+</div>
