@@ -4,7 +4,7 @@ const hbs = create({
     extname: '.hbs',
     encoding: 'utf-8',
     layoutsDir: './views/layouts',
-    partialsDir: './views/components',
+    partialsDir: './views/partials',
     defaultLayout: 'main'
 });
 
