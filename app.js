@@ -9,17 +9,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // config hbs
 const hbs = require('./config/handlebarsConfig');
+const routes = require('./routes');
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 app.set('views', './views');
 
+app.use('/', routes);
 
-app.get('/', (req, res) => {
-    res.render('home', {
-        // title: 'Home Page',
-        // name: 'John Doe'
-    });
-});
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
