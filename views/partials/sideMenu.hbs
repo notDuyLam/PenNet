@@ -1,9 +1,24 @@
 <div class="flex flex-col border rounded-lg overflow-hidden">
-    <img class="h-32 w-full object-cover" src={{user.cover_photo}} alt="cover-photo"></img>
-    <img class="h-16 w-16 rounded-full -mt-8 ml-8" src={{user.avatar}}></img>
+    <!-- Cover Photo -->
+    <img 
+        class="h-24 w-full object-cover"
+        src="{{#if user.cover_photo}}{{user.cover_photo}}{{else}}images/cover.png{{/if}}" 
+        alt="cover-photo"
+    />
+
+    <!-- Avatar -->
+    <img 
+        class="h-16 w-16 rounded-full -mt-8 ml-8 border border-white"
+        src="{{#if user.avatar}}{{user.avatar}}{{else}}images/avatar.png{{/if}}" 
+        alt="user-avatar"
+    />
+
+    <!-- User Name -->
     <div class="ml-8 mt-4 font-medium">
         {{user.name}}
     </div>
+
+    <!-- Navigation Links -->
     <div class="flex flex-col justify-between mt-8 ml-8 mb-4">
         <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
             <div class="w-4">

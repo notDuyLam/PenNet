@@ -1,7 +1,7 @@
 {{> header}}
-<div class="m-10 flex justify-between">
-
-    <div class="mr-6 min-w-fit w-64 flex flex-col">
+<div class="m-10 flex">
+    <!-- SideMenu -->
+    <div class="mr-6 min-w-[16rem] w-64 flex-shrink-0 flex flex-col">
         <div>
             {{> sideMenu user=user}}
         </div>
@@ -13,7 +13,11 @@
     <div class="flex-grow w-1/2 mr-6 flex flex-col">
         <div class="w-full p-4 mb-8 rounded-lg flex flex-col bg-violet-200"> 
             <div class="flex items-center mb-4">
-                <img class="h-16 w-16 rounded-full ml-4 mr-4" src={{user.avatar}}></img>
+                <img class="h-16 w-16 rounded-full ml-4 mr-4" 
+                src="{{#if user.avatar}}{{user.avatar}}{{else}}images/avatar.png{{/if}}" 
+                alt="user-avatar"
+                />
+
                 <textarea 
                     class="flex-grow bg-inherit placeholder-gray-700 outline-none flex-warp mr-8 
                         overflow-auto resize-none scroll-custom" 
