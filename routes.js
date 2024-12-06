@@ -11,6 +11,20 @@ router.get('/', (req, res) => {
     });
 });
 
+// Login route
+router.get('/login', (req, res) => {
+    res.render('login', {
+        // title: 'Home Page',
+        // name: 'John Doe'
+    });
+});
 
+// Signup route
+router.get('/signup', (req, res) => {
+    res.render('signup', {
+        // title: 'Home Page',
+        // name: 'John Doe'
+    });
+});
 
 module.exports = router;
