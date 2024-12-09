@@ -18,4 +18,9 @@ router.get('/signup', (req, res) => {
     res.render('signup', {});
 });
 
+// friendRequest route
+router.get('/friendRequest', (req, res) => {
+    res.render('friendRequest', {});
+});
+
 module.exports = router;
