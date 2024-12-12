@@ -23,4 +23,8 @@ router.get('/friendRequest', (req, res) => {
     res.render('friendRequest', {});
 });
 
+// friend route
+router.get('/friendList', (req, res) => {
+    res.render('friendList', {});
+});
 module.exports = router;
