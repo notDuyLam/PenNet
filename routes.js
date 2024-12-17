@@ -27,4 +27,25 @@ router.get('/friendRequest', (req, res) => {
 router.get('/friendList', (req, res) => {
     res.render('friendList', {});
 });
+
+// google route
+router.get('/LoginGoogle', (req, res) => {
+    res.render('LoginGoogle', {});
+});
+
+// ForgetPassword route
+router.get('/ForgetPassword', (req, res) => {
+    res.render('ForgetPassword', {});
+});
+
+// CodeGoogle route
+router.get('/CodeGoogle', (req, res) => {
+    res.render('CodeGoogle', {});
+});
+
+// CheckInbox route
+router.get('/CheckInbox', (req, res) => {
+    res.render('CheckInbox', {});
+});
+
 module.exports = router;
