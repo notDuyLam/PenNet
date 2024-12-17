@@ -19,7 +19,7 @@ router.get('/signup', (req, res) => {
 });
 
 // friendRequest route
-router.get('/friendRequest', (req, res) => {
+router.get('/friends', (req, res) => {
     res.render('friendRequest', {});
 });
 
