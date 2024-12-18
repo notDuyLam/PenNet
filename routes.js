@@ -32,4 +32,8 @@ router.get('/message', (req, res) => {
     res.render('message', {});
 });
 
+router.get('/group', (req, res) => {
+    res.render('group', {});
+});
+
 module.exports = router;

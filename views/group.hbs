@@ -1,0 +1,74 @@
+{{> header }}
+
+<!-- Banner -->
+<div class="relative w-full">
+  <img src="https://via.placeholder.com/1200x300" alt="Banner" class="w-full object-cover" />
+  <div class="absolute bottom-4 left-4 text-white">
+    <h1 class="text-2xl font-bold">TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN - ĐHQG TP. HCM</h1>
+    <p class="flex items-center gap-2 text-sm">
+      <span class="text-gray-200">📣 Public Group</span>
+      <span class="text-gray-200">👥 50.9k members</span>
+    </p>
+  </div>
+</div>
+
+<!-- Navigation Buttons -->
+{{!-- <div class="bg-white shadow-md flex gap-6 px-4 py-3">
+  <button class="bg-purple-600 text-white px-4 py-2 rounded-full">Invite</button>
+  <button class="text-purple-600 border border-purple-600 px-4 py-2 rounded-full">Share</button>
+  <button class="text-purple-600 border border-purple-600 px-4 py-2 rounded-full">Join Group</button>
+</div> --}}
+
+<!-- Main Content -->
+<div class="flex bg-gray-100">
+    <!-- SideMenu -->
+    <div class="m-6 min-w-[16rem] w-64 flex-shrink-0 flex flex-col">
+        <div>
+            {{> sideMenu user=user}}
+        </div>
+        <div class="mt-4">
+            {{> groups user=user}}
+        </div>
+    </div>
+
+  <!-- Feed Section -->
+  <div class="w-1/2 p-6">
+    {{> post }}
+    {{> post }}
+  </div>
+
+  <!-- Right Sidebar -->
+  <div class="w-1/4 bg-white shadow p-4">
+    <h3 class="text-lg font-semibold mb-4">Members</h3>
+    <ul class="space-y-4">
+      <li class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+        <div>
+          <p class="font-medium text-gray-700">Olivia Anderson</p>
+          <p class="text-sm text-gray-500">Financial Analyst</p>
+        </div>
+      </li>
+      <li class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+        <div>
+          <p class="font-medium text-gray-700">Thomas Baker</p>
+          <p class="text-sm text-gray-500">Project Manager</p>
+        </div>
+      </li>
+      <li class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+        <div>
+          <p class="font-medium text-gray-700">Lily Lee</p>
+          <p class="text-sm text-gray-500">Graphic Designer</p>
+        </div>
+      </li>
+      <li class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+        <div>
+          <p class="font-medium text-gray-700">Andrew Harris</p>
+          <p class="text-sm text-gray-500">Data Scientist</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
