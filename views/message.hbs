@@ -1,0 +1,88 @@
+{{> header}}
+
+<div class="flex h-screen m-10">
+  <!-- SideMenu -->
+    <div class="mr-6 min-w-[16rem] w-64 flex-shrink-0 flex flex-col">
+        <div>
+            {{> sideMenu user=user}}
+        </div>
+        <div class="mt-4">
+            {{> groups user=user}}
+        </div>
+    </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col ml-4">
+    <!-- Messages Section -->
+    <div class="flex h-full">
+      <!-- Message List -->
+      <div class="w-1/3 bg-white border-r overflow-y-auto">
+        <h2 class="text-lg font-semibold px-4 py-3 border-b">Messages</h2>
+        <ul>
+          <!-- Placeholder Items -->
+          <li class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer">
+            <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+            <div>
+              <p class="font-medium text-gray-800">Bessie Cooper</p>
+              <p class="text-sm text-gray-500 truncate">Hi, I’m facing some chall...</p>
+            </div>
+          </li>
+          <li class="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer">
+            <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+            <div>
+              <p class="font-medium text-gray-800">Thomas Baker</p>
+              <p class="text-sm text-gray-500 truncate">I have a job interview...</p>
+            </div>
+          </li>
+          <!-- Add more placeholders as needed -->
+        </ul>
+        <button class="block w-full text-blue-600 text-center py-2 mt-4 hover:bg-blue-50">
+          New Message
+        </button>
+      </div>
+
+      <!-- Chat Section -->
+      <div class="flex-1 flex flex-col bg-gray-50">
+        <!-- Chat Header -->
+        <div class="flex items-center justify-between px-6 py-3 border-b bg-white">
+          <div>
+            <p class="text-lg font-semibold">Bessie Cooper</p>
+            <p class="text-sm text-gray-500">Marketing Manager</p>
+          </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-4">
+          <!-- Received Message -->
+          <div class="flex items-start gap-3">
+            <div class="w-8 h-8 bg-gray-300 rounded-full"></div>
+            <div class="bg-gray-200 p-3 rounded-lg max-w-md">
+              <p class="text-gray-800">Hi, Robert. I’m facing some challenges in optimizing my code for performance. Can you help?</p>
+              <span class="text-xs text-gray-500 block mt-1">12:45 PM</span>
+            </div>
+          </div>
+          <!-- Sent Message -->
+          <div class="flex justify-end">
+            <div class="bg-blue-500 text-white p-3 rounded-lg max-w-md">
+              <p>Hi, Bessie 👋 I’d be glad to help you with optimizing your code for better performance...</p>
+              <span class="text-xs text-white block mt-1">12:55 PM</span>
+            </div>
+          </div>
+          <!-- Add more placeholders -->
+        </div>
+
+        <!-- Message Input -->
+        <div class="p-4 bg-white border-t flex items-center gap-2">
+          <input
+            type="text"
+            placeholder="Message ..."
+            class="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600">
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

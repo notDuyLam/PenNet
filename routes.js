@@ -19,7 +19,7 @@ router.get('/signup', (req, res) => {
 });
 
 // friendRequest route
-router.get('/friendRequest', (req, res) => {
+router.get('/friends', (req, res) => {
     res.render('friendRequest', {});
 });
 
@@ -27,6 +27,7 @@ router.get('/friendRequest', (req, res) => {
 router.get('/friendList', (req, res) => {
     res.render('friendList', {});
 });
+
 
 // google route
 router.get('/LoginGoogle', (req, res) => {
@@ -43,9 +44,17 @@ router.get('/CodeGoogle', (req, res) => {
     res.render('CodeGoogle', {});
 });
 
-// CheckInbox route
-router.get('/CheckInbox', (req, res) => {
-    res.render('CheckInbox', {});
+router.get('/message', (req, res) => {
+    res.render('message', {});
+});
+
+router.get('/group', (req, res) => {
+    res.render('group', {});
+});
+
+router.get('/block', (req, res) => {
+    res.render('block', {});
+
 });
 
 module.exports = router;
