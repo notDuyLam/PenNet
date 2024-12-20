@@ -124,16 +124,8 @@ const userController = {
   async renderForgotPasswordPage(req, res) {
     res.render("ForgetPassword", {});
   },
-  async resetPassword(req, res) {
-    try {
-      const { token, password } = req.body;
-      const user = await userService.resetPassword(token, password);
-      res.status(200).json({ message: user.message }); // Trả về JSON khi thành công
-    } catch (err) {
-      res
-        .status(400)
-        .json({ message: "Invalid token or error resetting password" }); // Đảm bảo JSON khi có lỗi
-    }
+  async renderResetPasswordPage(req, res) {
+    res.render("reset-password", {});
   },
   // Quên mật khẩu
   async forgotPassword(req, res) {
@@ -143,6 +135,17 @@ const userController = {
       res.status(200).json({ message: result.message }); // Trả về JSON khi thành công
     } catch (err) {
       res.status(500).send("Error sending password reset link");
+    }
+  },
+  async resetPassword(req, res) {
+    try {
+      const { token, password } = req.body;
+      const user = await userService.resetPassword(token, password);
+      res.status(200).json({ message: user.message }); // Trả về JSON khi thành công
+    } catch (err) {
+      res
+        .status(400)
+        .json({ message: "Invalid token or error resetting password" }); // Đảm bảo JSON khi có lỗi
     }
   },
 };

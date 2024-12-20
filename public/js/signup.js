@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageElement.classList.remove("text-red-500");
         setTimeout(() => {
           window.location.href = "/users/login";
-        }, 4000);
+        }, 2000);
       } else {
         const result = await response.json();
         console.error("Signup failed:", result.message);

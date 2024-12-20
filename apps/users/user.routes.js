@@ -30,4 +30,10 @@ router.get("/forgot-password", userController.renderForgotPasswordPage);
 // [POST] /forgot-password
 router.post("/forgot-password", userController.forgotPassword);
 
+// [GET] /reset-password
+router.get("/reset-password", userController.renderResetPasswordPage);
+
+// [POST] /reset-password
+router.post("/reset-password", userController.resetPassword);
+
 module.exports = router;

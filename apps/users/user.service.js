@@ -104,7 +104,7 @@ const userService = {
       user.resetPasswordExpires = Date.now() + 900000; // 15 minutes
       await user.save();
 
-      // await emailHelper.sendResetPasswordEmail(user.email, token);
+      await emailHelper.sendResetPasswordEmail(user.email, token);
       return { message: "Token reset email sent" };
     } catch (error) {
       return { message: "Internal server error" };
@@ -112,20 +112,16 @@ const userService = {
   },
   async resetPassword(token, newPassword) {
     try {
-      console.log(token);
       const user = await User.findOne({
         resetPasswordToken: token,
         resetPasswordExpires: { $gt: Date.now() },
       });
-
       if (!user) {
         return { message: "Invalid token" };
       }
-
       if (!user.isVerify) {
         return { error: "User account is not verified." };
       }
-
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       user.password = hashedPassword;
       user.resetPasswordToken = null; // Xóa token
