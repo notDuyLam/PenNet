@@ -58,6 +58,25 @@ const userController = {
       return res.status(500).json({ message: "Server error" });
     }
   },
+  async loginUser(req, res, next) {
+    passport.authenticate("local", (err, user, info) => {
+      if (err) {
+        console.log("OK1");
+
+        return next(err);
+      }
+      if (!user) {
+        return res.status(401).json({ message: info.message });
+      }
+      req.logIn(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        // Đăng nhập thành công
+        return res.status(200).json({ message: info.message });
+      });
+    })(req, res, next);
+  },
 };
 
 module.exports = userController;

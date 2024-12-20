@@ -12,4 +12,7 @@ router.get("/signup", userController.renderSignupPage);
 // [POST] /signup
 router.post("/signup", userController.createUser);
 
+// [POST] /login
+router.post("/login", userController.loginUser);
+
 module.exports = router;

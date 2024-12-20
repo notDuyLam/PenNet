@@ -13,11 +13,16 @@ const port = 3000;
 // Để sử dụng biến môi trường trong file .env
 require("dotenv").config();
 
+// Passport config
+require("./config/passport")(passport);
+
 // Sử dụng json parser
 app.use(express.json());
+
 // Sử dụng x-www-form-urlencoded parser
 app.use(express.urlencoded({ extended: true }));
 
+// Sử dụng cors
 app.use(cors());
 
 // Express session

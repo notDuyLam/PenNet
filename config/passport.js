@@ -2,7 +2,6 @@ const LocalStrategy = require("passport-local").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const bcrypt = require("bcrypt");
 const userService = require("../apps/users/user.service");
-const userController = require("../apps/users/user.controller");
 
 module.exports = function (passport) {
   passport.use(
@@ -14,14 +13,13 @@ module.exports = function (passport) {
           .then((user) => {
             if (!user) {
               return done(null, false, {
-                message: "Username and password is not matched!",
+                message: "Username or password is not matched!",
               });
             }
             bcrypt.compare(password, user.password, (err, isMatch) => {
               if (err) {
                 return done(err);
               }
-
               if (isMatch) {
                 if (!user.isVerify) {
                   return done(null, false, {
@@ -65,8 +63,7 @@ module.exports = function (passport) {
               email: email,
               password: null,
               isVerify: true,
-              firstName: profile.name.givenName,
-              lastName: profile.name.familyName,
+              name: profile.displayName,
               url: profile.photos[0].value,
             };
 

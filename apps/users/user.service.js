@@ -14,7 +14,7 @@ const userService = {
         password: hashedPassword, // Lưu mật khẩu đã mã hóa
       });
       await newUser.save(); // Lưu người dùng mới vào cơ sở dữ liệu
-      // emailHelper.sendVerificationEmail(newUser.email, verificationToken);
+      emailHelper.sendVerificationEmail(newUser.email, verificationToken);
       return newUser;
     } catch (error) {
       throw new Error("Error creating user: " + error.message);
@@ -44,6 +44,39 @@ const userService = {
       return user !== null;
     } catch (error) {
       throw new Error("Error checking email: " + error.message);
+    }
+  },
+  async getUserByUsername(username) {
+    try {
+      const user = await User.findOne({ username });
+      return user;
+    } catch (error) {
+      throw new Error("Error fetching user by username: " + error.message);
+    }
+  },
+  async getUserByEmail(email) {
+    try {
+      const user = await User.findOne({ email });
+      if (!user) {
+        throw new Error("User not found");
+      }
+      return user;
+    } catch (error) {
+      throw new Error("Error fetching user by email: " + error.message);
+    }
+  },
+  // Tạo người dùng từ thông tin lấy từ email
+  async createUserEmail(userData) {
+    try {
+      const randomPassword = Math.random().toString(36).slice(-8); // Tạo mật khẩu ngẫu nhiên
+      const hashedPassword = await bcrypt.hash(randomPassword, 10); // Mã hóa mật khẩu
+      const newUser = await User.create({
+        ...userData,
+        password: hashedPassword, // Lưu mật khẩu đã mã hóa
+      });
+      return newUser;
+    } catch (error) {
+      throw new Error("Error creating user: " + error.message);
     }
   },
 };
