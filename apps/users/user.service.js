@@ -20,6 +20,13 @@ const userService = {
       throw new Error("Error creating user: " + error.message);
     }
   },
+  // Kiểm tra các trường bắt buộc
+  async validateUserData(userData) {
+    const { name, email, username, password } = userData;
+    if (!name || !email || !username || !password) {
+      return true;
+    }
+  },
   // Kiểm tra tên người dùng có tồn tại không
   async checkIfUsernameExists(username) {
     try {

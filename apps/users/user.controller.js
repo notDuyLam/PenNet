@@ -17,6 +17,14 @@ const userController = {
     try {
       // Lấy dữ liệu từ request body
       const { name, email, username, password, url } = req.body;
+
+      // Kiểm tra nếu name, email, username, password null
+      const userData = { name, email, username, password };
+      if (await userService.validateUserData(userData)) {
+        return res.status(400).json({
+          message: "All fields are required",
+        });
+      }
       // Kiểm tra xem tên người dùng hoặc email đã tồn tại chưa
       if (await userService.checkIfUsernameExists(username)) {
         return res.status(400).json({ message: "Username already exists" });
