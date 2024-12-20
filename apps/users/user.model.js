@@ -1,55 +1,54 @@
-const mongoose = require("mongoose");
+const { DataTypes } = require("sequelize");
+const db = require("../../config/db");
 
 // Định nghĩa schema cho bảng Users
-const userSchema = new mongoose.Schema(
+const User = db.define(
+  "user",
   {
     name: {
-      type: String,
-      required: true,
-      trim: true,
+      type: DataTypes.STRING,
     },
+
     email: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
       unique: true,
-      lowercase: true,
-      trim: true,
     },
+
     username: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
       unique: true,
-      trim: true,
     },
+
     avatar_url: {
-      type: String,
-      default:
+      type: DataTypes.STRING,
+      defaultValue:
         "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
     },
+
     password: {
-      type: String,
-      required: true,
+      type: DataTypes.STRING,
     },
+
     isVerify: {
-      type: Boolean,
-      default: false,
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     },
     // Add token to check when send email
     verificationToken: {
-      type: String,
+      type: DataTypes.STRING,
     },
+
     // Cho chức năng quên mật khẩu
     resetPasswordToken: {
-      type: String,
+      type: DataTypes.STRING,
     },
     resetPasswordExpires: {
-      type: Date,
+      type: DataTypes.DATE,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true, // Kích hoạt timestamps
+  }
 );
-
-// Tạo model từ schema
-const User = mongoose.model("User", userSchema);
 
 module.exports = User;

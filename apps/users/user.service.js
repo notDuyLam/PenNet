@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("./user.model");
+const { Op } = require("sequelize");
 const emailHelper = require("../../helpers/emailService.helper");
 
 const userService = {
@@ -8,12 +9,11 @@ const userService = {
     try {
       const hashedPassword = await bcrypt.hash(userData.password, 10); // Mã hóa mật khẩu
       const verificationToken = await bcrypt.genSalt(10);
-      const newUser = new User({
+      const newUser = await User.create({
         ...userData,
         verificationToken: verificationToken,
         password: hashedPassword, // Lưu mật khẩu đã mã hóa
       });
-      await newUser.save(); // Lưu người dùng mới vào cơ sở dữ liệu
       emailHelper.sendVerificationEmail(newUser.email, verificationToken);
       return newUser;
     } catch (error) {
@@ -30,7 +30,7 @@ const userService = {
   // Kiểm tra tên người dùng có tồn tại không
   async checkIfUsernameExists(username) {
     try {
-      const user = await User.findOne({ username });
+      const user = await User.findOne({ where: { username } });
       return user !== null;
     } catch (error) {
       throw new Error("Error checking username: " + error.message);
@@ -40,7 +40,7 @@ const userService = {
   // Kiểm tra email đã tồn tại không
   async checkIfEmailExists(email) {
     try {
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ where: { email } });
       return user !== null;
     } catch (error) {
       throw new Error("Error checking email: " + error.message);
@@ -48,7 +48,7 @@ const userService = {
   },
   async getUserByUsername(username) {
     try {
-      const user = await User.findOne({ username });
+      const user = await User.findOne({ where: { username } });
       return user;
     } catch (error) {
       throw new Error("Error fetching user by username: " + error.message);
@@ -56,7 +56,7 @@ const userService = {
   },
   async getUserByEmail(email) {
     try {
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ where: { email } });
       if (!user) {
         throw new Error("User not found");
       }
@@ -81,7 +81,7 @@ const userService = {
   },
   async verifyAccount(token) {
     try {
-      const user = await User.findOne({ verificationToken: token });
+      const user = await User.findOne({ where: { verificationToken: token } });
       if (!user) {
         return { error: "Invalid token" };
       }
@@ -95,7 +95,7 @@ const userService = {
   },
   async forgotPassword(email) {
     try {
-      const user = await User.findOne({ email: email });
+      const user = await User.findOne({ where: { email: email } });
       if (!user) {
         return { message: "User not found" };
       }
@@ -113,8 +113,10 @@ const userService = {
   async resetPassword(token, newPassword) {
     try {
       const user = await User.findOne({
-        resetPasswordToken: token,
-        resetPasswordExpires: { $gt: Date.now() },
+        where: {
+          resetPasswordToken: token,
+          resetPasswordExpires: { [Op.gt]: Date.now() },
+        },
       });
       if (!user) {
         return { message: "Invalid token" };

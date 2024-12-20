@@ -6,6 +6,7 @@ const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const mongoose = require("mongoose");
+const db = require("./config/db");
 
 const app = express();
 const port = 3000;
@@ -58,10 +59,26 @@ app.set("views", "./views");
 app.use("/users", require("./apps/users/user.routes"));
 app.use("/", routes);
 
-mongoose
-  .connect("mongodb://127.0.0.1:27017/test")
-  .then(() => console.log("Connected database successfully"));
+// Kết nối database
+const connectDB = async () => {
+  console.log("Check database connection...");
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+  try {
+    await db.authenticate();
+    // Đồng bộ các models
+    await db.sync({ force: false });
+    console.log("Database connection established");
+  } catch (e) {
+    console.log("Database connection failed", e);
+  }
+};
+
+const PORT = process.env.PORT || 3000;
+
+(async () => {
+  await connectDB();
+  // Khởi động server
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
+})();
