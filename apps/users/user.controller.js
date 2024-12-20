@@ -7,27 +7,30 @@ const userController = {
     res.render("login", {});
   },
 
+  // Render login page
+  renderSignupPage(req, res) {
+    res.render("signup", {});
+  },
+
   // Tạo người dùng mới
   async createUser(req, res) {
     try {
       // Lấy dữ liệu từ request body
-      const { username, email, password, firstName, lastName, url } = req.body;
-
+      const { name, email, username, password, url } = req.body;
       // Kiểm tra xem tên người dùng hoặc email đã tồn tại chưa
-      // if (await userService.checkIfUsernameExists(username)) {
-      //   return res.status(400).json({ message: "Username already exists" });
-      // }
-      // if (await userService.checkIfEmailExists(email)) {
-      //   return res.status(400).json({ message: "Email already exists" });
-      // }
+      if (await userService.checkIfUsernameExists(username)) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+      if (await userService.checkIfEmailExists(email)) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
 
       // Tạo người dùng mới
       const newUser = await userService.createUser({
-        username,
+        name,
         email,
+        username,
         password,
-        firstName,
-        lastName,
         url,
       });
 
@@ -38,9 +41,8 @@ const userController = {
           id: newUser.id,
           username: newUser.username,
           email: newUser.email,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-          url: newUser.url,
+          name: newUser.name,
+          url: newUser.avatar_url,
         },
       });
     } catch (error) {

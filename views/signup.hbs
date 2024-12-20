@@ -2,40 +2,27 @@
     <!-- Logo and Title above the container -->
     {{> logoLogin}}
     
-    <div class="w-[384px] h-[600px] bg-white border border-[#ECF0F5] shadow-sm rounded-lg p-8 box-border text-center mt-[30px]">
-        <!-- Social Login Button -->
-        <div class="flex justify-center items-center gap-2 w-full h-[44px] border border-[#ECF0F5] rounded-md bg-white text-[#5D6778] text-sm cursor-pointer">
-            <img src="images/google.png" alt="Google icon" class="w-4 h-4">
-            Login with Google
-        </div>
+    <div class="w-[384px] h-[500px] bg-white border border-[#ECF0F5] shadow-sm rounded-lg p-8 box-border text-center mt-[30px]">
+        <h2 class="text-2xl font-semibold text-[#4B5669] mb-5">Sign Up</h2>
         
-        <!-- OR divider -->
-        <div class="flex items-center text-center text-[#5D6778] gap-3 mt-10">
-            <div class="w-full h-[1px] bg-[#ECF0F5]"></div>
-            <span>OR</span>
-            <div class="w-full h-[1px] bg-[#ECF0F5]"></div>
-        </div>
-        
-        <!-- Input fields -->
-        <input type="text" class="w-full p-2 border border-[#ECF0F5] rounded-md text-sm text-[#707988] mt-5" placeholder="Name">
-        <input type="email" class="w-full p-2 border border-[#ECF0F5] rounded-md text-sm text-[#707988] mt-5" placeholder="Email">
-        <input type="text" class="w-full p-2 border border-[#ECF0F5] rounded-md text-sm text-[#707988] mt-5" placeholder="Username">
-        <input type="password" class="w-full p-2 border border-[#ECF0F5] rounded-md text-sm text-[#707988] mt-5" placeholder="Password">
-        
-        <!-- Checkbox -->
-        {{!-- <div class="flex items-center gap-2 mt-8 text-sm text-[#5D6778]">
-            <input type="checkbox" id="terms" class="form-checkbox">
-            <label for="terms">I agree to the Terms and Privacy Policy.</label>
-        </div> --}}
-
-        <!-- Continue Button -->
-        <button class="w-full p-3 text-white bg-gradient-to-r from-[#AD49E1] to-[#873DEC] h-[44px] font-medium rounded-md cursor-pointer mt-10">
-            Continue
-        </button>
+        <!-- Form element -->
+        <form>
+            <!-- Input fields -->
+            <input type="text" class="w-full p-2 border border-[#ECF0F5] rounded-md text-sm text-[#707988] mt-5" placeholder="Name">
+            <input type="email" class="w-full p-2 border border-[#ECF0F5] rounded-md text-sm text-[#707988] mt-5" placeholder="Email">
+            <input type="text" class="w-full p-2 border border-[#ECF0F5] rounded-md text-sm text-[#707988] mt-5" placeholder="Username">
+            <input type="password" class="w-full p-2 border border-[#ECF0F5] rounded-md text-sm text-[#707988] mt-5" placeholder="Password">
+            
+            <!-- Continue Button -->
+            <button type="submit" class="w-full p-3 text-white bg-gradient-to-r from-[#AD49E1] to-[#873DEC] h-[44px] font-medium rounded-md cursor-pointer mt-10">
+                Continue
+            </button>
+        </form>
 
         <!-- Footer -->
         <div class="text-sm text-[#4B5669] mt-5">
-            Have an account? <a href="/login" class="text-black font-medium">Login</a>
+            Have an account? <a href="/users/login" class="text-black font-medium">Login</a>
         </div>
     </div>
 </body>
+<script src="/js/signup.js"></script>

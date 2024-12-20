@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("./user.model");
-// const emailHelper = require("../../helpers/emailService.helper");
+const emailHelper = require("../../helpers/emailService.helper");
 
 const userService = {
   // Tạo người dùng mới
@@ -18,6 +18,25 @@ const userService = {
       return newUser;
     } catch (error) {
       throw new Error("Error creating user: " + error.message);
+    }
+  },
+  // Kiểm tra tên người dùng có tồn tại không
+  async checkIfUsernameExists(username) {
+    try {
+      const user = await User.findOne({ username });
+      return user !== null;
+    } catch (error) {
+      throw new Error("Error checking username: " + error.message);
+    }
+  },
+
+  // Kiểm tra email đã tồn tại không
+  async checkIfEmailExists(email) {
+    try {
+      const user = await User.findOne({ email });
+      return user !== null;
+    } catch (error) {
+      throw new Error("Error checking email: " + error.message);
     }
   },
 };

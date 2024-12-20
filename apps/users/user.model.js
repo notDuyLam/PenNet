@@ -3,12 +3,7 @@ const mongoose = require("mongoose");
 // Định nghĩa schema cho bảng Users
 const userSchema = new mongoose.Schema(
   {
-    first_name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    last_name: {
+    name: {
       type: String,
       required: true,
       trim: true,
@@ -20,9 +15,16 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
     avatar_url: {
       type: String,
-      default: null,
+      default:
+        "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
     },
     password: {
       type: String,
