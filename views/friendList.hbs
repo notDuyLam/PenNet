@@ -1,0 +1,89 @@
+<body>
+  <!-- Header Section -->
+  {{> header}}
+
+  <div class="m-10 flex">
+    <!-- SideMenu -->
+    <div class="mr-6 min-w-[16rem] w-64 flex-shrink-0 flex flex-col">
+      <div>
+        {{> sideMenu user=user}}
+      </div>
+    </div>
+    
+    <div class="flex-1 bg-white shadow-md rounded-lg p-6">
+        <div class="flex">
+            <div class="w-full pl-6">
+                <!-- Requests Section -->
+                <div class="w-full flex flex-row justify-between items-center mt-4 mb-4 border-b border-[#DFE2E8]">
+                <!-- Your Friends Title -->
+                <h3 class="w-1/2 text-center text-sm font-semibold text-[#232323]" id="show-friends">Your Friends</h3>
+
+                <!-- Requests Title -->
+                <h3 class="w-1/2 text-center text-sm font-normal text-[#363B4B]" id="show-requests">Requests</h3>
+            </div>
+
+            <!-- Danh sách yêu cầu kết bạn (ban đầu ẩn) -->
+            <div class="space-y-6 hidden" id="request-list">
+                <!-- Các yêu cầu kết bạn ở đây -->
+                <div class="bg-gray-50 p-4 border rounded-lg shadow-md">
+                    <img src="images/avatar1.png" alt="Alice Smith" class="w-20 h-20 rounded-full mb-3 mx-auto">
+                    <h3 class="font-medium text-center mb-2">Alice Smith</h3>
+                        <div class="flex space-x-4">
+                            <button class="w-full py-2 bg-[#AD49E1] text-white rounded-md hover:bg-[#AD49E1]">Add friend</button>
+                            <button class="w-full py-2 bg-[#DFE2E8] text-black rounded-md hover:bg-[#DFE2E8]">Remove</button>
+                        </div>
+                    </div>
+                    <!-- Thêm các yêu cầu kết bạn khác tại đây -->
+                </div>
+
+                <!-- Danh sách bạn bè -->
+                <div class="space-y-6 " id="friends-list">
+                    <!-- Các bạn bè sẽ được hiển thị ở đây -->
+                    <div class="flex flex-row bg-gray-50 p-4 border rounded-lg shadow-md">
+                        <img src="images/avatar1.png" alt="Alice Smith" class="w-20 h-20 rounded-full mb-3">
+                        <div class="flex flex-col items-start gap-2 relative flex-1 grow">
+                            <div class="relative w-[248px] mt-6 pl-3 font-[Inter-Medium] font-medium text-[20px] leading-normal ">Daniel Brown</div>
+                            <div class="relative w-fit pl-3 font-normal text-[#B0B0B0] text-[14px] tracking-normal leading-normal whitespace-nowrap">You are now friends</div>
+                        </div>
+                        <img src="images/bacham.png" class="w-20 h-20">
+                    </div>
+                    <!-- Thêm các bạn bè khác tại đây -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+  // Lấy các phần tử cần thiết
+  const showRequestsButton = document.getElementById('show-requests');
+  const showFriendsButton = document.getElementById('show-friends');
+  const requestList = document.getElementById('request-list');
+  const friendsList = document.getElementById('friends-list');
+
+  // Xử lý sự kiện khi nhấn vào "Requests"
+  showRequestsButton.addEventListener('click', function() {
+    // Ẩn danh sách bạn bè và hiển thị danh sách yêu cầu kết bạn
+    friendsList.classList.add('hidden');
+    requestList.classList.remove('hidden');
+
+    // Cập nhật kiểu chữ (tùy chọn)
+    showRequestsButton.classList.add('font-semibold');
+    showRequestsButton.classList.remove('font-normal');
+    showFriendsButton.classList.add('font-normal');
+    showFriendsButton.classList.remove('font-semibold');
+  });
+
+  // Xử lý sự kiện khi nhấn vào "Your Friends"
+  showFriendsButton.addEventListener('click', function() {
+    // Ẩn danh sách yêu cầu kết bạn và hiển thị danh sách bạn bè
+    requestList.classList.add('hidden');
+    friendsList.classList.remove('hidden');
+
+    // Cập nhật kiểu chữ (tùy chọn)
+    showFriendsButton.classList.add('font-semibold');
+    showFriendsButton.classList.remove('font-normal');
+    showRequestsButton.classList.add('font-normal');
+    showRequestsButton.classList.remove('font-semibold');
+  });
+</script>
+</body>

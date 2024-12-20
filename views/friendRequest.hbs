@@ -1,0 +1,60 @@
+<body>
+  <!-- Header Section -->
+  {{> header}}
+
+  <div class="m-10 flex">
+    <!-- SideMenu -->
+    <div class="mr-6 min-w-[16rem] w-64 flex-shrink-0 flex flex-col">
+      <div>
+        {{> sideMenu user=user}}
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="flex-1 bg-white shadow-md rounded-lg p-6">
+
+      <!-- Requests Section -->
+      <div class="flex">
+        <!-- Requests Section (right column) -->
+        <div class="w-full pl-6">
+            <div class="w-full flex flex-row justify-between items-center mt-4 mb-4 border-b border-[#DFE2E8]">
+            <!-- Requests Title -->
+                <h3 class="w-1/2 text-center text-sm font-semibold text-[#363B4B]">Requests</h3>
+
+            <!-- Your Friends Title -->
+                <h3 class="w-1/2 text-center text-sm font-normal text-[#363B4B]">Your Friends</h3>
+            </div>         
+          <div class="space-y-6">
+            <div class="bg-gray-50 p-4 border rounded-lg shadow-md">
+              <img src="images/avatar1.png" alt="Alice Smith" class="w-20 h-20 rounded-full mb-3 mx-auto">
+              <h3 class="font-medium text-center mb-2">Alice Smith</h3>
+              <div class="flex space-x-4">
+                <button class="w-full py-2 bg-[#AD49E1] text-white rounded-md hover:bg-[#AD49E1]">Add friend</button>
+                <button class="w-full py-2 bg-[#DFE2E8] text-black rounded-md hover:bg-[#DFE2E8]">Remove</button>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 border rounded-lg shadow-md">
+              <img src="path_to_avatar2.png" alt="Bob Johnson" class="w-20 h-20 rounded-full mb-3 mx-auto">
+              <h3 class="font-medium text-center mb-2">Bob Johnson</h3>
+              <div class="flex space-x-4">
+                <button class="w-full py-2 bg-[#AD49E1] text-white rounded-md hover:bg-[#AD49E1]">Add friend</button>
+                <button class="w-full py-2 bg-[#DFE2E8] text-black rounded-md hover:bg-[#DFE2E8]">Remove</button>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 p-4 border rounded-lg shadow-md">
+              <img src="path_to_avatar3.png" alt="Charlie Brown" class="w-20 h-20 rounded-full mb-3 mx-auto">
+              <h3 class="font-medium text-center mb-2">Charlie Brown</h3>
+              <div class="flex space-x-4">
+                <button class="w-full py-2 bg-[#AD49E1] text-white rounded-md hover:bg-[#AD49E1]">Add friend</button>
+                <button class="w-full py-2 bg-[#DFE2E8] text-black rounded-md hover:bg-[#DFE2E8]">Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
