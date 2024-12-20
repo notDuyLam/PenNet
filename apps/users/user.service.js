@@ -79,6 +79,20 @@ const userService = {
       throw new Error("Error creating user: " + error.message);
     }
   },
+  async verifyAccount(token) {
+    try {
+      const user = await User.findOne({ verificationToken: token });
+      if (!user) {
+        return { error: "Invalid token" };
+      }
+      user.verificationToken = null;
+      user.isVerify = true;
+      await user.save();
+      return user;
+    } catch (error) {
+      throw new Error("Error verifying account: " + error.message);
+    }
+  },
 };
 
 module.exports = userService;

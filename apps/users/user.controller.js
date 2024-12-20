@@ -77,6 +77,19 @@ const userController = {
       });
     })(req, res, next);
   },
+  async verifyAccount(req, res) {
+    try {
+      const { token } = req.query;
+      //   Tìm người dùng
+      const user = await userService.verifyAccount(token);
+      if (user.error) {
+        return res.status(400).send(user.error);
+      }
+      res.redirect("/users/login");
+    } catch (err) {
+      res.status(500).send("Error verifying account");
+    }
+  },
 };
 
 module.exports = userController;

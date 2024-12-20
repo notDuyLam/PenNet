@@ -15,4 +15,7 @@ router.post("/signup", userController.createUser);
 // [POST] /login
 router.post("/login", userController.loginUser);
 
+// [GET] /verify
+router.get("/verify", userController.verifyAccount);
+
 module.exports = router;
