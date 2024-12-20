@@ -14,7 +14,7 @@ const userService = {
         password: hashedPassword, // Lưu mật khẩu đã mã hóa
       });
       await newUser.save(); // Lưu người dùng mới vào cơ sở dữ liệu
-      emailHelper.sendVerificationEmail(newUser.email, verificationToken);
+      // emailHelper.sendVerificationEmail(newUser.email, verificationToken);
       return newUser;
     } catch (error) {
       throw new Error("Error creating user: " + error.message);
