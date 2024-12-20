@@ -5,7 +5,8 @@ const router = express.Router();
 
 // Home route
 router.get("/", (req, res) => {
-  res.render("home", {});
+  console.log(req.user || "Nothing");
+  res.render("home");
 });
 
 // Login route

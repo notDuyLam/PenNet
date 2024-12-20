@@ -148,6 +148,11 @@ const userController = {
         .json({ message: "Invalid token or error resetting password" }); // Đảm bảo JSON khi có lỗi
     }
   },
+  async logoutUser(req, res) {
+    req.logout(() => {
+      res.redirect("/users/login");
+    });
+  },
 };
 
 module.exports = userController;

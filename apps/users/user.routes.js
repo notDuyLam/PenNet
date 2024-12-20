@@ -36,4 +36,7 @@ router.get("/reset-password", userController.renderResetPasswordPage);
 // [POST] /reset-password
 router.post("/reset-password", userController.resetPassword);
 
+// [POST] /logout
+router.get("/logout", userController.logoutUser);
+
 module.exports = router;

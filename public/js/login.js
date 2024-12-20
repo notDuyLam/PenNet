@@ -29,6 +29,9 @@ document.addEventListener("DOMContentLoaded", function () {
         messageElement.classList.add("text-green-500");
         messageElement.classList.remove("text-red-500");
         messageElement.innerHTML = "Login successful!";
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
       } else {
         const errorResult = await response.json();
         console.error("Login failed:", errorResult.message);
