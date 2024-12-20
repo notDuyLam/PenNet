@@ -7,7 +7,7 @@ const userController = {
     res.render("login", {});
   },
 
-  // Render login page
+  // Render signup page
   renderSignupPage(req, res) {
     res.render("signup", {});
   },
@@ -124,7 +124,7 @@ const userController = {
   async renderForgotPasswordPage(req, res) {
     res.render("ForgetPassword", {});
   },
-  async forgotPassword(req, res) {
+  async resetPassword(req, res) {
     try {
       const { token, password } = req.body;
       const user = await userService.resetPassword(token, password);
@@ -133,6 +133,16 @@ const userController = {
       res
         .status(400)
         .json({ message: "Invalid token or error resetting password" }); // Đảm bảo JSON khi có lỗi
+    }
+  },
+  // Quên mật khẩu
+  async forgotPassword(req, res) {
+    try {
+      const { email } = req.body;
+      const result = await userService.forgotPassword(email);
+      res.status(200).json({ message: result.message }); // Trả về JSON khi thành công
+    } catch (err) {
+      res.status(500).send("Error sending password reset link");
     }
   },
 };

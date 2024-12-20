@@ -14,7 +14,7 @@ const userService = {
         password: hashedPassword, // Lưu mật khẩu đã mã hóa
       });
       await newUser.save(); // Lưu người dùng mới vào cơ sở dữ liệu
-      // emailHelper.sendVerificationEmail(newUser.email, verificationToken);
+      emailHelper.sendVerificationEmail(newUser.email, verificationToken);
       return newUser;
     } catch (error) {
       throw new Error("Error creating user: " + error.message);
@@ -91,6 +91,51 @@ const userService = {
       return user;
     } catch (error) {
       throw new Error("Error verifying account: " + error.message);
+    }
+  },
+  async forgotPassword(email) {
+    try {
+      const user = await User.findOne({ email: email });
+      if (!user) {
+        return { message: "User not found" };
+      }
+      const token = await bcrypt.genSalt(10);
+      user.resetPasswordToken = token;
+      user.resetPasswordExpires = Date.now() + 900000; // 15 minutes
+      await user.save();
+
+      // await emailHelper.sendResetPasswordEmail(user.email, token);
+      return { message: "Token reset email sent" };
+    } catch (error) {
+      return { message: "Internal server error" };
+    }
+  },
+  async resetPassword(token, newPassword) {
+    try {
+      console.log(token);
+      const user = await User.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: Date.now() },
+      });
+
+      if (!user) {
+        return { message: "Invalid token" };
+      }
+
+      if (!user.isVerify) {
+        return { error: "User account is not verified." };
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+      user.resetPasswordToken = null; // Xóa token
+      user.resetPasswordExpires = null; // Xóa thời gian hết hạn
+      await user.save();
+
+      return { message: "Password reset successful" };
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      return { message: "Internal server error" };
     }
   },
 };
