@@ -120,6 +120,21 @@ const userController = {
       }
     )(req, res, next);
   },
+  // Trang điền thông tin để cập nhật
+  async renderForgotPasswordPage(req, res) {
+    res.render("ForgetPassword", {});
+  },
+  async forgotPassword(req, res) {
+    try {
+      const { token, password } = req.body;
+      const user = await userService.resetPassword(token, password);
+      res.status(200).json({ message: user.message }); // Trả về JSON khi thành công
+    } catch (err) {
+      res
+        .status(400)
+        .json({ message: "Invalid token or error resetting password" }); // Đảm bảo JSON khi có lỗi
+    }
+  },
 };
 
 module.exports = userController;

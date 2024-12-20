@@ -24,4 +24,10 @@ router.get("/login/auth/google", userController.loginWithGoogle);
 // [GET] /login/auth/google/callback
 router.get("/login/auth/google/callback", userController.callbackGoogle);
 
+// [GET] /forgot-password
+router.get("/forgot-password", userController.renderForgotPasswordPage);
+
+// [POST] /forgot-password
+router.post("/forgot-password", userController.forgotPassword);
+
 module.exports = router;
