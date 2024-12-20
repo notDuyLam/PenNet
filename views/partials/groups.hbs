@@ -1,27 +1,30 @@
 <div class="border rounded flex flex-col flex-grow">
-    <div class="border-b p-4 pl-8 pr-2 text-lg">
-        <div class="flex justify-between items-center font-bold">
-            Groups
-            <div class="flex rounded-2xl bg-violet-400 font-normal text-white pl-4 p-1 items-center">
-                Create
-                <div class="rounded-full h-6 w-6 ml-2 flex justify-center bg-white
-                     items-center text-black">
-                    <i class="fa-solid fa-plus"></i>
-                </div>
-            </div>
+  <div class="border-b p-4 pl-8 pr-2 text-lg">
+    <div class="flex justify-between items-center font-bold">
+      Groups
+      <div
+        class="flex rounded-2xl bg-violet-400 font-normal text-white pl-4 p-1 items-center"
+      >
+        Create
+        <div
+          class="rounded-full h-6 w-6 ml-2 flex justify-center bg-white items-center text-black"
+        >
+          <i class="fa-solid fa-plus"></i>
+        </div>
+      </div>
 
-        </div>
     </div>
-    <div class="flex flex-col pt-4">
-        {{!-- {{#each user.groups}} --}}
-        <div class="flex m-4 ml-8 ">
-            <img class="rounded-full w-8 h-8 mr-4" src="{{user.avatar}}">
-            <div>
-                <div>
-                    {{user.name}}
-                </div>
-            </div>
+  </div>
+  <div class="flex flex-col pt-4">
+    {{!-- {{#each user.groups}} --}}
+    <div class="flex m-4 ml-8">
+      <img class="rounded-full w-8 h-8 mr-4" src="{{user.avatar}}" />
+      <div>
+        <div>
+          {{user.name}}
         </div>
-        {{!-- {{/each}} --}}
+      </div>
     </div>
+    {{!-- {{/each}} --}}
+  </div>
 </div>

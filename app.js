@@ -5,6 +5,7 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
+const mongoose = require("mongoose");
 
 const app = express();
 const port = 3000;
@@ -49,7 +50,12 @@ app.engine("hbs", hbs.engine);
 app.set("view engine", "hbs");
 app.set("views", "./views");
 
-app.use("/", routes);
+app.use("/users", require("./apps/users/user.routes"));
+// app.use("/", routes);
+
+mongoose
+  .connect("mongodb://127.0.0.1:27017/test")
+  .then(() => console.log("Connected database successfully"));
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
