@@ -7,8 +7,11 @@
         
         <!-- Input fields -->
         <form action="/users/login" method="POST" class="w-full">
-            <input type="text" name="username" class="mt-5 w-full p-3 border border-[#ECF0F5] rounded-md box-border text-[14px] text-[#707988]" placeholder="Username" required>
-            <input type="password" name="password" class="mt-5 w-full p-3 border border-[#ECF0F5] rounded-md box-border text-[14px] text-[#707988]" placeholder="Password" required>
+            <label for="username" class="block text-left text-[#4B5669] font-medium">Username</label>
+            <input type="text" id="username" name="username" class="mt-2 w-full p-4 border border-[#ECF0F5] rounded-md box-border text-[14px] text-[#707988]" placeholder="Username" required>
+            
+            <label for="password" class="block text-left text-[#4B5669] font-medium mt-5">Password</label>
+            <input type="password" id="password" name="password" class="mt-2 w-full p-4 border border-[#ECF0F5] rounded-md box-border text-[14px] text-[#707988]" placeholder="Password" required>
             <button type="submit" class="w-full p-3 text-[16px] text-white bg-gradient-to-r from-[#AD49E1] to-[#873DEC] h-[44px] font-bold rounded-md cursor-pointer mt-8 border-none">Log in</button>
         </form>
 
@@ -31,7 +34,7 @@
         </a>
 
         <!-- Forgot Password -->
-        <a href="#" class="block mt-8 ml-[220px] text-[12px] text-[#5D6778] cursor-pointer no-underline">Forgot Password?</a>
+        <a href="/users/forgot-password" class="block mt-8 ml-[220px] text-[12px] text-[#5D6778] cursor-pointer no-underline">Forgot Password?</a>
         <!-- Sign Up Link -->
         <p class="text-[#5D6778] mt-5">Don't have an account? <a href="/users/signup" class="text-[14px] text-black font-medium no-underline">Sign up</a></p>
     </div>

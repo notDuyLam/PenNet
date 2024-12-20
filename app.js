@@ -56,7 +56,7 @@ app.set("view engine", "hbs");
 app.set("views", "./views");
 
 app.use("/users", require("./apps/users/user.routes"));
-// app.use("/", routes);
+app.use("/", routes);
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/test")
