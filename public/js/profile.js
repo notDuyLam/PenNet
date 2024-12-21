@@ -111,3 +111,61 @@ document.querySelector(".save").addEventListener("click", async function () {
     }
   }
 });
+
+document
+  .getElementById("change-password-button")
+  .addEventListener("click", function () {
+    document.getElementById("profile-form").classList.add("hidden");
+    document.getElementById("password-form").classList.remove("hidden");
+    document.getElementById("edit-button").classList.add("hidden");
+    document.getElementById("change-password-button").classList.add("hidden");
+  });
+
+document
+  .getElementById("password-form")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const currentPassword = document.getElementById("current_password").value;
+    const newPassword = document.getElementById("new_password").value;
+    const confirmPassword = document.getElementById("confirm_password").value;
+
+    if (newPassword !== confirmPassword) {
+      alert("New password and confirm password do not match");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/users/change-password", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Password changed successfully:", result);
+        alert("Password changed successfully");
+        document.getElementById("profile-form").classList.remove("hidden");
+        document.getElementById("password-form").classList.add("hidden");
+        document.getElementById("edit-button").classList.remove("hidden");
+        document
+          .getElementById("change-password-button")
+          .classList.remove("hidden");
+      } else {
+        const errorResult = await response.json();
+        console.log(errorResult);
+
+        console.error("Failed to change password:", errorResult.errorMessage);
+        alert("Failed to change password: " + errorResult.errorMessage);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred while changing the password");
+    }
+  });

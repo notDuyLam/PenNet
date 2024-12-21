@@ -153,6 +153,32 @@ const userService = {
       throw new Error("Error updating user avatar: " + error.message);
     }
   },
+  async verifyPassword(userId, currentPassword) {
+    try {
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
+      return isMatch;
+    } catch (error) {
+      throw new Error("Error verifying password: " + error.message);
+    }
+  },
+  async updatePassword(userId, newPassword) {
+    try {
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password_hash = hashedPassword;
+      await user.save();
+      return { message: "Password updated successfully" };
+    } catch (error) {
+      throw new Error("Error updating password: " + error.message);
+    }
+  },
 };
 
 module.exports = userService;

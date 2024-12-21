@@ -14,4 +14,6 @@ router.post(
   userController.uploadAvatar
 );
 
+router.patch("/change-password", userController.changePassword);
+
 module.exports = router;

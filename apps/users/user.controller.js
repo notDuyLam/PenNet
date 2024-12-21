@@ -227,6 +227,29 @@ const userController = {
       return res.status(500).json({ errorMessage: "Failed to update avatar" });
     }
   },
+  async changePassword(req, res) {
+    try {
+      const userId = req.user.id; // Get user ID from authenticated session
+      const { currentPassword, newPassword } = req.body;
+
+      // Verify current password
+      const isMatch = await userService.verifyPassword(userId, currentPassword);
+      if (!isMatch) {
+        return res
+          .status(400)
+          .json({ errorMessage: "Current password is incorrect" });
+      }
+
+      // Update to new password
+      await userService.updatePassword(userId, newPassword);
+      return res
+        .status(200)
+        .json({ successMessage: "Password changed successfully" });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
 };
 
 module.exports = userController;

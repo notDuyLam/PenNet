@@ -32,6 +32,26 @@
                             <input name="email" type="email" id="email" class="form-control border rounded w-full py-2 px-3 text-gray-700" placeholder="Enter your email" value="{{user.email}}" readonly disabled>
                         </div>
                     </form>
+
+                    <form id="password-form" class="hidden mt-6" action="/users/change-password">
+                        <div class="form-group mb-4">
+                            <label for="current_password" class="block text-gray-700 p-2 text-lg font-bold">Current Password</label>
+                            <input name="current_password" type="password" id="current_password" class="form-control border rounded w-full py-2 px-3 text-gray-700" placeholder="Enter your current password">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="new_password" class="block text-gray-700 p-2 text-lg font-bold">New Password</label>
+                            <input name="new_password" type="password" id="new_password" class="form-control border rounded w-full py-2 px-3 text-gray-700" placeholder="Enter your new password">
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="confirm_password" class="block text-gray-700 p-2 text-lg font-bold">Confirm New Password</label>
+                            <input name="confirm_password" type="password" id="confirm_password" class="form-control border rounded w-full py-2 px-3 text-gray-700" placeholder="Confirm your new password">
+                        </div>
+                        <div class="flex justify-center">
+                            <button type="submit" class="mt-5 bg-green-500 text-white py-2 px-4 rounded w-2/3 mx-2">
+                                Change Password
+                            </button>
+                        </div>
+                    </form>
                     
                     <div class="flex justify-center">
                         <button id="edit-button" class="mt-5 bg-blue-500 text-white py-2 px-4 rounded w-1/3 mx-2">
