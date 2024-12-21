@@ -5,8 +5,9 @@ const router = express.Router();
 
 // Home route
 router.get("/", (req, res) => {
-  console.log(req.user || "Nothing");
-  res.render("home");
+  res.render("home", {
+    user: req.user,
+  });
 });
 
 // Login route
@@ -45,7 +46,9 @@ router.get("/CodeGoogle", (req, res) => {
 });
 
 router.get("/message", (req, res) => {
-  res.render("message", {});
+  res.render("message", {
+    user: req.user,
+  });
 });
 
 router.get("/group", (req, res) => {

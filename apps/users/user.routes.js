@@ -41,8 +41,7 @@ router.get("/logout", userController.logoutUser);
 
 // Route profile
 router.get("/profile", (req, res) => {
-  console.log(req.user);
-  res.render("profile.hbs", {
+  res.render("profile", {
     user: req.user,
   });
 });
