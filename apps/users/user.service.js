@@ -132,8 +132,43 @@ const userService = {
 
       return { message: "Password reset successful" };
     } catch (error) {
-      console.error("Error resetting password:", error);
       return { message: "Internal server error" };
+    }
+  },
+  async getUserById(userId) {
+    try {
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return { error: "User not found" };
+      }
+      return user;
+    } catch (error) {
+      return { error: "Error fetching user: " + error.message };
+    }
+  },
+  async updateUser(userId, updateData) {
+    try {
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      await user.update(updateData);
+      return user;
+    } catch (error) {
+      throw new Error("Error updating user: " + error.message);
+    }
+  },
+  async updateUserAvatar(userId, avatarUrl) {
+    try {
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      user.avatar_url = avatarUrl.toString();
+      await user.save();
+      return user;
+    } catch (error) {
+      throw new Error("Error updating user avatar: " + error.message);
     }
   },
 };

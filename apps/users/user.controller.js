@@ -159,6 +159,78 @@ const userController = {
       res.redirect("/users/login");
     });
   },
+  async updateUser(req, res) {
+    try {
+      const userId = req.user.id; // Get user ID from authenticated session
+      const { name } = req.body;
+
+      // Prepare the update data
+      const updateData = {
+        name,
+      };
+
+      // Update the user
+      const updatedUser = await userService.updateUser(userId, updateData);
+
+      // Update the user session
+      req.login(updatedUser, (err) => {
+        if (err) {
+          console.log("Error updating session:", err);
+          return res.status(500).json({ errorMessage: "Server error" });
+        }
+        // Return the updated user information
+        return res.status(200).json({
+          successMessage: "User updated successfully",
+          user: {
+            id: updatedUser.id,
+            username: updatedUser.username,
+            email: updatedUser.email,
+            name: updatedUser.name,
+            avatar: updatedUser.avatar_url,
+          },
+        });
+      });
+    } catch (error) {
+      console.error("Error updating user:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async uploadAvatar(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Lấy user ID từ session đã xác thực
+      const avatarUrl = req.imageUrls;
+
+      // Cập nhật avatar của người dùng
+      const updatedUser = await userService.updateUserAvatar(userId, avatarUrl);
+
+      // Cập nhật lại session của người dùng
+      req.login(updatedUser, (err) => {
+        if (err) {
+          console.error("Error updating session:", err);
+          return res.status(500).json({ errorMessage: "Server error" });
+        }
+
+        // Trả về thông tin người dùng đã được cập nhật
+        return res.status(200).json({
+          successMessage: "Avatar updated successfully",
+          user: {
+            id: updatedUser.id,
+            username: updatedUser.username,
+            email: updatedUser.email,
+            name: updatedUser.name,
+            avatar: updatedUser.avatar_url,
+          },
+        });
+      });
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+      return res.status(500).json({ errorMessage: "Failed to update avatar" });
+    }
+  },
 };
 
 module.exports = userController;

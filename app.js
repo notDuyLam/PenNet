@@ -56,8 +56,12 @@ app.engine("hbs", hbs.engine);
 app.set("view engine", "hbs");
 app.set("views", "./views");
 
+// Định nghĩa các routes
 app.use("/users", require("./apps/users/user.routes"));
 app.use("/", routes);
+
+// APIs
+app.use("/api/users", require("./apps/users/users.api"));
 
 // Kết nối database
 const connectDB = async () => {

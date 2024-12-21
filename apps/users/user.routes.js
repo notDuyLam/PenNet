@@ -39,11 +39,18 @@ router.post("/reset-password", userController.resetPassword);
 // [POST] /logout
 router.get("/logout", userController.logoutUser);
 
-// Route profile
-router.get("/profile", (req, res) => {
-  res.render("profile", {
-    user: req.user,
-  });
+// [GET] /profile
+router.get("/profile", (req, res, next) => {
+  if (req.isAuthenticated()) {
+    res.render("profile", {
+      user: req.user,
+    });
+  } else {
+    res.redirect("/users/login");
+  }
 });
+
+// [PATCH] /profile
+router.patch("/profile", userController.updateUser);
 
 module.exports = router;
