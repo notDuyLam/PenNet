@@ -68,7 +68,7 @@ module.exports = function (passport) {
               isVerify: true,
               first_name: profile.name.givenName,
               last_name: profile.name.familyName,
-              avatar_url: profile.photos[0].value,
+              // avatar_url: profile.photos[0].value,
             };
 
             const createdUser = await userService.createUserEmail({
