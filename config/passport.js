@@ -89,7 +89,7 @@ module.exports = function (passport) {
       return done(null, {
         id: user.id,
         username: user.username,
-        picture: user.avatar_url,
+        avatar: user.avatar_url,
         email: user.email,
         name: user.name,
       });
