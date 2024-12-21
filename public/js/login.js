@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
         messageElement.innerHTML = "Login successful!";
         setTimeout(() => {
           window.location.href = "/";
-        }, 2000);
+        }, 1000);
       } else {
         const errorResult = await response.json();
         console.error("Login failed:", errorResult.message);

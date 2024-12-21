@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
           noticeText.textContent = result.message;
           setTimeout(() => {
             window.location.href = "/users/login";
-          }, 2000);
+          }, 1000);
         }
       } else {
         throw new Error(result.message || "Something went wrong");
