@@ -26,6 +26,8 @@ module.exports = function (passport) {
                     message: "Please active your account with registed email!",
                   });
                 }
+                console.log(user);
+
                 return done(null, user, { message: "Login successfully" });
               } else {
                 return done(null, false, {
@@ -87,10 +89,9 @@ module.exports = function (passport) {
       return done(null, {
         id: user.id,
         username: user.username,
-        picture: user.url,
+        picture: user.avatar_url,
         email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        name: user.name,
       });
     });
   });

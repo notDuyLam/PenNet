@@ -39,4 +39,15 @@ router.post("/reset-password", userController.resetPassword);
 // [POST] /logout
 router.get("/logout", userController.logoutUser);
 
+// Route profile
+router.get("/profile", (req, res) => {
+  res.render("profile", {
+    currentView: "profile",
+    name: req.user?.username,
+    profileImg: req.user?.picture,
+    email: req.user?.email,
+    name: req.user?.name,
+  });
+});
+
 module.exports = router;
