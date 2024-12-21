@@ -1,7 +1,7 @@
 const LocalStrategy = require("passport-local").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const bcrypt = require("bcrypt");
-const userService = require("../apps/users/user.service");
+const userService = require("../apps/user/services");
 
 module.exports = function (passport) {
   passport.use(

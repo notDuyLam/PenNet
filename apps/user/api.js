@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("./user.controller");
+const userController = require("./controller");
 
 const {
   uploadPhoto,

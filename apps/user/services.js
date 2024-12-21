@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const User = require("./user.model");
+const User = require("./model");
 const { Op } = require("sequelize");
 const emailHelper = require("../../helpers/emailService.helper");
 

@@ -6,7 +6,7 @@ const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const mongoose = require("mongoose");
-const db = require("./config/db");
+const db = require("./configs/db");
 
 const app = express();
 const port = 3000;
@@ -15,7 +15,7 @@ const port = 3000;
 require("dotenv").config();
 
 // Passport config
-require("./config/passport")(passport);
+require("./configs/passport")(passport);
 
 // Sử dụng json parser
 app.use(express.json());
@@ -50,20 +50,31 @@ app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, "public")));
 
 // config hbs
-const hbs = require("./config/handlebarsConfig");
+const hbs = require("./configs/handlebarsConfig");
 const routes = require("./routes");
 app.engine("hbs", hbs.engine);
 app.set("view engine", "hbs");
 app.set("views", "./views");
 
 // Định nghĩa các routes
-app.use("/users", require("./apps/users/user.routes"));
+app.use("/users", require("./apps/user/routes"));
 app.use("/", routes);
 
 // APIs
-app.use("/api/users", require("./apps/users/users.api"));
+app.use("/api/users", require("./apps/user/api"));
 
 // Kết nối database
+const { User,
+  UserInfo,
+  UserRela,
+  Post,
+  Like,
+  Comment,
+  Conversation,
+  Participant,
+  Message,
+} = require('./apps/apps.associations');  // connect models
+
 const connectDB = async () => {
   console.log("Check database connection...");
 

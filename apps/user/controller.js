@@ -1,4 +1,4 @@
-const userService = require("./user.service");
+const userService = require("./services");
 const passport = require("passport");
 
 const userController = {

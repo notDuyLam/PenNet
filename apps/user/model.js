@@ -1,33 +1,40 @@
-const { DataTypes } = require("sequelize");
-const db = require("../../config/db");
+const { Sequelize, DataTypes, Model } = require('sequelize');
+const sequelize = require('../../configs/db');
 
-// Định nghĩa schema cho bảng Users
-const User = db.define(
-  "user",
+class User extends Model {}
+
+User.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     first_name: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
-
     last_name: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
-
     email: {
       type: DataTypes.STRING,
+      allowNull: false,
       unique: true,
+      validate: {
+        isEmail: true,
+      },
     },
-
     avatar_url: {
       type: DataTypes.STRING,
-      defaultValue:
-        "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg",
+      allowNull: true,
+      defaultValue: "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
     },
-
     password_hash: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
-
     isVerify: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -46,7 +53,10 @@ const User = db.define(
     },
   },
   {
-    timestamps: true, // Kích hoạt timestamps
+    sequelize,
+    modelName: 'User',
+    tableName: 'users',
+    timestamps: false,
   }
 );
 
