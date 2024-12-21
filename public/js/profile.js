@@ -88,7 +88,7 @@ document.querySelector(".save").addEventListener("click", async function () {
 
     try {
       const response = await fetch("/api/users/upload-avatar", {
-        method: "POST",
+        method: "PATCH",
         body: formData,
       });
 
