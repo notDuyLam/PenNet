@@ -4,11 +4,17 @@ const passport = require("passport");
 const userController = {
   // Render login page
   renderLoginPage(req, res) {
+    if (req.isAuthenticated()) {
+      return res.redirect("/");
+    }
     res.render("login", {});
   },
 
   // Render signup page
   renderSignupPage(req, res) {
+    if (req.isAuthenticated()) {
+      return res.redirect("/");
+    }
     res.render("signup", {});
   },
 
