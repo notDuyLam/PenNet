@@ -5,16 +5,15 @@ const db = require("../../config/db");
 const User = db.define(
   "user",
   {
-    name: {
+    first_name: {
+      type: DataTypes.STRING,
+    },
+
+    last_name: {
       type: DataTypes.STRING,
     },
 
     email: {
-      type: DataTypes.STRING,
-      unique: true,
-    },
-
-    username: {
       type: DataTypes.STRING,
       unique: true,
     },
@@ -25,7 +24,7 @@ const User = db.define(
         "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg",
     },
 
-    password: {
+    password_hash: {
       type: DataTypes.STRING,
     },
 

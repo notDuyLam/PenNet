@@ -12,7 +12,7 @@ const userService = {
       const newUser = await User.create({
         ...userData,
         verificationToken: verificationToken,
-        password: hashedPassword, // Lưu mật khẩu đã mã hóa
+        password_hash: hashedPassword, // Lưu mật khẩu đã mã hóa
       });
       emailHelper.sendVerificationEmail(newUser.email, verificationToken);
       return newUser;
@@ -22,21 +22,12 @@ const userService = {
   },
   // Kiểm tra các trường bắt buộc
   async validateUserData(userData) {
-    const { name, email, username, password } = userData;
-    if (!name || !email || !username || !password) {
+    const { first_name, last_name, email, password } = userData;
+    if (!first_name || !last_name || !email || !password) {
       return true;
     }
+    return false;
   },
-  // Kiểm tra tên người dùng có tồn tại không
-  async checkIfUsernameExists(username) {
-    try {
-      const user = await User.findOne({ where: { username } });
-      return user !== null;
-    } catch (error) {
-      throw new Error("Error checking username: " + error.message);
-    }
-  },
-
   // Kiểm tra email đã tồn tại không
   async checkIfEmailExists(email) {
     try {
@@ -46,23 +37,15 @@ const userService = {
       throw new Error("Error checking email: " + error.message);
     }
   },
-  async getUserByUsername(username) {
-    try {
-      const user = await User.findOne({ where: { username } });
-      return user;
-    } catch (error) {
-      throw new Error("Error fetching user by username: " + error.message);
-    }
-  },
   async getUserByEmail(email) {
     try {
       const user = await User.findOne({ where: { email } });
       if (!user) {
-        throw new Error("User not found");
+        return null;
       }
       return user;
     } catch (error) {
-      throw new Error("Error fetching user by email: " + error.message);
+      throw new Error("Error checking email: " + error.message);
     }
   },
   // Tạo người dùng từ thông tin lấy từ email
@@ -72,7 +55,7 @@ const userService = {
       const hashedPassword = await bcrypt.hash(randomPassword, 10); // Mã hóa mật khẩu
       const newUser = await User.create({
         ...userData,
-        password: hashedPassword, // Lưu mật khẩu đã mã hóa
+        password_hash: hashedPassword, // Lưu mật khẩu đã mã hóa
       });
       return newUser;
     } catch (error) {
@@ -103,7 +86,6 @@ const userService = {
       user.resetPasswordToken = token;
       user.resetPasswordExpires = Date.now() + 900000; // 15 minutes
       await user.save();
-
       await emailHelper.sendResetPasswordEmail(user.email, token);
       return { message: "Token reset email sent" };
     } catch (error) {
@@ -125,7 +107,7 @@ const userService = {
         return { error: "User account is not verified." };
       }
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      user.password = hashedPassword;
+      user.password_hash = hashedPassword;
       user.resetPasswordToken = null; // Xóa token
       user.resetPasswordExpires = null; // Xóa thời gian hết hạn
       await user.save();

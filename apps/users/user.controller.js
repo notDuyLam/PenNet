@@ -22,30 +22,26 @@ const userController = {
   async createUser(req, res) {
     try {
       // Lấy dữ liệu từ request body
-      const { name, email, username, password, url } = req.body;
+      const { first_name, last_name, email, password } = req.body;
 
       // Kiểm tra nếu name, email, username, password null
-      const userData = { name, email, username, password };
+      const userData = { first_name, last_name, email, password };
       if (await userService.validateUserData(userData)) {
         return res.status(400).json({
           message: "All fields are required",
         });
       }
       // Kiểm tra xem tên người dùng hoặc email đã tồn tại chưa
-      if (await userService.checkIfUsernameExists(username)) {
-        return res.status(400).json({ message: "Username already exists" });
-      }
       if (await userService.checkIfEmailExists(email)) {
         return res.status(400).json({ message: "Email already exists" });
       }
 
       // Tạo người dùng mới
       const newUser = await userService.createUser({
-        name,
+        first_name,
+        last_name,
         email,
-        username,
         password,
-        url,
       });
 
       // Trả về kết quả
@@ -53,10 +49,10 @@ const userController = {
         message: "User created successfully",
         user: {
           id: newUser.id,
-          username: newUser.username,
+          first_name: newUser.first_name,
+          last_name: newUser.last_name,
+          avatar: newUser.avatar_url,
           email: newUser.email,
-          name: newUser.name,
-          url: newUser.avatar_url,
         },
       });
     } catch (error) {
@@ -65,23 +61,26 @@ const userController = {
     }
   },
   async loginUser(req, res, next) {
-    passport.authenticate("local", (err, user, info) => {
-      if (err) {
-        console.log("OK1");
-
-        return next(err);
-      }
-      if (!user) {
-        return res.status(401).json({ message: info.message });
-      }
-      req.logIn(user, (err) => {
+    passport.authenticate(
+      "local",
+      { usernameField: "email" },
+      (err, user, info) => {
         if (err) {
           return next(err);
         }
-        // Đăng nhập thành công
-        return res.status(200).json({ message: info.message });
-      });
-    })(req, res, next);
+        if (!user) {
+          return res.status(401).json({ message: info.message });
+        }
+
+        req.logIn(user, (err) => {
+          if (err) {
+            return next(err);
+          }
+          // Đăng nhập thành công
+          return res.status(200).json({ message: info.message });
+        });
+      }
+    )(req, res, next);
   },
   async verifyAccount(req, res) {
     try {
@@ -162,11 +161,11 @@ const userController = {
   async updateUser(req, res) {
     try {
       const userId = req.user.id; // Get user ID from authenticated session
-      const { name } = req.body;
-
+      const { firstName, lastName } = req.body;
       // Prepare the update data
       const updateData = {
-        name,
+        first_name: firstName,
+        last_name: lastName,
       };
 
       // Update the user
@@ -183,9 +182,9 @@ const userController = {
           successMessage: "User updated successfully",
           user: {
             id: updatedUser.id,
-            username: updatedUser.username,
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
             email: updatedUser.email,
-            name: updatedUser.name,
             avatar: updatedUser.avatar_url,
           },
         });
@@ -217,10 +216,10 @@ const userController = {
         // Trả về thông tin người dùng đã được cập nhật
         return res.status(200).json({
           id: updatedUser.id,
-          username: updatedUser.username,
-          email: updatedUser.email,
-          name: updatedUser.name,
+          first_name: updatedUser.first_name,
+          last_name: updatedUser.last_name,
           avatar: updatedUser.avatar_url,
+          email: updatedUser.email,
         });
       });
     } catch (error) {

@@ -16,8 +16,10 @@ document
   });
 
 document.getElementById("edit-button").addEventListener("click", function () {
-  document.getElementById("name").removeAttribute("readonly");
-  document.getElementById("name").removeAttribute("disabled");
+  document.getElementById("first_name").removeAttribute("readonly");
+  document.getElementById("first_name").removeAttribute("disabled");
+  document.getElementById("last_name").removeAttribute("readonly");
+  document.getElementById("last_name").removeAttribute("disabled");
   document.getElementById("edit-button").classList.add("hidden");
   document.getElementById("save-button").classList.remove("hidden");
 });
@@ -25,7 +27,8 @@ document.getElementById("edit-button").addEventListener("click", function () {
 document
   .getElementById("save-button")
   .addEventListener("click", async function () {
-    const name = document.getElementById("name").value;
+    const firstName = document.getElementById("first_name").value;
+    const lastName = document.getElementById("last_name").value;
 
     try {
       const response = await fetch("/users/profile", {
@@ -33,17 +36,22 @@ document
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: new URLSearchParams({ name }),
+        body: new URLSearchParams({ firstName, lastName }),
       });
 
       if (response.ok) {
         const result = await response.json();
         console.log("Profile updated successfully:", result);
-        document.getElementById("name").setAttribute("readonly", true);
-        document.getElementById("name").setAttribute("disabled", true);
+        document.getElementById("first_name").setAttribute("readonly", true);
+        document.getElementById("first_name").setAttribute("disabled", true);
+        document.getElementById("last_name").setAttribute("readonly", true);
+        document.getElementById("last_name").setAttribute("disabled", true);
         document.getElementById("edit-button").classList.remove("hidden");
         document.getElementById("save-button").classList.add("hidden");
-        document.querySelector(".username").textContent = name;
+        document.getElementById("first_name").value = firstName;
+        document.getElementById("last_name").value = lastName;
+        document.querySelector(".fullName").textContent =
+          firstName + " " + lastName;
         alert("Profile updated successfully");
       } else {
         const errorResult = await response.json();

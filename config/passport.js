@@ -5,39 +5,43 @@ const userService = require("../apps/users/user.service");
 
 module.exports = function (passport) {
   passport.use(
-    new LocalStrategy(
-      { usernameField: "username" },
-      (username, password, done) => {
-        userService
-          .getUserByUsername(username)
-          .then((user) => {
-            if (!user) {
-              return done(null, false, {
-                message: "Username or password is not matched!",
-              });
+    new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
+      userService
+        .getUserByEmail(email)
+        .then((user) => {
+          if (!user) {
+            return done(null, false, {
+              message: "Email or password is not matched!",
+            });
+          }
+          bcrypt.compare(password, user.password_hash, (err, isMatch) => {
+            if (err) {
+              return done(err);
             }
-            bcrypt.compare(password, user.password, (err, isMatch) => {
-              if (err) {
-                return done(err);
-              }
-              if (isMatch) {
-                if (!user.isVerify) {
-                  return done(null, false, {
-                    message: "Please active your account with registed email!",
-                  });
-                }
-
-                return done(null, user, { message: "Login successfully" });
-              } else {
+            if (isMatch) {
+              if (!user.isVerify) {
                 return done(null, false, {
-                  message: "Username and password is not matched!",
+                  message: "Please active your account with registered email!",
                 });
               }
+
+              return done(null, user, { message: "Login successfully" });
+            } else {
+              return done(null, false, {
+                message: "Email and password is not matched!",
+              });
+            }
+          });
+        })
+        .catch((err) => {
+          if (err.message === "User not found") {
+            return done(null, false, {
+              message: "Email or password is not matched!",
             });
-          })
-          .catch((err) => done(err));
-      }
-    )
+          }
+          return done(err);
+        });
+    })
   );
 
   passport.use(
@@ -60,12 +64,11 @@ module.exports = function (passport) {
           //   Nếu không thấy thì tạo mới
           if (!user) {
             const newUser = {
-              username: email,
               email: email,
-              password: null,
               isVerify: true,
-              name: profile.displayName,
-              url: profile.photos[0].value,
+              first_name: profile.name.givenName,
+              last_name: profile.name.familyName,
+              avatar_url: profile.photos[0].value,
             };
 
             const createdUser = await userService.createUserEmail({
@@ -87,10 +90,10 @@ module.exports = function (passport) {
     process.nextTick(function () {
       return done(null, {
         id: user.id,
-        username: user.username,
+        first_name: user.first_name,
+        last_name: user.last_name,
         avatar: user.avatar_url,
         email: user.email,
-        name: user.name,
       });
     });
   });
