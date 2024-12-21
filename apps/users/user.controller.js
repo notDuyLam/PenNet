@@ -216,14 +216,11 @@ const userController = {
 
         // Trả về thông tin người dùng đã được cập nhật
         return res.status(200).json({
-          successMessage: "Avatar updated successfully",
-          user: {
-            id: updatedUser.id,
-            username: updatedUser.username,
-            email: updatedUser.email,
-            name: updatedUser.name,
-            avatar: updatedUser.avatar_url,
-          },
+          id: updatedUser.id,
+          username: updatedUser.username,
+          email: updatedUser.email,
+          name: updatedUser.name,
+          avatar: updatedUser.avatar_url,
         });
       });
     } catch (error) {

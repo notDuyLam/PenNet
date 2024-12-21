@@ -79,15 +79,16 @@ document.querySelector(".save").addEventListener("click", async function () {
     formData.append("images", file); // Change the key to "images" to match the server-side handler
 
     try {
-      const response = await fetch("/upload-avatar", {
+      const response = await fetch("/api/users/upload-avatar", {
         method: "POST",
         body: formData,
       });
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Image uploaded successfully:", result);
-        document.querySelector(".profile-image img").src = result.avatarUrl;
+        console.log(result);
+        document.querySelector(".profile-image img").src = result.avatar;
+        document.querySelector(".image-avatar").src = result.avatar;
         alert("Image uploaded successfully");
         document.getElementById("upload-button").classList.remove("hidden");
         document.querySelector(".save").classList.add("hidden");
