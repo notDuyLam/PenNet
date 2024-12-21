@@ -26,7 +26,6 @@ module.exports = function (passport) {
                     message: "Please active your account with registed email!",
                   });
                 }
-                console.log(user);
 
                 return done(null, user, { message: "Login successfully" });
               } else {

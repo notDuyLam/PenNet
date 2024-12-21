@@ -22,7 +22,7 @@ const User = db.define(
     avatar_url: {
       type: DataTypes.STRING,
       defaultValue:
-        "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
+        "https://cellphones.com.vn/sforum/wp-content/uploads/2023/10/avatar-trang-4.jpg",
     },
 
     password: {
