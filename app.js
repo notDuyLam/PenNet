@@ -6,6 +6,7 @@ const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
 const passport = require("passport");
 const mongoose = require("mongoose");
+const db = require("./configs/db");
 
 const app = express();
 const port = 3000;
@@ -14,7 +15,7 @@ const port = 3000;
 require("dotenv").config();
 
 // Passport config
-require("./config/passport")(passport);
+require("./configs/passport")(passport);
 
 // Sử dụng json parser
 app.use(express.json());
@@ -49,19 +50,50 @@ app.use(passport.initialize());
 app.use(express.static(path.join(__dirname, "public")));
 
 // config hbs
-const hbs = require("./config/handlebarsConfig");
+const hbs = require("./configs/handlebarsConfig");
 const routes = require("./routes");
 app.engine("hbs", hbs.engine);
 app.set("view engine", "hbs");
 app.set("views", "./views");
 
-app.use("/users", require("./apps/users/user.routes"));
+// Định nghĩa các routes
+app.use("/users", require("./apps/user/routes"));
 app.use("/", routes);
 
-mongoose
-  .connect("mongodb://127.0.0.1:27017/test")
-  .then(() => console.log("Connected database successfully"));
+// APIs
+app.use("/api/users", require("./apps/user/api"));
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+// Kết nối database
+const { User,
+  UserInfo,
+  UserRela,
+  Post,
+  Like,
+  Comment,
+  Conversation,
+  Participant,
+  Message,
+} = require('./apps/apps.associations');  // connect models
+
+const connectDB = async () => {
+  console.log("Check database connection...");
+
+  try {
+    await db.authenticate();
+    // Đồng bộ các models
+    await db.sync({ force: false });
+    console.log("Database connection established");
+  } catch (e) {
+    console.log("Database connection failed", e);
+  }
+};
+
+const PORT = process.env.PORT || 3000;
+
+(async () => {
+  await connectDB();
+  // Khởi động server
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  });
+})();

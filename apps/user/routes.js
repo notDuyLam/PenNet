@@ -1,19 +1,19 @@
 const express = require("express");
 const router = express.Router();
 
-const userController = require("./user.controller");
+const userController = require("./controller");
 
 // [GET] /login
 router.get("/login", userController.renderLoginPage);
+
+// [POST] /login
+router.post("/login", userController.loginUser);
 
 // [GET] /signup
 router.get("/signup", userController.renderSignupPage);
 
 // [POST] /signup
 router.post("/signup", userController.createUser);
-
-// [POST] /login
-router.post("/login", userController.loginUser);
 
 // [GET] /verify
 router.get("/verify", userController.verifyAccount);
@@ -38,5 +38,19 @@ router.post("/reset-password", userController.resetPassword);
 
 // [POST] /logout
 router.get("/logout", userController.logoutUser);
+
+// [GET] /profile
+router.get("/profile", (req, res, next) => {
+  if (req.isAuthenticated()) {
+    res.render("profile", {
+      user: req.user,
+    });
+  } else {
+    res.redirect("/users/login");
+  }
+});
+
+// [PATCH] /profile
+router.patch("/profile", userController.updateUser);
 
 module.exports = router;

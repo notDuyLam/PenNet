@@ -4,30 +4,34 @@ document.addEventListener("DOMContentLoaded", () => {
   const messageElement = noticeElement.querySelector("p");
 
   form.addEventListener("submit", async (event) => {
+    console.log("OK");
+
     event.preventDefault();
-    const name = document.querySelector('input[placeholder="Name"]').value;
-    const email = document.querySelector('input[placeholder="Email"]').value;
-    const username = document.querySelector(
-      'input[placeholder="Username"]'
+    const firstName = document.querySelector(
+      'input[placeholder="First Name"]'
     ).value;
+    const lastName = document.querySelector(
+      'input[placeholder="Last Name"]'
+    ).value;
+    const email = document.querySelector('input[placeholder="Email"]').value;
     const password = document.querySelector(
       'input[placeholder="Password"]'
     ).value;
 
-    const data = {
-      name: name,
-      email: email,
-      username: username,
-      password: password,
-    };
-
-    if (!name || !email || !username || !password) {
+    if (!firstName || !lastName || !email || !password) {
       messageElement.textContent = "All fields are required.";
       messageElement.classList.add("text-red-500");
       messageElement.classList.remove("text-green-500");
       noticeElement.classList.remove("hidden");
       return;
     }
+
+    const data = {
+      email: email,
+      password: password,
+      first_name: firstName,
+      last_name: lastName,
+    };
 
     try {
       const response = await fetch("/users/signup", {
@@ -47,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageElement.classList.remove("text-red-500");
         setTimeout(() => {
           window.location.href = "/users/login";
-        }, 2000);
+        }, 1000);
       } else {
         const result = await response.json();
         console.error("Signup failed:", result.message);

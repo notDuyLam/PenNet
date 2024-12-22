@@ -8,10 +8,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const formData = new FormData(form);
     const data = {
-      username: formData.get("username"),
+      email: formData.get("email"),
       password: formData.get("password"),
     };
-
     try {
       const response = await fetch("/users/login", {
         method: "POST",
@@ -31,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
         messageElement.innerHTML = "Login successful!";
         setTimeout(() => {
           window.location.href = "/";
-        }, 2000);
+        }, 1000);
       } else {
         const errorResult = await response.json();
         console.error("Login failed:", errorResult.message);

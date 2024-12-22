@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
           messageElement.textContent = data.message;
           setTimeout(() => {
             window.location.href = "/users/reset-password";
-          }, 2000);
+          }, 1000);
         } else {
           noticeElement.classList.remove("hidden");
           messageElement.classList.add("text-red-500");
