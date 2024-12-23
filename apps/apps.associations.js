@@ -5,6 +5,7 @@ const UserRela = require('./user/user_rela/model');                 // Model Use
 const Post = require('./post/model');                               // Model Post
 const Like = require('./post/like/model');                          // Model Like
 const Comment = require('./post/comment/model');                    // Model Like
+const Attachment = require('./post/attachment/model');              // Model Like
 
 const Conversation = require('./conversation/model');               // Model Conversation
 const Participant = require('./conversation/participant/model');    // Model Participant
@@ -135,6 +136,26 @@ Message.belongsTo(Conversation, {
   as: 'conversation',
 });
 
+// Message - Attachment
+Message.hasMany(Attachment, {
+  foreignKey: 'message_id',
+  as: 'attachments',
+});
+Attachment.belongsTo(Message, {
+  foreignKey: 'message_id',
+  as: 'message',
+});
+
+// Post - Attachment
+Post.hasMany(Attachment, {
+  foreignKey: 'post_id',
+  as: 'attachments',
+});
+Attachment.belongsTo(Post, {
+  foreignKey: 'post_id',
+  as: 'post',
+});
+
 
 module.exports = {
   User,
@@ -143,6 +164,7 @@ module.exports = {
   Post,
   Like,
   Comment,
+  Attachment,
   Conversation,
   Participant,
   Message,
