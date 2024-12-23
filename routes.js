@@ -10,6 +10,10 @@ router.get("/", (req, res) => {
   });
 });
 
+router.get('/user/id=:id', (req, res) => {
+    res.render('personProfile', {});
+});
+
 // Login route
 router.get("/login", (req, res) => {
   res.render("login", {});
@@ -58,5 +62,11 @@ router.get("/group", (req, res) => {
 router.get("/block", (req, res) => {
   res.render("block", {});
 });
+
+router.get("/Dang/test", (req, res) => {
+    res.render("personProfile", {
+      user: req.user,
+    });
+  });
 
 module.exports = router;
