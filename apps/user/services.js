@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("./model");
+const UserInfo = require("./user_info/model");
 const { Op } = require("sequelize");
 const emailHelper = require("../../helpers/emailService.helper");
 
@@ -14,8 +15,20 @@ const userService = {
         verificationToken: verificationToken,
         password_hash: hashedPassword, // Lưu mật khẩu đã mã hóa
       });
-      emailHelper.sendVerificationEmail(newUser.email, verificationToken);
-      return newUser;
+      await UserInfo.create({
+        user_id: newUser.id,
+      });
+      // emailHelper.sendVerificationEmail(newUser.email, verificationToken);
+
+      return await User.findOne({
+        where: { id: newUser.id },
+        include: [
+          {
+            model: UserInfo,
+            as: "userInfo",
+          },
+        ],
+      });
     } catch (error) {
       throw new Error("Error creating user: " + error.message);
     }
@@ -39,7 +52,15 @@ const userService = {
   },
   async getUserByEmail(email) {
     try {
-      const user = await User.findOne({ where: { email } });
+      const user = await User.findOne({
+        where: { email },
+        include: [
+          {
+            model: UserInfo,
+            as: "userInfo", // Chỉ định alias đã định nghĩa
+          },
+        ],
+      });
       if (!user) {
         return null;
       }
@@ -53,11 +74,32 @@ const userService = {
     try {
       const randomPassword = Math.random().toString(36).slice(-8); // Tạo mật khẩu ngẫu nhiên
       const hashedPassword = await bcrypt.hash(randomPassword, 10); // Mã hóa mật khẩu
-      const newUser = await User.create({
-        ...userData,
+
+      const newUser = {
+        email: userData.email,
+        isVerify: true,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        // avatar_url: userData.avatar_url,
         password_hash: hashedPassword, // Lưu mật khẩu đã mã hóa
+      };
+      const createdUser = await User.create(newUser);
+      await UserInfo.create({
+        user_id: createdUser.id,
+        date_of_birth: userData.date_of_birth, // Ngày sinh
+        country: userData.country, // Quốc gia
       });
-      return newUser;
+      const user = await User.findOne({
+        where: { email: createdUser.email },
+        include: [
+          {
+            model: UserInfo,
+            as: "userInfo",
+          },
+        ],
+      });
+
+      return user;
     } catch (error) {
       throw new Error("Error creating user: " + error.message);
     }
@@ -86,7 +128,7 @@ const userService = {
       user.resetPasswordToken = token;
       user.resetPasswordExpires = Date.now() + 900000; // 15 minutes
       await user.save();
-      await emailHelper.sendResetPasswordEmail(user.email, token);
+      // await emailHelper.sendResetPasswordEmail(user.email, token);
       return { message: "Token reset email sent" };
     } catch (error) {
       return { message: "Internal server error" };

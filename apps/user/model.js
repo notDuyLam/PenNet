@@ -1,5 +1,5 @@
-const { Sequelize, DataTypes, Model } = require('sequelize');
-const sequelize = require('../../configs/db');
+const { Sequelize, DataTypes, Model } = require("sequelize");
+const sequelize = require("../../configs/db");
 
 class User extends Model {}
 
@@ -12,11 +12,11 @@ User.init(
     },
     first_name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     last_name: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     email: {
       type: DataTypes.STRING,
@@ -29,7 +29,8 @@ User.init(
     avatar_url: {
       type: DataTypes.STRING,
       allowNull: true,
-      defaultValue: "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
+      defaultValue:
+        "https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/anh-den-ngau-012.jpg",
     },
     password_hash: {
       type: DataTypes.STRING,
@@ -54,8 +55,8 @@ User.init(
   },
   {
     sequelize,
-    modelName: 'User',
-    tableName: 'users',
+    modelName: "User",
+    tableName: "users",
     timestamps: false,
   }
 );

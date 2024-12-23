@@ -1,7 +1,7 @@
-const { Sequelize, DataTypes, Model } = require('sequelize');
-const sequelize = require('../../../configs/db');
+const { Sequelize, DataTypes, Model } = require("sequelize");
+const sequelize = require("../../../configs/db");
 
-const User = require('../model');
+const User = require("../model");
 
 class UserInfo extends Model {}
 
@@ -12,10 +12,10 @@ UserInfo.init(
       primaryKey: true,
       references: {
         model: User,
-        key: 'id',
+        key: "id",
       },
-      onDelete: 'CASCADE', // Delete User -> Delete UserInfo
-      onUpdate: 'CASCADE',
+      onDelete: "CASCADE", // Delete User -> Delete UserInfo
+      onUpdate: "CASCADE",
     },
     is_active: {
       type: DataTypes.BOOLEAN,
@@ -38,8 +38,8 @@ UserInfo.init(
   },
   {
     sequelize,
-    modelName: 'UserInfo',
-    tableName: 'user_infos',
+    modelName: "UserInfo",
+    tableName: "user_infos",
     timestamps: false,
   }
 );

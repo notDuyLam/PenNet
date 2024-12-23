@@ -50,6 +50,12 @@ module.exports = function (passport) {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: process.env.CALLBACK_URL,
+        scope: [
+          "profile",
+          "email",
+          "https://www.googleapis.com/auth/user.birthday.read",
+          "https://www.googleapis.com/auth/userinfo.profile",
+        ],
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
@@ -69,12 +75,10 @@ module.exports = function (passport) {
               first_name: profile.name.givenName,
               last_name: profile.name.familyName,
               // avatar_url: profile.photos[0].value,
+              date_of_birth: profile._json.birthday, // Ngày sinh
+              country: profile._json.locale, // Quốc gia
             };
-
-            const createdUser = await userService.createUserEmail({
-              ...newUser,
-              password: "",
-            });
+            const createdUser = await userService.createUserEmail(newUser);
             return done(null, createdUser);
           }
           // Return user
@@ -94,6 +98,8 @@ module.exports = function (passport) {
         last_name: user.last_name,
         avatar: user.avatar_url,
         email: user.email,
+        date_of_birth: user.userInfo.date_of_birth,
+        country: user.userInfo.country,
       });
     });
   });
