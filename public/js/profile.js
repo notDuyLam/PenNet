@@ -71,7 +71,9 @@ document
     if (file) {
       const reader = new FileReader();
       reader.onload = function (e) {
-        document.querySelector(".profile-image img").src = e.target.result;
+        document.querySelectorAll(".profile-image img").forEach((img) => {
+            img.src = e.target.result;
+        });        
         document.getElementById("upload-button").classList.add("hidden");
         document.querySelector(".save").classList.remove("hidden");
       };

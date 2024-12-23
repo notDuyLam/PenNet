@@ -64,9 +64,21 @@ router.get("/block", (req, res) => {
 });
 
 router.get("/Dang/test", (req, res) => {
-    res.render("personProfile", {
-      user: req.user,
-    });
-  });
+    const posts = [{ id: 1, content: "Post 1" }, { id: 2, content: "Post 2" }];
+    const reviewers = [{ id: 1, name: "Reviewer 1" }, { id: 2, name: "Reviewer 2" }];
+    const user = req.user;
+    res.render("personProfile", {user, posts, reviewers});
+});
+
+router.get("/Dang/test2", (req, res) => {
+    const newPosts = [{ id: 1, content: "Post 1" }, { id: 2, content: "Post 2" }];
+    const user = req.user;
+    const postHtml = res.render('partials/posts', { posts: newPosts }, (err, html) => {
+        if (err) {
+          return res.status(500).send('Error rendering post');
+        }
+        res.json({ html: html });
+      });
+});
 
 module.exports = router;
