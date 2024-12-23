@@ -11,9 +11,28 @@
                 </div>
             </div>
         </div>
-        <div class="flex flex-col justify-end">
-            <div class="flex justify-end">
+        <div class="relative flex flex-col justify-end">
+            <div class="post-more-btn flex justify-end cursor-pointer">
                 <i class="fa-solid fa-ellipsis"></i>
+            </div>
+            <div 
+                id="items" 
+                class="absolute right-0 top-5 bg-white border rounded-xl shadow-lg 
+                group-hover:block w-48 hidden"
+            >
+                <a href="#" id="edit-post" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-pen-fancy"></i>
+                        <div class="ml-2"><span>Edit post</span></div>
+                    </div>
+                </a>
+                <a href="#" id="delete-post" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <div class="ml-2"><span>Delete post</span></div>
+                    </div>
+                </a>
+
             </div>
             <div>{{post.time}} 7 hour ago</div>
         </div>
