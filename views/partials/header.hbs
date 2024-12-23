@@ -10,8 +10,86 @@
         <input class="ml-4 text-gray-500 focus:border-none focus:outline-none flex-grow" type="text"
             placeholder="Search"></input>
     </div>
-    <div class="flex items-center cursor-pointer border rounded p-2 pl-4 pr-4">
-        <div class="mr-4">Setting</div>
-        <i class="fa-solid fa-gear"></i>
+    <div class="flex items-center cursor-pointer border rounded ">
+        <div class="relative">
+            <button id="dropdown" class="flex items-center rounded-md focus:outline-none p-2 pl-4 pr-4">
+                <div class="mr-4">Setting</div>
+                <i class="fa-solid fa-gear"></i>
+            </button>
+            <div id="items" class="absolute right-0 hidden  w-48 
+                    bg-white border rounded-xl shadow-lg 
+                    group-hover:block ">
+                <a href="#" id="darkmode" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-moon"></i>
+                        <div class="ml-2"><span>Dark Mode</span></div>
+                    </div>
+                </a>
+                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-ban"></i>
+                        <div class="ml-2">Block list</div>
+                    </div>
+                </a>
+                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <div class="ml-2">Edit privacy</div>
+                    </div>
+                </a>
+                <a href="#" id="notification" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-bell"></i>
+                        <div class="ml-2">Notification</div>
+                    </div>
+                </a>
+                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <div class="ml-2">Logout</div>
+                    </div>
+                </a>
+            </div>
+        </div>
     </div>
 </nav>
+
+<script>
+    $(document).ready(() => {
+        $('#dropdown').on('click', () => {
+            $('#items').toggleClass('hidden');
+        });
+
+        $('#darkmode').on('click', function(e) {
+            e.preventDefault();
+            if ($('#darkmode i').hasClass('fa-moon')) {
+                // đang là light mode -> chuyển sang dark mode
+                $('#darkmode i').removeClass('fa-moon');
+                $('#darkmode i').addClass('fa-sun');
+                $(this).find('span').html('Light Mode');
+            }
+            else {
+                // đang là dark mode -> chuyển sang light mode
+                $('#darkmode i').removeClass('fa-sun');
+                $('#darkmode i').addClass('fa-moon');
+                $(this).find('span').html('Dark Mode');
+            }
+        });
+
+        $('#notification').on('click', (e) => {
+            e.preventDefault();
+            if ($('#notification i').hasClass('fa-bell')) {
+                // bật -> tắt
+                $('#notification i').removeClass('fa-bell');
+                $('#notification i').addClass('fa-bell-slash');
+            }
+            else {
+                // tắt -> bật
+                $('#notification i').removeClass('fa-bell-slash');
+                $('#notification i').addClass('fa-bell');
+            }
+        });
+    })
+
+
+</script>

@@ -63,4 +63,10 @@ router.get("/block", (req, res) => {
   res.render("block", {});
 });
 
+router.get("/Dang/test", (req, res) => {
+    res.render("personProfile", {
+      user: req.user,
+    });
+  });
+
 module.exports = router;
