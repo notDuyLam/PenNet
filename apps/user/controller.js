@@ -53,6 +53,8 @@ const userController = {
           last_name: newUser.last_name,
           avatar: newUser.avatar_url,
           email: newUser.email,
+          date_of_birth: newUser.userInfo.date_of_birth,
+          country: newUser.userInfo.country,
         },
       });
     } catch (error) {

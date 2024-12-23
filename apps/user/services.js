@@ -18,7 +18,7 @@ const userService = {
       await UserInfo.create({
         user_id: newUser.id,
       });
-      // emailHelper.sendVerificationEmail(newUser.email, verificationToken);
+      emailHelper.sendVerificationEmail(newUser.email, verificationToken);
 
       return await User.findOne({
         where: { id: newUser.id },
@@ -128,7 +128,7 @@ const userService = {
       user.resetPasswordToken = token;
       user.resetPasswordExpires = Date.now() + 900000; // 15 minutes
       await user.save();
-      // await emailHelper.sendResetPasswordEmail(user.email, token);
+      await emailHelper.sendResetPasswordEmail(user.email, token);
       return { message: "Token reset email sent" };
     } catch (error) {
       return { message: "Internal server error" };
