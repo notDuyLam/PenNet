@@ -161,11 +161,13 @@ const userController = {
   async updateUser(req, res) {
     try {
       const userId = req.user.id; // Get user ID from authenticated session
-      const { firstName, lastName } = req.body;
+      const { firstName, lastName, date_of_birth, country } = req.body;
       // Prepare the update data
       const updateData = {
         first_name: firstName,
         last_name: lastName,
+        date_of_birth: date_of_birth,
+        country: country,
       };
 
       // Update the user
@@ -186,6 +188,8 @@ const userController = {
             lastName: updatedUser.lastName,
             email: updatedUser.email,
             avatar: updatedUser.avatar_url,
+            date_of_birth: updatedUser.userInfo.date_of_birth,
+            country: updatedUser.userInfo.country,
           },
         });
       });

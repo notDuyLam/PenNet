@@ -172,11 +172,29 @@ const userService = {
   },
   async updateUser(userId, updateData) {
     try {
-      const user = await User.findByPk(userId);
+      const { first_name, last_name, date_of_birth, country } = updateData;
+      const updateUserInfo = {
+        date_of_birth: date_of_birth,
+        country: country,
+      };
+      const updateUser = {
+        first_name: first_name,
+        last_name: last_name,
+      };
+      await UserInfo.update(updateUserInfo, { where: { user_id: userId } });
+      await User.update(updateUser, { where: { id: userId } });
+      const user = await User.findOne({
+        where: { id: userId },
+        include: [
+          {
+            model: UserInfo,
+            as: "userInfo",
+          },
+        ],
+      });
       if (!user) {
         throw new Error("User not found");
       }
-      await user.update(updateData);
       return user;
     } catch (error) {
       throw new Error("Error updating user: " + error.message);
@@ -190,7 +208,15 @@ const userService = {
       }
       user.avatar_url = avatarUrl.toString();
       await user.save();
-      return user;
+      return await User.findOne({
+        where: { id: user.id },
+        include: [
+          {
+            model: UserInfo,
+            as: "userInfo",
+          },
+        ],
+      });
     } catch (error) {
       throw new Error("Error updating user avatar: " + error.message);
     }
