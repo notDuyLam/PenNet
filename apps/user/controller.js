@@ -268,18 +268,18 @@ const userController = {
     const query = req.query.query;
     try {
       const results = await userService.searchFriends(query);
-      const filteredResults = results.map(user => ({
+      const filteredResults = results.map((user) => ({
         id: user.dataValues.id,
         first_name: user.dataValues.first_name,
         last_name: user.dataValues.last_name,
-        avatar_url: user.dataValues.avatar_url
+        avatar_url: user.dataValues.avatar_url,
       }));
       res.render("search", { query, results: filteredResults });
     } catch (error) {
-      console.error('Error searching friends:', error);
-      res.status(500).send('Internal Server Error');
+      console.error("Error searching friends:", error);
+      res.status(500).send("Internal Server Error");
     }
-  }
+  },
   async getFriends(req, res) {
     try {
       if (!req.isAuthenticated()) {

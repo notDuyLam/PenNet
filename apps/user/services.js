@@ -254,16 +254,16 @@ const userService = {
         where: {
           [Op.or]: [
             { first_name: { [Op.like]: `%${query}%` } },
-            { last_name: { [Op.like]: `%${query}%` } }
-          ]
-        }
+            { last_name: { [Op.like]: `%${query}%` } },
+          ],
+        },
       });
       return friends;
     } catch (error) {
-      console.error('Error searching friends:', error);
+      console.error("Error searching friends:", error);
       throw error;
     }
-  }
+  },
   async getFriends(userId) {
     try {
       // Tìm User trước
