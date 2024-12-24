@@ -1,0 +1,32 @@
+{{!-- search.hbs --}}
+{{> header}}
+
+<div class="flex">
+  {{!-- Sidebar --}}
+    <div class="min-w-[16rem] w-64 flex-shrink-0 flex flex-col">
+        <div>
+            {{> sideMenu user=user}}
+        </div>
+        <div class="mt-4">
+            {{> groups user=user}}
+        </div>
+    </div>
+
+  {{!-- Main Content --}}
+  <main class="w-3/4 px-6 py-4">
+    <div class="mb-6">
+      <h1 class="text-xl font-bold">Result for "{{query}}"</h1>
+    </div>
+
+    <ul class="space-y-4">
+      {{#each results}}
+        <li class="flex items-center">
+          <img src="{{this.avatar_url}}" alt="{{this.first_name}} {{this.last_name}}" class="w-12 h-12 rounded-full mr-4">
+          <div>
+            <p class="font-semibold">{{this.first_name}} {{this.last_name}}</p>
+            
+          </div>
+        </li>
+      {{/each}}
+  </main>
+</div>

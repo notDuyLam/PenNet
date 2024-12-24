@@ -1,4 +1,5 @@
 const express = require("express");
+const userController = require("./apps/user/controller");
 
 // cài đặt router
 const router = express.Router();
@@ -25,12 +26,12 @@ router.get("/signup", (req, res) => {
 });
 
 // friendRequest route
-router.get("/friends", (req, res) => {
-  res.render("friendRequest", {});
-});
+// router.get("/friends", (req, res) => {
+//   res.render("friendRequest", {});
+// });
 
 // friend route
-router.get("/friendList", (req, res) => {
+router.get("/friends", (req, res) => {
   res.render("friendList", {});
 });
 
@@ -54,6 +55,8 @@ router.get("/message", (req, res) => {
     user: req.user,
   });
 });
+
+
 
 router.get("/group", (req, res) => {
   res.render("group", {});
@@ -80,5 +83,8 @@ router.get("/Dang/test2", (req, res) => {
         res.json({ html: html });
       });
 });
+
+router.get("/search", userController.searchFriends);
+
 
 module.exports = router;
