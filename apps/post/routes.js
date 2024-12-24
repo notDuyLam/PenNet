@@ -19,10 +19,16 @@ router.post(
   postController.createPost
 );
 
-// [DELETE] /posts
-router.delete("/", postController.deletePost);
-
 // [GET] /posts/your-posts
 router.get("/your-posts", postController.getPersonalPost);
+
+// [DELETE] /posts/:post_id
+router.delete("/:post_id", postController.deletePost);
+
+// [PATCH] /posts/:post_id
+router.patch("/:post_id", postController.changePost);
+
+// [GET] /posts/:post_id
+router.get("/:post_id", postController.getDetails);
 
 module.exports = router;

@@ -61,7 +61,7 @@ const postController = {
         return res.redirect("/users/login");
       }
 
-      const post_id = req.body.post_id;
+      const post_id = req.params.post_id;
       const user_id = req.user.id; // Get user ID from authenticated session
 
       if (!post_id) {
@@ -73,6 +73,49 @@ const postController = {
         .then(() =>
           res.status(200).json({ message: "Post deleted successfully" })
         )
+        .catch((error) => res.status(500).json({ error: error.message }));
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  changePost(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+      const post_id = req.params.post_id;
+      const user_id = req.user.id; // Get user ID from authenticated session
+      const data = {
+        content: req.body.content,
+        access_modifier: req.body.access_modifier,
+      };
+      if (!post_id || !data.content) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+      postService
+        .updatePost(post_id, user_id, data)
+        .then((post) => res.status(200).json(post))
+        .catch((error) => res.status(500).json({ error: error.message }));
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+  getDetails(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const post_id = req.params.post_id;
+
+      if (!post_id) {
+        return res.status(400).json({ error: "Missing post ID" });
+      }
+
+      postService
+        .getPostById(post_id)
+        .then((post) => res.status(200).json(post))
         .catch((error) => res.status(500).json({ error: error.message }));
     } catch (error) {
       res.status(500).json({ error: error.message });

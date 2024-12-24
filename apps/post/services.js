@@ -54,6 +54,38 @@ const postService = {
       throw new Error("Error deleting post: " + error.message);
     }
   },
+  async updatePost(post_id, user_id, data) {
+    try {
+      const post = await Post.findOne({
+        where: { id: post_id, user_id },
+      });
+      if (!post) {
+        throw new Error("Post not found!");
+      }
+      await post.update(data);
+      const updatedPost = await Post.findOne({
+        where: { id: post_id },
+        include: [{ model: Attachment, as: "attachments" }],
+      });
+      return updatedPost;
+    } catch (error) {
+      throw new Error("Error updating post: " + error.message);
+    }
+  },
+  async getPostById(post_id) {
+    try {
+      const post = await Post.findOne({
+        where: { id: post_id },
+        include: [{ model: Attachment, as: "attachments" }],
+      });
+      if (!post) {
+        throw new Error("Post not found!");
+      }
+      return post;
+    } catch (error) {
+      throw new Error("Error retrieving post: " + error.message);
+    }
+  },
 };
 
 module.exports = postService;
