@@ -15,4 +15,11 @@
     background-color: #e0e0e0;
     border-radius: 10px;
   }
+
+  /* CSS để vô hiệu hóa cuộn, bỏ vào body*/
+.no-scroll {
+    overflow: hidden;
+    height: 100vh; 
+}
+
   

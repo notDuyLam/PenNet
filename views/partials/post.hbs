@@ -1,35 +1,54 @@
-<div class="w-full border flex flex-col rounded mb-4">
+<div data-post-id="{{post.id}}" class="w-full border flex flex-col rounded mb-4">
     <div class="flex justify-between border-b rounded p-4 w-full">
         <div class="flex items-center">
-            <img class="rounded-full w-12 h-12 mr-4" 
-            src="{{#if user.avatar}}{{user.avatar}}{{else}}images/avatar.png{{/if}}"
-            alt="user-avatar">
-            
+            <img class="rounded-full w-12 h-12 mr-4"
+                src="{{#if post.author.avatar}}{{post.author.avatar}}{{else}}/images/avatar.png{{/if}}"
+                alt="user-avatar">
+
             <div>
                 <div>
-                    {{user.name}}
+                    {{post.author.first_name}} {{post.author.last_name}} post.author_name
                 </div>
             </div>
         </div>
-        <div class="flex flex-col justify-end">
-            <div class="flex justify-end">
+        <div class="relative flex flex-col justify-end">
+            <div class="post-more-btn flex justify-end cursor-pointer">
                 <i class="fa-solid fa-ellipsis"></i>
             </div>
-            <div>{{this.time}} 7 hour ago</div>
+            <div 
+                id="items" 
+                class="absolute right-0 top-5 bg-white border rounded-xl shadow-lg 
+                group-hover:block w-48 hidden"
+            >
+                <a href="#" id="edit-post" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-pen-fancy"></i>
+                        <div class="ml-2"><span>Edit post</span></div>
+                    </div>
+                </a>
+                <a href="#" id="delete-post" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <div class="ml-2"><span>Delete post</span></div>
+                    </div>
+                </a>
+
+            </div>
+            <div>{{post.time}} 7 hour ago</div>
         </div>
     </div>
     <div class="pl-8 pr-8 pt-4 pb-8 h-52 overflow-auto">
-        {{this.content}} abc
+        {{post.content}} abc
     </div>
     <div class="flex justify-between pl-8 pr-8">
-        <div class="flex items-center m-8 cursor-pointer rounded border-gray-400 w-36 text-xl">
+        <div class="post-comment flex items-center m-8 cursor-pointer rounded border-gray-400 w-36 text-xl">
             <div class="w-4">
-                <i class="fa-solid fa-comment"></i>
+                <i class="fa-regular fa-comment"></i>
             </div>
             <div class="ml-4"> Comment </div>
         </div>
-        <div class="m-8 text-3xl">
-            <i class="fa-solid fa-thumbs-up"></i>
+        <div class="post-like m-8 text-3xl cursor-pointer">
+            <i class="fa-regular fa-thumbs-up"></i>
         </div>
     </div>
 </div>
