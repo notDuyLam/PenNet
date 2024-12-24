@@ -2,6 +2,7 @@ const Post = require("./model");
 const Like = require("./like/model");
 const Comment = require("./comment/model");
 const Attachment = require("./attachment/model");
+const User = require("../user/model");
 const { Op } = require("sequelize");
 
 const postService = {
@@ -37,6 +38,13 @@ const postService = {
       const likes = await Like.findAll({
         where: { post_id: posts.map((post) => post.id) },
         attributes: ["id", "user_id", "post_id"],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
       });
       posts.forEach((post) => {
         post.dataValues.likes = likes.filter(
@@ -46,6 +54,13 @@ const postService = {
       const comments = await Comment.findAll({
         where: { post_id: posts.map((post) => post.id) },
         attributes: ["id", "user_id", "post_id", "content"],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
       });
       posts.forEach((post) => {
         post.dataValues.comments = comments.filter(
@@ -104,11 +119,25 @@ const postService = {
       const likes = await Like.findAll({
         where: { post_id },
         attributes: ["id", "user_id", "post_id"],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
       });
       post.dataValues.likes = likes;
       const comments = await Comment.findAll({
         where: { post_id },
         attributes: ["id", "user_id", "post_id", "content"],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
       });
       post.dataValues.comments = comments;
       return post;
