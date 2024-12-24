@@ -121,6 +121,96 @@ const postController = {
       res.status(500).json({ error: error.message });
     }
   },
+  likePost(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const post_id = req.params.post_id;
+      const user_id = req.user.id; // Get user ID from authenticated session
+
+      if (!post_id) {
+        return res.status(400).json({ error: "Missing post ID" });
+      }
+
+      postService
+        .likePost(post_id, user_id)
+        .then((result) => res.status(200).json(result))
+        .catch((error) => res.status(500).json({ error: error.message }));
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+  commentPost(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const post_id = req.params.post_id;
+      const user_id = req.user.id; // Get user ID from authenticated session
+      const { content } = req.body;
+
+      if (!post_id || !content) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      postService
+        .addComment(post_id, user_id, content)
+        .then((result) => res.status(201).json(result))
+        .catch((error) => res.status(500).json({ error: error.message }));
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+  deleteCommentPost(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const post_id = req.params.post_id;
+      const id = req.params.comment_id;
+      const user_id = req.user.id; // Get user ID from authenticated session
+
+      if (!post_id || !id) {
+        return res.status(400).json({ error: "Missing post ID or comment ID" });
+      }
+
+      postService
+        .deleteComment(post_id, user_id, id)
+        .then(() =>
+          res.status(200).json({ message: "Comment deleted successfully" })
+        )
+        .catch((error) => res.status(500).json({ error: error.message }));
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+  changeCommentPost(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const post_id = req.params.post_id;
+      const id = req.params.comment_id;
+      const user_id = req.user.id; // Get user ID from authenticated session
+      const { content } = req.body;
+
+      if (!post_id || !id || !content) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+
+      postService
+        .updateComment(post_id, user_id, id, content)
+        .then((comment) => res.status(200).json(comment))
+        .catch((error) => res.status(500).json({ error: error.message }));
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
 };
 
 module.exports = postController;

@@ -1,4 +1,6 @@
 const Post = require("./model");
+const Like = require("./like/model");
+const Comment = require("./comment/model");
 const Attachment = require("./attachment/model");
 const { Op } = require("sequelize");
 
@@ -31,6 +33,24 @@ const postService = {
       const posts = await Post.findAll({
         where: { user_id },
         include: [{ model: Attachment, as: "attachments" }],
+      });
+      const likes = await Like.findAll({
+        where: { post_id: posts.map((post) => post.id) },
+        attributes: ["id", "user_id", "post_id"],
+      });
+      posts.forEach((post) => {
+        post.dataValues.likes = likes.filter(
+          (like) => like.post_id === post.id
+        );
+      });
+      const comments = await Comment.findAll({
+        where: { post_id: posts.map((post) => post.id) },
+        attributes: ["id", "user_id", "post_id", "content"],
+      });
+      posts.forEach((post) => {
+        post.dataValues.comments = comments.filter(
+          (comment) => comment.post_id === post.id
+        );
       });
       return posts;
     } catch (error) {
@@ -81,9 +101,91 @@ const postService = {
       if (!post) {
         throw new Error("Post not found!");
       }
+      const likes = await Like.findAll({
+        where: { post_id },
+        attributes: ["id", "user_id", "post_id"],
+      });
+      post.dataValues.likes = likes;
+      const comments = await Comment.findAll({
+        where: { post_id },
+        attributes: ["id", "user_id", "post_id", "content"],
+      });
+      post.dataValues.comments = comments;
       return post;
     } catch (error) {
       throw new Error("Error retrieving post: " + error.message);
+    }
+  },
+  async likePost(post_id, user_id) {
+    try {
+      const post = await Post.findOne({
+        where: { id: post_id },
+      });
+      if (!post) {
+        throw new Error("Post not found!");
+      }
+      const existingLike = await Like.findOne({
+        where: { user_id, post_id },
+      });
+      if (existingLike) {
+        await existingLike.destroy();
+        await post.decrement("like_count");
+        return { message: "Post unliked successfully." };
+      }
+      const like = await Like.create({
+        user_id,
+        post_id,
+      });
+      await post.increment("like_count");
+      return { message: "Post liked successfully.", like };
+    } catch (error) {
+      throw new Error("Error liking post: " + error.message);
+    }
+  },
+  async addComment(post_id, user_id, content) {
+    try {
+      const post = await Post.findOne({
+        where: { id: post_id },
+      });
+      if (!post) {
+        throw new Error("Post not found!");
+      }
+      const newComment = await Comment.create({
+        post_id,
+        user_id,
+        content,
+      });
+      return { message: "Comment added successfully.", content: newComment };
+    } catch (error) {
+      throw new Error("Error adding comment: " + error.message);
+    }
+  },
+  async deleteComment(post_id, user_id, id) {
+    try {
+      const comment = await Comment.findOne({
+        where: { id, post_id, user_id },
+      });
+      if (!comment) {
+        throw new Error("Comment not found!");
+      }
+      await comment.destroy();
+      return { message: "Comment deleted successfully." };
+    } catch (error) {
+      throw new Error("Error deleting comment: " + error.message);
+    }
+  },
+  async updateComment(post_id, user_id, id, content) {
+    try {
+      const comment = await Comment.findOne({
+        where: { id, post_id, user_id },
+      });
+      if (!comment) {
+        throw new Error("Comment not found!");
+      }
+      await comment.update({ content });
+      return { message: "Comment updated successfully.", content: comment };
+    } catch (error) {
+      throw new Error("Error updating comment: " + error.message);
     }
   },
 };
