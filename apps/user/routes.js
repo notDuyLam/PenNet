@@ -3,43 +3,43 @@ const router = express.Router();
 
 const userController = require("./controller");
 
-// [GET] /login
+// [GET] /users/login
 router.get("/login", userController.renderLoginPage);
 
-// [POST] /login
+// [POST] /users/login
 router.post("/login", userController.loginUser);
 
-// [GET] /signup
+// [GET] /users/signup
 router.get("/signup", userController.renderSignupPage);
 
-// [POST] /signup
+// [POST] /users/signup
 router.post("/signup", userController.createUser);
 
-// [GET] /verify
+// [GET] /users/verify
 router.get("/verify", userController.verifyAccount);
 
-// [GET] /login/auth/google
+// [GET] /users/login/auth/google
 router.get("/login/auth/google", userController.loginWithGoogle);
 
-// [GET] /login/auth/google/callback
+// [GET] /users/login/auth/google/callback
 router.get("/login/auth/google/callback", userController.callbackGoogle);
 
-// [GET] /forgot-password
+// [GET] /users/forgot-password
 router.get("/forgot-password", userController.renderForgotPasswordPage);
 
-// [POST] /forgot-password
+// [POST] /users/forgot-password
 router.post("/forgot-password", userController.forgotPassword);
 
-// [GET] /reset-password
+// [GET] /users/reset-password
 router.get("/reset-password", userController.renderResetPasswordPage);
 
-// [POST] /reset-password
+// [POST] /users/reset-password
 router.post("/reset-password", userController.resetPassword);
 
-// [POST] /logout
+// [POST] /users/logout
 router.get("/logout", userController.logoutUser);
 
-// [GET] /profile
+// [GET] /users/profile
 router.get("/profile", (req, res, next) => {
   if (req.isAuthenticated()) {
     res.render("profile", {
@@ -50,7 +50,21 @@ router.get("/profile", (req, res, next) => {
   }
 });
 
-// [PATCH] /profile
+// [PATCH] /users/profile
 router.patch("/profile", userController.updateUser);
+
+// Make friends
+
+// [GET] /users/friends
+router.get("/friends", userController.getFriends);
+
+// [POST] /users/make-friends/:user_id
+router.post("/send-request-friend/:user_id", userController.sendRequestFriend);
+
+// [GET] /users/friend-request
+router.get("/friends-request", userController.getFriendRequest);
+
+// [GET] /users/friends-blocked
+router.get("/friends-blocked", userController.getFriendBlocked);
 
 module.exports = router;

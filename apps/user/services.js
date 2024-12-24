@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("./model");
 const UserInfo = require("./user_info/model");
+const UserRela = require("./user_rela/model");
 const { Op } = require("sequelize");
 const emailHelper = require("../../helpers/emailService.helper");
 
@@ -245,6 +246,157 @@ const userService = {
       return { message: "Password updated successfully" };
     } catch (error) {
       throw new Error("Error updating password: " + error.message);
+    }
+  },
+  async getFriends(userId) {
+    try {
+      // Tìm User trước
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // Tìm sentRequests
+      const sentRequests = await UserRela.findAll({
+        where: {
+          user_from: userId,
+          status: "accepted",
+        },
+        include: [
+          {
+            model: User,
+            as: "toUser", // Sử dụng alias 'toUser'
+            attributes: {
+              exclude: [
+                "password_hash",
+                "isVerify",
+                "verificationToken",
+                "resetPasswordToken",
+                "resetPasswordExpires",
+                "email",
+              ],
+            },
+          },
+        ],
+      });
+
+      // Tìm receivedRequests
+      const receivedRequests = await UserRela.findAll({
+        where: {
+          user_to: userId,
+          status: "accepted",
+        },
+        include: [
+          {
+            model: User,
+            as: "fromUser", // Sử dụng alias 'fromUser'
+            attributes: {
+              exclude: [
+                "password_hash",
+                "isVerify",
+                "verificationToken",
+                "resetPasswordToken",
+                "resetPasswordExpires",
+                "email",
+              ],
+            },
+          },
+        ],
+      });
+
+      // Kết hợp danh sách bạn bè từ cả hai loại yêu cầu
+      const friends = [
+        ...sentRequests.map((rel) => rel.toUser),
+        ...receivedRequests.map((rel) => rel.fromUser),
+      ];
+
+      return friends;
+    } catch (error) {
+      throw new Error("Error fetching friends: " + error.message);
+    }
+  },
+  async sendFriendRequest(userId, friendId) {
+    try {
+      const existingRequest = await UserRela.findOne({
+        where: {
+          user_from: userId,
+          user_to: friendId,
+        },
+      });
+
+      if (existingRequest) {
+        return { message: "Friend request already sent" };
+      }
+
+      const newRequest = await UserRela.create({
+        user_from: userId,
+        user_to: friendId,
+        status: "pending",
+      });
+
+      return newRequest;
+    } catch (error) {
+      throw new Error("Error sending friend request: " + error.message);
+    }
+  },
+  async getFriendRequests(userId) {
+    try {
+      const receivedRequests = await UserRela.findAll({
+        where: {
+          user_to: userId,
+          status: "pending",
+        },
+        include: [
+          {
+            model: User,
+            as: "fromUser", // Sử dụng alias 'fromUser'
+            attributes: {
+              exclude: [
+                "password_hash",
+                "isVerify",
+                "verificationToken",
+                "resetPasswordToken",
+                "resetPasswordExpires",
+                "email",
+              ],
+            },
+          },
+        ],
+      });
+
+      return receivedRequests.map((rel) => rel.fromUser);
+    } catch (error) {
+      throw new Error("Error fetching friend requests: " + error.message);
+    }
+  },
+  async getBlockedFriends(userId) {
+    try {
+      const blockedUsers = await UserRela.findAll({
+        where: {
+          user_from: userId,
+          status: "blocked",
+        },
+        include: [
+          {
+            model: User,
+            as: "toUser",
+            attributes: {
+              exclude: [
+                "password_hash",
+                "isVerify",
+                "verificationToken",
+                "resetPasswordToken",
+                "resetPasswordExpires",
+                "email",
+              ],
+            },
+          },
+        ],
+      });
+
+      return blockedUsers.map((rel) => rel.toUser);
+    } catch (error) {
+      throw new Error("Error fetching blocked friends: " + error.message);
     }
   },
 };

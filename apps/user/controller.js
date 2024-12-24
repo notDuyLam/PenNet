@@ -162,6 +162,10 @@ const userController = {
   },
   async updateUser(req, res) {
     try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
       const userId = req.user.id; // Get user ID from authenticated session
       const { firstName, lastName, date_of_birth, country } = req.body;
       // Prepare the update data
@@ -235,6 +239,10 @@ const userController = {
   },
   async changePassword(req, res) {
     try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
       const userId = req.user.id; // Get user ID from authenticated session
       const { currentPassword, newPassword } = req.body;
 
@@ -253,6 +261,65 @@ const userController = {
         .json({ successMessage: "Password changed successfully" });
     } catch (error) {
       console.error("Error changing password:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async getFriends(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friends = await userService.getFriends(userId);
+      return res.status(200).json({ friends });
+    } catch (error) {
+      console.error("Error fetching friends:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async sendRequestFriend(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendId = req.params.user_id; // Get friend ID from request parameters
+
+      // Send friend request
+      const result = await userService.sendFriendRequest(userId, friendId);
+      return res.status(200).json({ successMessage: result });
+    } catch (error) {
+      console.error("Error sending friend request:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async getFriendRequest(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendRequests = await userService.getFriendRequests(userId);
+      return res.status(200).json({ friendRequests });
+    } catch (error) {
+      console.error("Error fetching friend requests:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async getFriendBlocked(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const blockedFriends = await userService.getBlockedFriends(userId);
+      return res.status(200).json({ blockedFriends });
+    } catch (error) {
+      console.error("Error fetching blocked friends:", error);
       return res.status(500).json({ errorMessage: "Server error" });
     }
   },
