@@ -266,7 +266,6 @@ const userController = {
         last_name: user.dataValues.last_name,
         avatar_url: user.dataValues.avatar_url
       }));
-      console.log(filteredResults)
       res.render("search", { query, results: filteredResults });
     } catch (error) {
       console.error('Error searching friends:', error);
