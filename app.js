@@ -58,22 +58,25 @@ app.set("views", "./views");
 
 // Định nghĩa các routes
 app.use("/users", require("./apps/user/routes"));
+app.use("/posts", require("./apps/post/routes"));
 app.use("/", routes);
 
 // APIs
 app.use("/api/users", require("./apps/user/api"));
 
 // Kết nối database
-const { User,
+const {
+  User,
   UserInfo,
   UserRela,
   Post,
   Like,
   Comment,
+  Attachment,
   Conversation,
   Participant,
   Message,
-} = require('./apps/apps.associations');  // connect models
+} = require("./apps/apps.associations"); // connect models
 
 const connectDB = async () => {
   console.log("Check database connection...");
