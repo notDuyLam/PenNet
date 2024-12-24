@@ -53,53 +53,13 @@
         </div>
     </div>
 </nav>
-<style>
 
-    body.dark-mode {
-         background-color: #1a1919;
-        color: #999;
-    }
-
-    body.light-mode {
-        background-color: #fff;
-        color: #333;
-    }
-</style>
 <script>
     $(document).ready(() => {
         $('#dropdown').on('click', () => {
             $('#items').toggleClass('hidden');
         });
 
-        const body = $('body'); // Lấy thẻ body
-        // Kiểm tra trạng thái lưu trữ trong localStorage
-        const darkModeEnabled = localStorage.getItem('darkMode') === 'true';
-        if (darkModeEnabled) {
-            body.addClass('dark-mode').removeClass('light-mode');
-            $('#darkmode i').removeClass('fa-moon').addClass('fa-sun');
-            $('#darkmode span').html('Light Mode');
-        } else {
-            body.addClass('light-mode').removeClass('dark-mode');
-        }
-        $('#darkmode').on('click', function(e) {
-            e.preventDefault();
-            if ($('#darkmode i').hasClass('fa-moon')) {
-                // đang là light mode -> chuyển sang dark mode
-                body.removeClass('light-mode').addClass('dark-mode');
-                $('#darkmode i').removeClass('fa-moon');
-                $('#darkmode i').addClass('fa-sun');
-                $(this).find('span').html('Light Mode');
-                localStorage.setItem('darkMode', 'true'); // Lưu trạng thái
-            }
-            else {
-                // đang là dark mode -> chuyển sang light mode
-                body.removeClass('dark-mode').addClass('light-mode');
-                $('#darkmode i').removeClass('fa-sun');
-                $('#darkmode i').addClass('fa-moon');
-                $(this).find('span').html('Dark Mode');
-                localStorage.setItem('darkMode', 'false'); // Lưu trạng thái
-            }
-        });
 
         $('#notification').on('click', (e) => {
             e.preventDefault();
@@ -118,3 +78,5 @@
 
 
 </script>
+
+<script src="/js/darkmode.js"></script>
