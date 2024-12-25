@@ -1,9 +1,17 @@
 const bcrypt = require("bcrypt");
 const User = require("./model");
 const UserInfo = require("./user_info/model");
-const UserRela = require("./user_rela/model");
-const { Op } = require("sequelize");
 const emailHelper = require("../../helpers/emailService.helper");
+const Like = require("../post/like/model");
+const Post = require("../post/model");
+const Comment = require("../post/comment/model");
+const Message = require("../conversation/message/model");
+const Participant = require("../conversation/participant/model");
+const Conversation = require("../conversation/model");
+const UserRela = require("./user_rela/model");
+const { Op, Sequelize } = require("sequelize");
+
+
 
 const userService = {
   // Tạo người dùng mới
@@ -273,6 +281,222 @@ const userService = {
       throw error;
     }
   },
+  async notifyLike(userId, postId) {
+    const post = await Post.findByPk(postId);
+    const user = await User.findByPk(userId);
+    const message = `${user.first_name} ${user.last_name} liked your post.`;
+    await this.createNotification(post.userId, 'like', message, user.avatar_url, `${user.first_name} ${user.last_name}`);
+  },
+
+  async notifyComment(userId, postId, commentId) {
+    const post = await Post.findByPk(postId);
+    const user = await User.findByPk(userId);
+    const comment = await Comment.findByPk(commentId);
+    const message = `${user.first_name} ${user.last_name} commented: "${comment.content}" on your post.`;
+    await this.createNotification(post.userId, 'comment', message, user.avatar_url, `${user.first_name} ${user.last_name}`);
+  },
+
+  async notifyBirthday(userId, friendId) {
+    const user = await User.findByPk(userId);
+    const friend = await User.findByPk(friendId);
+    const message = `Today is ${friend.first_name} ${friend.last_name}'s birthday.`;
+    await this.createNotification(userId, 'birthday', message, friend.avatar_url, `${friend.first_name} ${friend.last_name}`);
+  },
+
+  async notifyMessage(senderId, receiverId, messageContent) {
+    const sender = await User.findByPk(senderId);
+    const message = `${sender.first_name} ${sender.last_name} sent you a message: "${messageContent}".`;
+    await this.createNotification(receiverId, 'message', message, sender.avatar_url, `${sender.first_name} ${sender.last_name}`);
+  },
+
+  async getNotifications(userId) {
+    // console.log(userId);
+    try {
+
+      // Fetch accepted friends
+      const acceptedFriends = await UserRela.findAll(
+        where: {
+          user_from: userId,
+          status: "accepted",
+        },
+        attributes: ['user_to'], // Only need user_to
+      });
+
+      // Extract list of friend IDs
+      const friendIds = acceptedFriends.map(rel => rel.user_to);
+
+      // Find all records in UserInfo with user_id in friendIds
+      // and date_of_birth matching today, join with User table to get first_name and last_name
+      const today = new Date();
+      const todayMonth = today.getMonth() + 1; // getMonth() returns 0-11
+      const todayDay = today.getDate();
+
+      const birthdates = await UserInfo.findAll({
+        where: {
+          user_id: { [Op.in]: friendIds },
+          [Op.and]: [
+            Sequelize.where(
+              Sequelize.fn('EXTRACT', Sequelize.literal('MONTH FROM date_of_birth')),
+              todayMonth
+            ),
+
+            Sequelize.where(
+              Sequelize.fn('EXTRACT', Sequelize.literal('DAY FROM date_of_birth')),
+              todayDay
+            ),
+          ],
+        },
+        include: [
+          {
+            model: User,
+            as: 'user',
+            attributes: ['first_name', 'last_name'], // Get necessary info from User table
+          },
+        ],
+        attributes: ['user_id', 'date_of_birth'], // Get necessary info from UserInfo table
+      });
+
+      
+
+
+
+      // Tìm tất cả các post có user_id = userId trong bảng Post
+      const userPosts = await Post.findAll({
+        where: { user_id: userId },
+        attributes: ['id'], // Chỉ cần lấy post_id
+      });
+
+      // Trích xuất danh sách post_id
+      const postIds = userPosts.map(post => post.id);
+
+      // Tìm tất cả các like có post_id thuộc danh sách postIds 
+      // và user_id khác với userId
+      const likes = await Like.findAll({
+        where: {
+          post_id: { [Op.in]: postIds },
+          user_id: { [Op.ne]: userId }, // Chỉ chọn các like có user_id khác userId
+        },
+        include: [
+          {
+            model: Post,
+            as: 'post',
+            include: [
+              {
+                model: User,
+                as: 'user',
+              },
+            ],
+          },
+        ],
+      });
+
+      const comments = await Comment.findAll({
+        where: {
+          post_id: { [Op.in]: postIds },
+          user_id: { [Op.ne]: userId }, // Chỉ chọn các comment có user_id khác userId
+        },
+        include: [
+          {
+            model: Post,
+            as: 'post',
+            include: [
+              {
+                model: User,
+                as: 'user',
+              },
+            ],
+          },
+        ],
+      });
+
+      // Lấy danh sách conversation_id từ bảng Participant
+      const participantConversations = await Participant.findAll({
+        where: { user_id: userId },
+        attributes: ['conversation_id'], // Chỉ lấy trường conversation_id
+      });
+
+      // Trích xuất danh sách conversation_id
+      const conversationIds = participantConversations.map(pc => pc.conversation_id);
+
+      // Tìm tất cả các Message có conversation_id trùng với danh sách conversationIds 
+      // và user_id khác với userId
+      const messages = await Message.findAll({
+        where: {
+          conversation_id: { [Op.in]: conversationIds },
+          user_id: { [Op.ne]: userId }, // Lọc các tin nhắn không phải của userId
+        },
+        include: [
+          {
+            model: Conversation,
+            as: 'conversation',
+          },
+        ],
+      });
+
+      console.log(birthdates);
+      // console.log(likes);
+      // console.log(messages);
+
+      const notifications = [];
+
+      for (const like of likes) {
+        const sender = await User.findByPk(like.user_id);
+        // const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
+        notifications.push({
+          type: 'like',
+          message: `${sender.first_name} ${sender.last_name} liked your post.`,
+          profileImage: sender.avatar_url,
+          name: `${sender.first_name} ${sender.last_name}`,
+          createdAt: like.createdAt
+        });
+      }
+
+      for (const comment of comments) {
+        const sender = await User.findByPk(comment.user_id);
+        // const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
+        notifications.push({
+          type: 'comment',
+          message: `${sender.first_name} ${sender.last_name} comment "${comment.content}" on your post.`,
+          profileImage: sender.avatar_url,
+          name: `${sender.first_name} ${sender.last_name}`,
+          createdAt: comment.createdAt
+        });
+      }
+
+      for (const message of messages) {
+        const sender = await User.findByPk(message.user_id);
+        // const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
+        notifications.push({
+          type: 'message',
+          message: `${sender.first_name} ${sender.last_name} sent you a message: "${message.content}".`,
+          profileImage: sender.avatar_url,
+          name: `${sender.first_name} ${sender.last_name}`,
+          createdAt: message.createdAt
+        });
+      }
+
+      for (const birthday of birthdates) {
+        const sender = await User.findByPk(birthday.user_id);
+        // const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
+        notifications.push({
+          type: 'birthday',
+          message: `Today is ${sender.first_name} ${sender.last_name} birthday!!! Let's celebrate!`,
+          profileImage: sender.avatar_url,
+          name: `${sender.first_name} ${sender.last_name}`,
+          createdAt: new Date()
+        });
+      }
+
+      // Sort notifications by createdAt
+      notifications.sort((a, b) => b.createdAt - a.createdAt);
+
+      return notifications;
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      throw error;
+    }
+  }
+
   async getFriends(userId) {
     try {
       // Tìm User trước
@@ -283,10 +507,9 @@ const userService = {
 
       // Tìm sentRequests
       const sentRequests = await UserRela.findAll({
-        where: {
-          user_from: userId,
-          status: "accepted",
-        },
+
+
+
         include: [
           {
             model: User,
@@ -310,10 +533,11 @@ const userService = {
         where: {
           user_to: userId,
           status: "accepted",
-        },
-        include: [
-          {
-            model: User,
+
+
+
+
+
             as: "fromUser", // Sử dụng alias 'fromUser'
             attributes: {
               exclude: [
@@ -493,6 +717,7 @@ const userService = {
       throw new Error("Error blocking friend: " + error.message);
     }
   },
+
 };
 
 module.exports = userService;

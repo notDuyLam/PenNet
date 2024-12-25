@@ -1,4 +1,5 @@
 const Handlebars = require('handlebars');
+const moment = require('moment');
 
 module.exports = {
     range: function (start, end, query, category, brand, min, max, rating) {
@@ -33,4 +34,7 @@ module.exports = {
         const emptyStars = '<i class="fa fa-star-o" style="color: gray;"></i>'.repeat(5 - rating);
         return new Handlebars.SafeString(fullStars + emptyStars);
     },
+    timeAgo: (date) => {
+        return moment(date).fromNow();
+    }
 };

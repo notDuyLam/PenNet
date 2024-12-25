@@ -96,5 +96,7 @@ router.get("/Dang/test2", (req, res) => {
 });
 
 router.get("/search", userController.searchFriends);
+router.get("/notification", userController.getNotifications);
+
 
 module.exports = router;
