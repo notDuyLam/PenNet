@@ -339,6 +339,57 @@ const userController = {
       return res.status(500).json({ errorMessage: "Server error" });
     }
   },
+  async acceptFriendRequest(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendId = req.params.user_id; // Get friend ID from request parameters
+
+      // Accept friend request
+      const result = await userService.acceptFriendRequest(userId, friendId);
+      return res.status(200).json({ successMessage: result });
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async deniedFriendRequest(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendId = req.params.user_id; // Get friend ID from request parameters
+
+      // Deny friend request
+      const result = await userService.denyFriendRequest(userId, friendId);
+      return res.status(200).json({ successMessage: result });
+    } catch (error) {
+      console.error("Error denying friend request:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async blockFriend(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendId = req.params.user_id; // Get friend ID from request parameters
+
+      // Block friend
+      const result = await userService.blockFriend(userId, friendId);
+      return res.status(200).json({ successMessage: result });
+    } catch (error) {
+      console.error("Error blocking friend:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
 };
 
 module.exports = userController;

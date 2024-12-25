@@ -64,7 +64,22 @@ router.post("/send-request-friend/:user_id", userController.sendRequestFriend);
 // [GET] /users/friend-request
 router.get("/friends-request", userController.getFriendRequest);
 
+// [POST] /users/friend-request/accept/:user_id
+router.post(
+  "/friend-request/accept/:user_id",
+  userController.acceptFriendRequest
+);
+
+// [POST] /users/friend-request/denied/:user_id
+router.post(
+  "/friend-request/denied/:user_id",
+  userController.deniedFriendRequest
+);
+
 // [GET] /users/friends-blocked
 router.get("/friends-blocked", userController.getFriendBlocked);
+
+// [POST] /users/friend-request/denied/:user_id
+router.post("/friend-request/block/:user_id", userController.blockFriend);
 
 module.exports = router;

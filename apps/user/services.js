@@ -415,6 +415,75 @@ const userService = {
       throw new Error("Error fetching blocked friends: " + error.message);
     }
   },
+  async acceptFriendRequest(userId, friendId) {
+    try {
+      const friendRequest = await UserRela.findOne({
+        where: {
+          user_from: friendId,
+          user_to: userId,
+          status: "pending",
+        },
+      });
+
+      if (!friendRequest) {
+        return { message: "Friend request not found" };
+      }
+
+      friendRequest.status = "accepted";
+      await friendRequest.save();
+
+      return { message: "Friend request accepted" };
+    } catch (error) {
+      throw new Error("Error accepting friend request: " + error.message);
+    }
+  },
+  async denyFriendRequest(userId, friendId) {
+    try {
+      const friendRequest = await UserRela.findOne({
+        where: {
+          user_from: friendId,
+          user_to: userId,
+          status: "pending",
+        },
+      });
+
+      if (!friendRequest) {
+        return { message: "Friend request not found" };
+      }
+
+      await friendRequest.destroy();
+
+      return { message: "Friend request denied" };
+    } catch (error) {
+      throw new Error("Error denying friend request: " + error.message);
+    }
+  },
+  async blockFriend(userId, friendId) {
+    try {
+      const existingRelation = await UserRela.findOne({
+        where: {
+          user_from: userId,
+          user_to: friendId,
+        },
+      });
+
+      if (!existingRelation) {
+        await UserRela.create({
+          user_from: userId,
+          user_to: friendId,
+          status: "blocked",
+        });
+        return { message: "Friend blocked successfully" };
+      }
+
+      existingRelation.status = "blocked";
+      await existingRelation.save();
+
+      return { message: "Friend blocked successfully" };
+    } catch (error) {
+      throw new Error("Error blocking friend: " + error.message);
+    }
+  },
 };
 
 module.exports = userService;
