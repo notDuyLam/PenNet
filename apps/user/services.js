@@ -3,6 +3,13 @@ const User = require("./model");
 const UserInfo = require("./user_info/model");
 const { Op } = require("sequelize");
 const emailHelper = require("../../helpers/emailService.helper");
+const Like = require("../post/like/model");
+const Post = require("../post/model");
+const Comment = require("../post/comment/model");
+const Message = require("../conversation/message/model");
+const Participant = require("../conversation/participant/model");
+const Conversation = require("../conversation/model");
+
 
 const userService = {
   // Tạo người dùng mới
@@ -260,6 +267,110 @@ const userService = {
       return friends;
     } catch (error) {
       console.error('Error searching friends:', error);
+      throw error;
+    }
+  },
+  async notifyLike(userId, postId) {
+    const post = await Post.findByPk(postId);
+    const user = await User.findByPk(userId);
+    const message = `${user.first_name} ${user.last_name} liked your post.`;
+    await this.createNotification(post.userId, 'like', message, user.avatar_url, `${user.first_name} ${user.last_name}`);
+  },
+
+  async notifyComment(userId, postId, commentId) {
+    const post = await Post.findByPk(postId);
+    const user = await User.findByPk(userId);
+    const comment = await Comment.findByPk(commentId);
+    const message = `${user.first_name} ${user.last_name} commented: "${comment.content}" on your post.`;
+    await this.createNotification(post.userId, 'comment', message, user.avatar_url, `${user.first_name} ${user.last_name}`);
+  },
+
+  async notifyBirthday(userId, friendId) {
+    const user = await User.findByPk(userId);
+    const friend = await User.findByPk(friendId);
+    const message = `Today is ${friend.first_name} ${friend.last_name}'s birthday.`;
+    await this.createNotification(userId, 'birthday', message, friend.avatar_url, `${friend.first_name} ${friend.last_name}`);
+  },
+
+  async notifyMessage(senderId, receiverId, messageContent) {
+    const sender = await User.findByPk(senderId);
+    const message = `${sender.first_name} ${sender.last_name} sent you a message: "${messageContent}".`;
+    await this.createNotification(receiverId, 'message', message, sender.avatar_url, `${sender.first_name} ${sender.last_name}`);
+  },
+
+  async getNotifications(userId) {
+    try {
+      // Fetch notifications from existing models
+      const likes = await Like.findAll({
+        where: { user_id: userId },
+        include: [{ model: Post, as: 'post', include: [{ model: User, as: 'user' }] }]
+      });
+
+      const comments = await Comment.findAll({
+        where: { user_id: userId },
+        include: [{ model: Post, as: 'post', include: [{ model: User, as: 'user' }] }]
+      });
+
+      const messages = await Message.findAll({
+        where: { user_id: userId },
+        include: [
+          {
+            model: Conversation,
+            as: 'conversation',
+            include: [
+              {
+                model: Participant,
+                as: 'participants',
+                where: { user_id: { [Op.ne]: userId } },
+                include: [{ model: User, as: 'user' }]
+              }
+            ]
+          }
+        ]
+      });
+
+      const notifications = [];
+
+      likes.forEach(like => {
+        notifications.push({
+          type: 'like',
+          message: `${like.user.first_name} ${like.user.last_name} liked your post.`,
+          profileImage: like.user.avatar_url,
+          name: `${like.user.first_name} ${like.user.last_name}`,
+          createdAt: like.createdAt
+        });
+      });
+
+      comments.forEach(comment => {
+        notifications.push({
+          type: 'comment',
+          message: `${comment.user.first_name} ${comment.user.last_name} commented: "${comment.content}" on your post.`,
+          profileImage: comment.user.avatar_url,
+          name: `${comment.user.first_name} ${comment.user.last_name}`,
+          createdAt: comment.createdAt
+        });
+      });
+
+      for (const message of messages) {
+        const sender = await User.findByPk(message.user_id);
+        const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
+        notifications.push({
+          type: 'message',
+          message: `${sender.first_name} ${sender.last_name} sent you a message: "${message.content}".`,
+          profileImage: sender.avatar_url,
+          name: `${sender.first_name} ${sender.last_name}`,
+          createdAt: message.createdAt
+        });
+      }
+
+      // Sort notifications by createdAt
+      notifications.sort((a, b) => b.createdAt - a.createdAt);
+
+      console.log('Notifications:', notifications);
+
+      return notifications;
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
       throw error;
     }
   }

@@ -3,14 +3,14 @@
 
 <div class="flex h-screen m-10">
   {{!-- Sidebar --}}
-    <div class="mr-6 min-w-[16rem] w-64 flex-shrink-0 flex flex-col">
-        <div>
-            {{> sideMenu user=user}}
-        </div>
-        <div class="mt-4">
-            {{> groups user=user}}
-        </div>
+  <div class="mr-6 min-w-[16rem] w-64 flex-shrink-0 flex flex-col">
+    <div>
+      {{> sideMenu user=user}}
     </div>
+    <div class="mt-4">
+      {{> groups user=user}}
+    </div>
+  </div>
 
   {{!-- Main Content --}}
   <main class="w-3/4 px-6 py-4 flex space-x-4">
@@ -20,13 +20,13 @@
       <ul class="divide-y divide-gray-200">
         {{#each notifications}}
           <li class="py-3 flex items-start">
-            <img src="{{profileImage}}" alt="{{name}}" class="w-10 h-10 rounded-full mr-4">
+            <img src="{{this.profileImage}}" alt="{{this.name}}" class="w-10 h-10 rounded-full mr-4">
             <div>
               <p>
-                <span class="font-semibold">{{name}}</span>
-                {{message}}
+                <span class="font-semibold">{{this.name}}</span><br>
+                {{this.message}}
               </p>
-              <p class="text-sm text-gray-500">{{timeAgo}}</p>
+              <p class="text-sm text-gray-500">{{timeAgo this.createdAt}}</p>
             </div>
           </li>
         {{/each}}

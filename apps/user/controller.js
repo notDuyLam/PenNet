@@ -271,6 +271,17 @@ const userController = {
       console.error('Error searching friends:', error);
       res.status(500).send('Internal Server Error');
     }
+  },
+  async getNotifications(req, res) {
+    // console.log(req.body);
+    const userId = req.user.id; // Assuming user is authenticated and user ID is available
+    try {
+      const notifications = await userService.getNotifications(userId);
+      res.render("notification", { user: req.user, notifications });
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+      res.status(500).send('Internal Server Error');
+    }
   }
 };
 
