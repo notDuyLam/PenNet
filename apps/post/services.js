@@ -41,6 +41,7 @@ const postService = {
             attributes: ["first_name", "last_name", "avatar_url"],
           },
         ],
+        order: [["createdAt", "DESC"]],
       });
       const likes = await Like.findAll({
         where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
