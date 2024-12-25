@@ -7,17 +7,6 @@
 {{> header}}
 
 
-{{#each posts}}
-    <div class="post mb-4 p-4 border rounded-lg max-w-xs">
-        <p>{{this.content}}</p>
-        {{#each this.attachments}}
-            <img src="{{this.media_url}}" alt="attachment" class="w-full h-auto mt-2">
-        {{/each}}
-        <div class="text-sm text-gray-500 mt-2">Posted on: {{this.createdAt}}</div>
-    </div>
-{{/each}}
-
-
 <div class="m-10 flex justify-between">
     <!-- SideMenu -->
     <div class="mr-6 min-w-[16rem] w-64 flex-shrink-0 flex flex-col">
@@ -85,12 +74,9 @@
             <div id="tab" class="flex-grow w-1/2 mr-6 flex flex-col">
                 {{!-- my post --}}
                 <div id="my-post-tab" class="hidden tap-item">
-                    <div id="post-list" class=" w-full flex flex-col overflow-auto scroll-custom border rounded-lg"
-                        style="height:36rem">
-                        {{#each posts}}
+                    {{#each posts}}
                         {{> post post=this}}
-                        {{/each}}
-                    </div>
+                    {{/each}}
                 </div>
 
                 {{!-- edit profile --}}
@@ -249,18 +235,19 @@
     $(document).ready(function () {
 
         // Hàm để gửi yêu cầu và nhận nhiều post mới
-        function getNewPosts() {
-            $.ajax({
-                url: '/Dang/test2', // API để nhận các post mới
-                method: 'GET',
-                success: function (response) {
-                    if (response.html) {
-                        // Nếu server trả về HTML, bạn có thể chèn vào post-list
-                        $('#post-list').append(response.html);
-                    }
-                }
-            });
-        }
+        
+        // function getNewPosts() {
+        //     $.ajax({
+        //         url: '/Dang/test2', // API để nhận các post mới
+        //         method: 'GET',
+        //         success: function (response) {
+        //             if (response.html) {
+        //                 // Nếu server trả về HTML, bạn có thể chèn vào post-list
+        //                 $('#post-list').append(response.html);
+        //             }
+        //         }
+        //     });
+        // }
 
         const tab = 'My post';
 
@@ -287,7 +274,7 @@
             switch (tab) {
                 case 'My post':
                     $('#my-post-tab').removeClass('hidden');
-                    getNewPosts();
+                    // getNewPosts();
                     break;
                 case 'Edit Profile':
                     $('#edit-profile-tab').removeClass('hidden');

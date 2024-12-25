@@ -33,7 +33,14 @@ const postService = {
     try {
       const posts = await Post.findAll({
         where: { user_id },
-        include: [{ model: Attachment, as: "attachments" }],
+        include: [
+          { model: Attachment, as: "attachments" },
+          {
+            model: User,
+            as: "user",
+            attributes: ["first_name", "last_name", "avatar_url"],
+          },
+        ],
       });
       const likes = await Like.findAll({
         where: { post_id: posts.map((post) => post.id) },
