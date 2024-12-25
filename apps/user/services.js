@@ -299,6 +299,7 @@ const userService = {
   },
 
   async getNotifications(userId) {
+    // console.log(userId);
     try {
       // Fetch notifications from existing models
       const likes = await Like.findAll({
@@ -311,23 +312,32 @@ const userService = {
         include: [{ model: Post, as: 'post', include: [{ model: User, as: 'user' }] }]
       });
 
-      const messages = await Message.findAll({
+      // Lấy danh sách conversation_id từ bảng Participant
+      const participantConversations = await Participant.findAll({
         where: { user_id: userId },
+        attributes: ['conversation_id'], // Chỉ lấy trường conversation_id
+      });
+
+      // Trích xuất danh sách conversation_id
+      const conversationIds = participantConversations.map(pc => pc.conversation_id);
+
+      // Tìm tất cả các Message có conversation_id trùng với danh sách conversationIds 
+      // và user_id khác với userId
+      const messages = await Message.findAll({
+        where: {
+          conversation_id: { [Op.in]: conversationIds },
+          user_id: { [Op.ne]: userId }, // Lọc các tin nhắn không phải của userId
+        },
         include: [
           {
             model: Conversation,
             as: 'conversation',
-            include: [
-              {
-                model: Participant,
-                as: 'participants',
-                where: { user_id: { [Op.ne]: userId } },
-                include: [{ model: User, as: 'user' }]
-              }
-            ]
-          }
-        ]
+          },
+        ],
       });
+
+
+      console.log(messages);
 
       const notifications = [];
 
@@ -353,7 +363,7 @@ const userService = {
 
       for (const message of messages) {
         const sender = await User.findByPk(message.user_id);
-        const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
+        // const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
         notifications.push({
           type: 'message',
           message: `${sender.first_name} ${sender.last_name} sent you a message: "${message.content}".`,
@@ -365,8 +375,6 @@ const userService = {
 
       // Sort notifications by createdAt
       notifications.sort((a, b) => b.createdAt - a.createdAt);
-
-      // console.log('Notifications:', notifications);
 
       return notifications;
     } catch (error) {
