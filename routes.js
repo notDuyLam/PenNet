@@ -11,8 +11,8 @@ router.get("/", (req, res) => {
   });
 });
 
-router.get('/user/id=:id', (req, res) => {
-    res.render('personProfile', {});
+router.get("/user/id=:id", (req, res) => {
+  res.render("personProfile", {});
 });
 
 // Login route
@@ -56,8 +56,6 @@ router.get("/message", (req, res) => {
   });
 });
 
-
-
 router.get("/group", (req, res) => {
   res.render("group", {});
 });
@@ -67,24 +65,36 @@ router.get("/block", (req, res) => {
 });
 
 router.get("/Dang/test", (req, res) => {
-    const posts = [{ id: 1, content: "Post 1" }, { id: 2, content: "Post 2" }];
-    const reviewers = [{ id: 1, name: "Reviewer 1" }, { id: 2, name: "Reviewer 2" }];
-    const user = req.user;
-    res.render("personProfile", {user, posts, reviewers});
+  const posts = [
+    { id: 1, content: "Post 1" },
+    { id: 2, content: "Post 2" },
+  ];
+  const reviewers = [
+    { id: 1, name: "Reviewer 1" },
+    { id: 2, name: "Reviewer 2" },
+  ];
+  const user = req.user;
+  res.render("personProfile", { user, posts, reviewers });
 });
 
 router.get("/Dang/test2", (req, res) => {
-    const newPosts = [{ id: 1, content: "Post 1" }, { id: 2, content: "Post 2" }];
-    const user = req.user;
-    const postHtml = res.render('partials/posts', { posts: newPosts }, (err, html) => {
-        if (err) {
-          return res.status(500).send('Error rendering post');
-        }
-        res.json({ html: html });
-      });
+  const newPosts = [
+    { id: 1, content: "Post 1" },
+    { id: 2, content: "Post 2" },
+  ];
+  const user = req.user;
+  const postHtml = res.render(
+    "partials/posts",
+    { posts: newPosts },
+    (err, html) => {
+      if (err) {
+        return res.status(500).send("Error rendering post");
+      }
+      res.json({ html: html });
+    }
+  );
 });
 
 router.get("/search", userController.searchFriends);
-
 
 module.exports = router;

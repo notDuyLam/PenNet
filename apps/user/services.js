@@ -174,17 +174,26 @@ const userService = {
   async updateUser(userId, updateData) {
     try {
       const { first_name, last_name, date_of_birth, country } = updateData;
+      const user = await User.findOne({
+        where: { id: userId },
+        include: [{ model: UserInfo, as: "userInfo" }],
+      });
+      if (!user) {
+        throw new Error("User not found");
+      }
+
       const updateUserInfo = {
-        date_of_birth: date_of_birth,
-        country: country,
+        date_of_birth: date_of_birth || user.userInfo.date_of_birth,
+        country: country || user.userInfo.country,
       };
       const updateUser = {
-        first_name: first_name,
-        last_name: last_name,
+        first_name: first_name || user.first_name,
+        last_name: last_name || user.last_name,
       };
+
       await UserInfo.update(updateUserInfo, { where: { user_id: userId } });
       await User.update(updateUser, { where: { id: userId } });
-      const user = await User.findOne({
+      const updatedUser = await User.findOne({
         where: { id: userId },
         include: [
           {
@@ -193,10 +202,10 @@ const userService = {
           },
         ],
       });
-      if (!user) {
+      if (!updatedUser) {
         throw new Error("User not found");
       }
-      return user;
+      return updatedUser;
     } catch (error) {
       throw new Error("Error updating user: " + error.message);
     }

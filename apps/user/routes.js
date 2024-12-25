@@ -42,9 +42,16 @@ router.get("/logout", userController.logoutUser);
 // [GET] /users/profile
 router.get("/profile", (req, res, next) => {
   if (req.isAuthenticated()) {
-    res.render("profile", {
-      user: req.user,
-    });
+    const posts = [
+      { id: 1, content: "Post 1" },
+      { id: 2, content: "Post 2" },
+    ];
+    const reviewers = [
+      { id: 1, name: "Reviewer 1" },
+      { id: 2, name: "Reviewer 2" },
+    ];
+    const user = req.user;
+    res.render("personProfile", { user, posts, reviewers });
   } else {
     res.redirect("/users/login");
   }
