@@ -12,27 +12,27 @@
 
     <div class="flex-grow w-1/2 mr-6 flex flex-col">
         <form id="post-form" action="/posts" method="POST" class="w-full p-4 mb-8 rounded-lg flex flex-col bg-violet-200"> 
-            <div class="flex items-center mb-4">
-            <img class="h-16 w-16 rounded-full ml-4 mr-4" 
-            src="{{#if user.avatar}}{{user.avatar}}{{else}}/images/avatar.png{{/if}}" 
-            alt="user-avatar"
-            />
-            <textarea 
-            name="content"
-            class="flex-grow bg-inherit placeholder-gray-700 outline-none flex-warp mr-8 
-            overflow-auto resize-none scroll-custom" 
-            placeholder="What 's on your mind?"
-            ></textarea>
+            <div class="flex items-center mb-4 data-send">
+                <img class="h-16 w-16 rounded-full ml-4 mr-4" 
+                src="{{#if user.avatar}}{{user.avatar}}{{else}}/images/avatar.png{{/if}}" 
+                alt="user-avatar"
+                />
+                <textarea 
+                name="content"
+                class="flex-grow bg-inherit placeholder-gray-700 outline-none flex-warp mr-8 
+                overflow-auto resize-none scroll-custom" 
+                placeholder="What 's on your mind?"
+                ></textarea>
             </div>
             <div class="flex justify-around">
-            <label for="image-upload" class="cursor-pointer flex items-center">
-            <i class="fa-solid fa-image mr-2"></i>
-            Add Media
-            </label>
-            <input type="file" id="image-upload" name="images" accept="image/*" class="hidden" multiple>
-            <button type="submit" class="rounded-xl pl-4 pr-4 pt-0.5 pb-0.5 bg-violet-700 text-white">
-            Post
-            </button>
+                <label for="image-upload" class="cursor-pointer flex items-center">
+                <i class="fa-solid fa-image mr-2"></i>
+                Add Media
+                </label>
+                <input type="file" id="image-upload" name="images" accept="image/*" class="hidden" multiple>
+                <button type="submit" class="rounded-xl pl-4 pr-4 pt-0.5 pb-0.5 bg-violet-700 text-white">
+                Post
+                </button>
             </div>
         </form>
         <div class="w-full flex flex-col overflow-auto scroll-custom border rounded-lg" style="height:36rem">
