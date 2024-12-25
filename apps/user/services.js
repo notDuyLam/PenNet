@@ -366,7 +366,7 @@ const userService = {
       // Sort notifications by createdAt
       notifications.sort((a, b) => b.createdAt - a.createdAt);
 
-      console.log('Notifications:', notifications);
+      // console.log('Notifications:', notifications);
 
       return notifications;
     } catch (error) {
