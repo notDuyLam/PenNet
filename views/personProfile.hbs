@@ -27,14 +27,14 @@
                     bg-gray-300 h-8 w-8 flex justify-center items-center cursor-pointer" style="left:8rem">
                     <i class="fa-solid fa-camera"></i>
                 </div>
-
+                <h1 class="hidden" id="user_id" >{{user.id}}</h1> 
                 <div class="ml-8 mb-4 font-medium text-2xl fullName">
                     {{#if user.first_name}}{{user.first_name}} {{user.last_name}}{{else}}User Name{{/if}}
                 </div>
                 <div class="ml-auto flex ">
                     <div class="flex flex-col items-center mr-8">
                         <div class="text-3xl font-medium">
-                            {{#if user.posts}}{{user.posts}}{{else}}0{{/if}}
+                            {{#if posts}}{{posts.length}}{{else}}0{{/if}}
                         </div>
                         <div>
                             Posts
@@ -75,7 +75,7 @@
                 {{!-- my post --}}
                 <div id="my-post-tab" class="hidden tap-item">
                     {{#each posts}}
-                        {{> post post=this}}
+                        {{> post post=this user=../user}}
                     {{/each}}
                 </div>
 
@@ -274,7 +274,6 @@
             switch (tab) {
                 case 'My post':
                     $('#my-post-tab').removeClass('hidden');
-                    // getNewPosts();
                     break;
                 case 'Edit Profile':
                     $('#edit-profile-tab').removeClass('hidden');

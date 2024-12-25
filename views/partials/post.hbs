@@ -5,7 +5,7 @@
                 src="{{#if post.user.avatar_url}}{{post.user.avatar_url}}{{else}}/images/avatar.png{{/if}}"
                 alt="user-avatar">
             <div>
-                <div>
+                <div class="font-medium text-xl fullName">
                     {{post.user.first_name}} {{post.user.last_name}}
                 </div>
             </div>
@@ -57,7 +57,7 @@
             </div>
             <div class="ml-4"> Comment </div>
         </div>
-        <div class="post-like m-8 text-3xl cursor-pointer">
+        <div class="post-like m-8 text-3xl cursor-pointer text-blue-500">
             <i class="fa-regular fa-thumbs-up"></i>
         </div>
     </div>

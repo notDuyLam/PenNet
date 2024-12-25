@@ -1,66 +1,61 @@
 // Like post button logic
-$(document).on('click', '.post-like, .comment-like', function () {
-    // lấy user
-    const user = {name: "name"};
-    // Lấy postId từ thuộc tính data-post-id
-    const postId = $(this).closest('[data-post-id]').data('post-id') || '111';
+$(document).on("click", ".post-like, .comment-like", function () {
+  // Lấy postId từ thuộc tính data-post-id
+  const postId = $(this).closest("[data-post-id]").data("post-id");
 
-    let isLike;
+  let isLike;
 
-    const icon = $(this).find('i');
+  const icon = $(this).find("i");
 
-    if (icon.hasClass('fa-regular')) {
-        // đang là unlike -> chuyển sang like
-        icon.removeClass('fa-regular').addClass('text-blue-600 fa-solid');
-        isLike = true;
-    } else {
-        // đang là like -> chuyển sang unlike
-        icon.removeClass('text-blue-600 fa-solid').addClass('fa-regular');
-        isLike = false;
-    }
+  if (icon.hasClass("fa-regular")) {
+    // đang là unlike -> chuyển sang like
+    icon.removeClass("fa-regular").addClass("text-blue-600 fa-solid");
+    isLike = true;
+  } else {
+    // đang là like -> chuyển sang unlike
+    icon.removeClass("text-blue-600 fa-solid").addClass("fa-regular");
+    isLike = false;
+  }
 
-    $.ajax({
-        url: '/like',
-        method: 'POST',
-        data: { postId, isLike }
-    })
-
+  $.ajax({
+    url: `/posts/like/${postId}`,
+    method: "POST",
+  });
 });
 
+$(document).on("click", ".post-comment", function () {
+  // lấy user
+  const user = { name: "name" };
 
-$(document).on('click', '.post-comment', function () {
-    // lấy user
-    const user = {name: "name"};
+  // Lấy postId từ thuộc tính data-post-id
+  const postId = $(this).closest("[data-post-id]").data("post-id") || "111";
 
-    // Lấy postId từ thuộc tính data-post-id
-    const postId = $(this).closest('[data-post-id]').data('post-id') || '111';
+  // fetch data từ postid
+  const comments = [
+    {
+      author: "nva",
+      avatar: "/images/avatar1.png",
+      content: "good",
+    },
+    {
+      author: "nvb",
+      avatar: "/images/avatar2.png",
+      content: "bad",
+    },
+    {
+      author: "nva",
+      avatar: "/images/avatar1.png",
+      content: "good",
+    },
+    {
+      author: "nva",
+      avatar: "/images/avatar1.png",
+      content: "good",
+    },
+  ];
 
-    // fetch data từ postid
-    const comments = [
-        {
-            author: 'nva',
-            avatar: '/images/avatar1.png',
-            content: 'good',
-        },
-        {
-            author: 'nvb',
-            avatar: '/images/avatar2.png',
-            content: 'bad',
-        },
-        {
-            author: 'nva',
-            avatar: '/images/avatar1.png',
-            content: 'good',
-        },
-        {
-            author: 'nva',
-            avatar: '/images/avatar1.png',
-            content: 'good',
-        },
-    ];
-
-    // Tạo modal chứa danh sách comment
-    const post_details = $(`
+  // Tạo modal chứa danh sách comment
+  const post_details = $(`
         <div class="w-full h-full fixed top-0 left-0 flex items-center justify-center bg-black bg-opacity-50">
             <div class="flex flex-col w-1/2 h-2/3 bg-white rounded">
                 <div class="flex justify-end p-2 pr-4">
@@ -89,11 +84,13 @@ $(document).on('click', '.post-comment', function () {
         </div>
     `);
 
-    // Thêm từng comment vào container
-    for (let i = 0; i < comments.length; i++) {
-        const comment = comments[i];
-        $(post_details).find('#container').append(
-            `
+  // Thêm từng comment vào container
+  for (let i = 0; i < comments.length; i++) {
+    const comment = comments[i];
+    $(post_details)
+      .find("#container")
+      .append(
+        `
             <div class="flex p-4 border-b">
                 <img class="rounded-full w-12 h-12 mr-4" src="${comment.avatar}" alt="user-avatar">
                 <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
@@ -107,29 +104,33 @@ $(document).on('click', '.post-comment', function () {
                 </div>
             </div>
             `
-        );
-    }
+      );
+  }
 
-    $(post_details).find('#comment-form').on('submit', function (e) {
-        e.preventDefault();
+  $(post_details)
+    .find("#comment-form")
+    .on("submit", function (e) {
+      e.preventDefault();
 
-        const form = $(this);
-        const content = form.find('#content').val(); // Lấy nội dung comment
+      const form = $(this);
+      const content = form.find("#content").val(); // Lấy nội dung comment
 
-        if (!content.trim()) {
-            alert('Comment cannot be empty!');
-            return;
-        }
-        console.log({ postId, content });
-        // Gửi dữ liệu comment về server qua AJAX
-        $.ajax({
-            url: '/add-comment',
-            method: 'POST',
-            data: { postId, content },
-            success: function (response) {
-                // Thêm comment mới vào danh sách mà không cần reload
-                $(post_details).find('#container').append(
-                    `
+      if (!content.trim()) {
+        alert("Comment cannot be empty!");
+        return;
+      }
+      console.log({ postId, content });
+      // Gửi dữ liệu comment về server qua AJAX
+      $.ajax({
+        url: "/add-comment",
+        method: "POST",
+        data: { postId, content },
+        success: function (response) {
+          // Thêm comment mới vào danh sách mà không cần reload
+          $(post_details)
+            .find("#container")
+            .append(
+              `
                     <div class="flex p-4 border-b">
                         <img class="rounded-full w-12 h-12 mr-4" src="${user.avatar}" alt="user-avatar">
                         <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
@@ -143,48 +144,48 @@ $(document).on('click', '.post-comment', function () {
                         </div>
                     </div>
                     `
-                );
-                form[0].reset(); // Reset form sau khi gửi thành công
-            },
-            error: function (err) {
-                console.error(err);
-                alert('Failed to add comment.');
-            },
-        });
+            );
+          form[0].reset(); // Reset form sau khi gửi thành công
+        },
+        error: function (err) {
+          console.error(err);
+          alert("Failed to add comment.");
+        },
+      });
     });
 
-    // Thêm modal vào body
-    $('body').append(post_details);
+  // Thêm modal vào body
+  $("body").append(post_details);
 
-    $('body').addClass('no-scroll');
+  $("body").addClass("no-scroll");
 
-    // Đóng modal khi nhấn nút close
-    $(document).on('click', '#close-modal', function () {
-        post_details.remove();
-        $('body').removeClass('no-scroll');
-    });
+  // Đóng modal khi nhấn nút close
+  $(document).on("click", "#close-modal", function () {
+    post_details.remove();
+    $("body").removeClass("no-scroll");
+  });
 });
 
-$(document).on('click', '.post-more-btn', function() {
-    $(this).siblings('#items').toggleClass('hidden');
-})
+$(document).on("click", ".post-more-btn", function () {
+  $(this).siblings("#items").toggleClass("hidden");
+});
 
-$(document).on('click', '#edit-post', function(e) {
-    e.preventDefault();
-    // fetch lấy post từ post id
-    const postId = $(this).closest('[data-post-id]').data('post-id') || '111';
-    // ví dụ 1 post
-    const post = {
-        author: {
-            avatar: "sth",
-            first_name: "fname",
-            last_name: "lname",
-        },
-        content: "abc",
-        time: "2 second ago"
-    }; 
+$(document).on("click", "#edit-post", function (e) {
+  e.preventDefault();
+  // fetch lấy post từ post id
+  const postId = $(this).closest("[data-post-id]").data("post-id") || "111";
+  // ví dụ 1 post
+  const post = {
+    author: {
+      avatar: "sth",
+      first_name: "fname",
+      last_name: "lname",
+    },
+    content: "abc",
+    time: "2 second ago",
+  };
 
-    const edit_post_container = $(`
+  const edit_post_container = $(`
         <div class="w-full h-full fixed top-0 left-0 flex items-center justify-center bg-black bg-opacity-50">
             <div class="flex flex-col w-1/2 h-2/3 bg-white rounded justify-between items-center  p-4">
                 <div class="text-3xl font-bold ">
@@ -223,34 +224,33 @@ $(document).on('click', '#edit-post', function(e) {
         </div>
     `);
 
-    $('body').append(edit_post_container);
-    $('body').addClass('no-scroll');
+  $("body").append(edit_post_container);
+  $("body").addClass("no-scroll");
 
-    $(document).on('click', '#close-modal', function () {
-        edit_post_container.remove();
-        $('body').removeClass('no-scroll');
+  $(document).on("click", "#close-modal", function () {
+    edit_post_container.remove();
+    $("body").removeClass("no-scroll");
+  });
+
+  $(document).on("click", "#submit-form", function () {
+    e.preventDefault();
+
+    // Lấy dữ liệu từ form
+    const content = $('#edit-post-form textarea[name="content"]').val();
+
+    $.ajax({
+      url: "/edit-post", // Endpoint xử lý trên server
+      method: "POST",
+      data: { postId, content }, // Gửi postId và nội dung chỉnh sửa
+      success: function (response) {
+        alert("Post updated successfully!");
+        edit_post_container.remove(); // Đóng modal sau khi cập nhật thành công
+        $("body").removeClass("no-scroll");
+      },
+      error: function (error) {
+        console.error("Failed to update post:", error);
+        alert("Failed to update the post. Please try again!");
+      },
     });
-
-    $(document).on('click', '#submit-form', function() {
-        e.preventDefault();
-
-        // Lấy dữ liệu từ form
-        const content = $('#edit-post-form textarea[name="content"]').val();
-
-        $.ajax({
-            url: '/edit-post', // Endpoint xử lý trên server
-            method: 'POST',
-            data: { postId, content }, // Gửi postId và nội dung chỉnh sửa
-            success: function (response) {
-                alert('Post updated successfully!');
-                edit_post_container.remove(); // Đóng modal sau khi cập nhật thành công
-                $('body').removeClass('no-scroll');
-            },
-            error: function (error) {
-                console.error('Failed to update post:', error);
-                alert('Failed to update the post. Please try again!');
-            },
-        });
-    });
-
-})
+  });
+});
