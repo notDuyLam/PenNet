@@ -301,15 +301,53 @@ const userService = {
   async getNotifications(userId) {
     // console.log(userId);
     try {
-      // Fetch notifications from existing models
-      const likes = await Like.findAll({
+      // Tìm tất cả các post có user_id = userId trong bảng Post
+      const userPosts = await Post.findAll({
         where: { user_id: userId },
-        include: [{ model: Post, as: 'post', include: [{ model: User, as: 'user' }] }]
+        attributes: ['id'], // Chỉ cần lấy post_id
+      });
+
+      // Trích xuất danh sách post_id
+      const postIds = userPosts.map(post => post.id);
+
+      // Tìm tất cả các like có post_id thuộc danh sách postIds 
+      // và user_id khác với userId
+      const likes = await Like.findAll({
+        where: {
+          post_id: { [Op.in]: postIds },
+          user_id: { [Op.ne]: userId }, // Chỉ chọn các like có user_id khác userId
+        },
+        include: [
+          {
+            model: Post,
+            as: 'post',
+            include: [
+              {
+                model: User,
+                as: 'user',
+              },
+            ],
+          },
+        ],
       });
 
       const comments = await Comment.findAll({
-        where: { user_id: userId },
-        include: [{ model: Post, as: 'post', include: [{ model: User, as: 'user' }] }]
+        where: {
+          post_id: { [Op.in]: postIds },
+          user_id: { [Op.ne]: userId }, // Chỉ chọn các comment có user_id khác userId
+        },
+        include: [
+          {
+            model: Post,
+            as: 'post',
+            include: [
+              {
+                model: User,
+                as: 'user',
+              },
+            ],
+          },
+        ],
       });
 
       // Lấy danh sách conversation_id từ bảng Participant
@@ -336,30 +374,34 @@ const userService = {
         ],
       });
 
-
-      console.log(messages);
+      console.log(likes);
+      // console.log(messages);
 
       const notifications = [];
 
-      likes.forEach(like => {
+      for (const like of likes) {
+        const sender = await User.findByPk(like.user_id);
+        // const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
         notifications.push({
           type: 'like',
-          message: `${like.user.first_name} ${like.user.last_name} liked your post.`,
-          profileImage: like.user.avatar_url,
-          name: `${like.user.first_name} ${like.user.last_name}`,
+          message: `${sender.first_name} ${sender.last_name} liked your post.`,
+          profileImage: sender.avatar_url,
+          name: `${sender.first_name} ${sender.last_name}`,
           createdAt: like.createdAt
         });
-      });
+      }
 
-      comments.forEach(comment => {
+      for (const comment of comments) {
+        const sender = await User.findByPk(comment.user_id);
+        // const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
         notifications.push({
           type: 'comment',
-          message: `${comment.user.first_name} ${comment.user.last_name} commented: "${comment.content}" on your post.`,
-          profileImage: comment.user.avatar_url,
-          name: `${comment.user.first_name} ${comment.user.last_name}`,
+          message: `${sender.first_name} ${sender.last_name} comment "${comment.content}" on your post.`,
+          profileImage: sender.avatar_url,
+          name: `${sender.first_name} ${sender.last_name}`,
           createdAt: comment.createdAt
         });
-      });
+      }
 
       for (const message of messages) {
         const sender = await User.findByPk(message.user_id);
