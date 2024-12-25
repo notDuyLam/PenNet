@@ -39,24 +39,6 @@ router.post("/reset-password", userController.resetPassword);
 // [POST] /users/logout
 router.get("/logout", userController.logoutUser);
 
-// [GET] /users/profile
-router.get("/profile", (req, res, next) => {
-  if (req.isAuthenticated()) {
-    const posts = [
-      { id: 1, content: "Post 1" },
-      { id: 2, content: "Post 2" },
-    ];
-    const reviewers = [
-      { id: 1, name: "Reviewer 1" },
-      { id: 2, name: "Reviewer 2" },
-    ];
-    const user = req.user;
-    res.render("personProfile", { user, posts, reviewers });
-  } else {
-    res.redirect("/users/login");
-  }
-});
-
 // [PATCH] /users/profile
 router.patch("/profile", userController.updateUser);
 
@@ -88,5 +70,8 @@ router.get("/friends-blocked", userController.getFriendBlocked);
 
 // [POST] /users/friend-request/denied/:user_id
 router.post("/friend-request/block/:user_id", userController.blockFriend);
+
+// [GET] /users/profile
+router.get("/profile", userController.renderProfilePage);
 
 module.exports = router;

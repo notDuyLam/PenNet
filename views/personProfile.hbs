@@ -5,6 +5,19 @@
 </style>
 
 {{> header}}
+
+
+{{#each posts}}
+    <div class="post mb-4 p-4 border rounded-lg max-w-xs">
+        <p>{{this.content}}</p>
+        {{#each this.attachments}}
+            <img src="{{this.media_url}}" alt="attachment" class="w-full h-auto mt-2">
+        {{/each}}
+        <div class="text-sm text-gray-500 mt-2">Posted on: {{this.createdAt}}</div>
+    </div>
+{{/each}}
+
+
 <div class="m-10 flex justify-between">
     <!-- SideMenu -->
     <div class="mr-6 min-w-[16rem] w-64 flex-shrink-0 flex flex-col">

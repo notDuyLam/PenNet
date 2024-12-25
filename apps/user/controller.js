@@ -1,4 +1,5 @@
 const userService = require("./services");
+const postService = require("../post/services");
 const passport = require("passport");
 
 const userController = {
@@ -387,6 +388,24 @@ const userController = {
       return res.status(200).json({ successMessage: result });
     } catch (error) {
       console.error("Error blocking friend:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async renderProfilePage(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+      const user_id = req.user.id;
+      const user = req.user;
+      const posts = await postService.getPostsByUserId(user_id);
+      const reviewers = [
+        { id: 1, name: "Reviewer 1" },
+        { id: 2, name: "Reviewer 2" },
+      ];
+      res.render("personProfile", { user, posts, reviewers });
+    } catch (error) {
+      console.error("Error rendering profile page:", error);
       return res.status(500).json({ errorMessage: "Server error" });
     }
   },
