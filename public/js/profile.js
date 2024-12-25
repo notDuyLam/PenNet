@@ -192,3 +192,25 @@ document
       alert("An error occurred while changing the password");
     }
   });
+
+// Khi trang đã sẵn sàng
+document.addEventListener("DOMContentLoaded", function () {
+  // Gắn Flatpickr vào input
+  const dobInput = document.getElementById("dob");
+  const calendarIcon = document.getElementById("dob-calendar");
+
+  // Khởi tạo Flatpickr
+  const datepicker = flatpickr(dobInput, {
+    dateFormat: "Y-m-d", // Định dạng ngày
+    defaultDate: dobInput.value, // Lấy giá trị ban đầu
+    onChange: function (selectedDates, dateStr) {
+      // Cập nhật giá trị khi chọn ngày
+      dobInput.value = dateStr;
+    },
+  });
+
+  // Hiển thị lịch khi nhấp vào biểu tượng
+  calendarIcon.addEventListener("click", () => {
+    datepicker.open();
+  });
+});
