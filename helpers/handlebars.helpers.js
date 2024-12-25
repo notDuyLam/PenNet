@@ -24,9 +24,9 @@ module.exports = {
         }
         return result;
     },
-    formatDate: (date) => {
-        return new Date(date).toLocaleString();
-    },
+    // formatDate: (date) => {
+    //     return new Date(date).toLocaleString();
+    // },
     formatRate: (rating) => {
         // Tạo chuỗi sao đầy
         const fullStars = '<i class="fa fa-star"></i>'.repeat(rating);
@@ -36,5 +36,13 @@ module.exports = {
     },
     timeAgo: (date) => {
         return moment(date).fromNow();
-    }
+    },
+    formatDate: function (date) {
+        if (!date) return "";
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        return new Date(date).toLocaleDateString("en-US", options);
+      },
+    gridClass: function (length) {
+        return length > 1 ? "grid grid-cols-2 gap-4" : "grid grid-cols-1 gap-4";
+    },
 };

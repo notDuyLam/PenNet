@@ -323,7 +323,7 @@ const userController = {
       console.error('Error fetching notifications:', error);
       res.status(500).send('Internal Server Error');
     }
-  }
+  },
   async getFriendRequest(req, res) {
     try {
       if (!req.isAuthenticated()) {

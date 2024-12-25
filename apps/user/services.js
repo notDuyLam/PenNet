@@ -314,7 +314,7 @@ const userService = {
     try {
 
       // Fetch accepted friends
-      const acceptedFriends = await UserRela.findAll(
+      const acceptedFriends = await UserRela.findAll({
         where: {
           user_from: userId,
           status: "accepted",
@@ -495,25 +495,26 @@ const userService = {
       console.error('Error fetching notifications:', error);
       throw error;
     }
-  }
+  },
 
   async getFriends(userId) {
     try {
-      // Tìm User trước
+      // Find User first
       const user = await User.findByPk(userId);
       if (!user) {
         throw new Error("User not found");
       }
 
-      // Tìm sentRequests
+      // Find sentRequests
       const sentRequests = await UserRela.findAll({
-
-
-
+        where: {
+          user_from: userId,
+          status: "accepted",
+        },
         include: [
           {
             model: User,
-            as: "toUser", // Sử dụng alias 'toUser'
+            as: "toUser", // Use alias 'toUser'
             attributes: {
               exclude: [
                 "password_hash",
@@ -528,17 +529,16 @@ const userService = {
         ],
       });
 
-      // Tìm receivedRequests
+      // Find receivedRequests
       const receivedRequests = await UserRela.findAll({
         where: {
           user_to: userId,
           status: "accepted",
-
-
-
-
-
-            as: "fromUser", // Sử dụng alias 'fromUser'
+        },
+        include: [
+          {
+            model: User,
+            as: "fromUser", // Use alias 'fromUser'
             attributes: {
               exclude: [
                 "password_hash",
@@ -553,7 +553,7 @@ const userService = {
         ],
       });
 
-      // Kết hợp danh sách bạn bè từ cả hai loại yêu cầu
+      // Combine friend lists from both types of requests
       const friends = [
         ...sentRequests.map((rel) => rel.toUser),
         ...receivedRequests.map((rel) => rel.fromUser),
@@ -564,6 +564,7 @@ const userService = {
       throw new Error("Error fetching friends: " + error.message);
     }
   },
+
   async sendFriendRequest(userId, friendId) {
     try {
       const existingRequest = await UserRela.findOne({
@@ -588,6 +589,7 @@ const userService = {
       throw new Error("Error sending friend request: " + error.message);
     }
   },
+
   async getFriendRequests(userId) {
     try {
       const receivedRequests = await UserRela.findAll({
@@ -598,7 +600,7 @@ const userService = {
         include: [
           {
             model: User,
-            as: "fromUser", // Sử dụng alias 'fromUser'
+            as: "fromUser", // Use alias 'fromUser'
             attributes: {
               exclude: [
                 "password_hash",
@@ -618,6 +620,7 @@ const userService = {
       throw new Error("Error fetching friend requests: " + error.message);
     }
   },
+
   async getBlockedFriends(userId) {
     try {
       const blockedUsers = await UserRela.findAll({
@@ -648,6 +651,7 @@ const userService = {
       throw new Error("Error fetching blocked friends: " + error.message);
     }
   },
+
   async acceptFriendRequest(userId, friendId) {
     try {
       const friendRequest = await UserRela.findOne({
@@ -670,6 +674,7 @@ const userService = {
       throw new Error("Error accepting friend request: " + error.message);
     }
   },
+
   async denyFriendRequest(userId, friendId) {
     try {
       const friendRequest = await UserRela.findOne({
@@ -691,6 +696,7 @@ const userService = {
       throw new Error("Error denying friend request: " + error.message);
     }
   },
+
   async blockFriend(userId, friendId) {
     try {
       const existingRelation = await UserRela.findOne({
@@ -717,7 +723,6 @@ const userService = {
       throw new Error("Error blocking friend: " + error.message);
     }
   },
-
 };
 
 module.exports = userService;
