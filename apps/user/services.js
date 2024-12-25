@@ -433,9 +433,7 @@ const userService = {
         ],
       });
 
-      console.log(birthdates);
-      // console.log(likes);
-      // console.log(messages);
+
 
       const notifications = [];
 
