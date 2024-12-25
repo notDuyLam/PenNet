@@ -26,7 +26,11 @@
                 <span class="font-semibold">{{this.name}}</span><br>
                 {{this.message}}
               </p>
-              <p class="text-sm text-gray-500">{{timeAgo this.createdAt}}</p>
+              {{#if (eq this.type "birthday")}}
+                <p class="text-sm text-gray-500"><i class="fa fa-birthday-cake"></i></p>
+              {{else}}
+                <p class="text-sm text-gray-500">{{timeAgo this.createdAt}}</p>
+              {{/if}}
             </div>
           </li>
           <hr class="my-2 border-gray-300">

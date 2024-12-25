@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("./model");
 const UserInfo = require("./user_info/model");
-const { Op } = require("sequelize");
 const emailHelper = require("../../helpers/emailService.helper");
 const Like = require("../post/like/model");
 const Post = require("../post/model");
@@ -9,6 +8,9 @@ const Comment = require("../post/comment/model");
 const Message = require("../conversation/message/model");
 const Participant = require("../conversation/participant/model");
 const Conversation = require("../conversation/model");
+const UserRela = require("./user_rela/model");
+const { Op, Sequelize } = require("sequelize");
+
 
 
 const userService = {
@@ -301,6 +303,54 @@ const userService = {
   async getNotifications(userId) {
     // console.log(userId);
     try {
+
+      // Fetch accepted friends
+      const acceptedFriends = await UserRela.findAll({
+        where: {
+          user_from: userId,
+          status: "accepted",
+        },
+        attributes: ['user_to'], // Only need user_to
+      });
+
+      // Extract list of friend IDs
+      const friendIds = acceptedFriends.map(rel => rel.user_to);
+
+      // Find all records in UserInfo with user_id in friendIds
+      // and date_of_birth matching today, join with User table to get first_name and last_name
+      const today = new Date();
+      const todayMonth = today.getMonth() + 1; // getMonth() returns 0-11
+      const todayDay = today.getDate();
+
+      const birthdates = await UserInfo.findAll({
+        where: {
+          user_id: { [Op.in]: friendIds },
+          [Op.and]: [
+            Sequelize.where(
+              Sequelize.fn('EXTRACT', Sequelize.literal('MONTH FROM date_of_birth')),
+              todayMonth
+            ),
+
+            Sequelize.where(
+              Sequelize.fn('EXTRACT', Sequelize.literal('DAY FROM date_of_birth')),
+              todayDay
+            ),
+          ],
+        },
+        include: [
+          {
+            model: User,
+            as: 'user',
+            attributes: ['first_name', 'last_name'], // Get necessary info from User table
+          },
+        ],
+        attributes: ['user_id', 'date_of_birth'], // Get necessary info from UserInfo table
+      });
+
+      
+
+
+
       // Tìm tất cả các post có user_id = userId trong bảng Post
       const userPosts = await Post.findAll({
         where: { user_id: userId },
@@ -374,7 +424,8 @@ const userService = {
         ],
       });
 
-      console.log(likes);
+      console.log(birthdates);
+      // console.log(likes);
       // console.log(messages);
 
       const notifications = [];
@@ -412,6 +463,18 @@ const userService = {
           profileImage: sender.avatar_url,
           name: `${sender.first_name} ${sender.last_name}`,
           createdAt: message.createdAt
+        });
+      }
+
+      for (const birthday of birthdates) {
+        const sender = await User.findByPk(birthday.user_id);
+        // const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
+        notifications.push({
+          type: 'birthday',
+          message: `Today is ${sender.first_name} ${sender.last_name} birthday!!! Let's celebrate!`,
+          profileImage: sender.avatar_url,
+          name: `${sender.first_name} ${sender.last_name}`,
+          createdAt: new Date()
         });
       }
 
