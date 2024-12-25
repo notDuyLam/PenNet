@@ -19,6 +19,15 @@ const hbs = create({
     gridClass: function (length) {
       return length > 1 ? "grid grid-cols-2 gap-4" : "grid grid-cols-1 gap-4";
     },
+    includes: function (array, value) {
+      if (!Array.isArray(array)) return false;
+      for (let item of array) {
+        if (item.user_id === value) {
+          return true;
+        }
+      }
+      return false;
+    },
   },
 });
 

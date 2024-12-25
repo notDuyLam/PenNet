@@ -25,34 +25,48 @@ $(document).on("click", ".post-like, .comment-like", function () {
 
 $(document).on("click", ".post-comment", function () {
   // lấy user
-  const user = { name: "name" };
+  const user = {
+    name: $(".fullName").first().text(),
+    avatar: $(".image-avatar").first().attr("src"),
+  };
+
+  console.log(user.name);
 
   // Lấy postId từ thuộc tính data-post-id
-  const postId = $(this).closest("[data-post-id]").data("post-id") || "111";
+  const postId = $(this).closest("[data-post-id]").data("post-id");
 
-  // fetch data từ postid
-  const comments = [
-    {
-      author: "nva",
-      avatar: "/images/avatar1.png",
-      content: "good",
+  // Fetch comments from server
+  $.ajax({
+    url: `/posts/comment/${postId}`,
+    method: "GET",
+    success: function (response) {
+      // Assuming response is an array of comments
+      response.forEach((comment) => {
+        $(post_details)
+          .find("#container")
+          .append(
+            `
+              <div class="flex p-4 border-b">
+            <img class="rounded-full w-12 h-12 mr-4" src="${comment.user.avatar_url}" alt="user-avatar">
+            <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
+                <div class="rounded-xl p-2 pl-4 pr-4">
+              <div class="font-bold">${comment.user.first_name} ${comment.user.last_name}</div>
+              <div>${comment.content}</div>
+                </div>
+                <div class="comment-like flex text-xl mr-2">
+              <i class="fa-regular fa-thumbs-up mr-2 cursor-pointer"></i>
+                </div>
+            </div>
+              </div>
+            `
+          );
+      });
     },
-    {
-      author: "nvb",
-      avatar: "/images/avatar2.png",
-      content: "bad",
+    error: function (error) {
+      console.error("Failed to fetch comments:", error);
+      alert("Failed to load comments. Please try again!");
     },
-    {
-      author: "nva",
-      avatar: "/images/avatar1.png",
-      content: "good",
-    },
-    {
-      author: "nva",
-      avatar: "/images/avatar1.png",
-      content: "good",
-    },
-  ];
+  });
 
   // Tạo modal chứa danh sách comment
   const post_details = $(`
@@ -69,6 +83,7 @@ $(document).on("click", ".post-comment", function () {
                     <div class="rounded-xl flex-grow flex bg-gray-200 items-center w-full">
                         <div class="rounded-xl p-2 pl-4 pr-4 flex-grow">
                             <div class="font-bold">${user.name}</div>
+                            <div data-post-id="${postId}" class="w-full border flex flex-col rounded mb-4 hidden"></div>
                             <form id="comment-form">
                                 <input 
                                     name="content" id="content" type="text" 
@@ -76,36 +91,12 @@ $(document).on("click", ".post-comment", function () {
                                     rounded-md text-sm text-[#707988]" placeholder="Comment here"
                                 />
                             </form>
-                            
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     `);
-
-  // Thêm từng comment vào container
-  for (let i = 0; i < comments.length; i++) {
-    const comment = comments[i];
-    $(post_details)
-      .find("#container")
-      .append(
-        `
-            <div class="flex p-4 border-b">
-                <img class="rounded-full w-12 h-12 mr-4" src="${comment.avatar}" alt="user-avatar">
-                <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
-                    <div class="rounded-xl p-2 pl-4 pr-4">
-                        <div class="font-bold">${comment.author}</div>
-                        <div>${comment.content}</div>
-                    </div>
-                    <div class="comment-like flex text-xl mr-2">
-                        <i class="fa-regular fa-thumbs-up mr-2 cursor-pointer"></i>
-                    </div>
-                </div>
-            </div>
-            `
-      );
-  }
 
   $(post_details)
     .find("#comment-form")
@@ -119,31 +110,34 @@ $(document).on("click", ".post-comment", function () {
         alert("Comment cannot be empty!");
         return;
       }
-      console.log({ postId, content });
+
+      // Lấy postId từ thuộc tính data-post-id
+      const postId = $(this).closest("form").prev().data("post-id");
+
       // Gửi dữ liệu comment về server qua AJAX
       $.ajax({
-        url: "/add-comment",
+        url: `/posts/comment/${postId}`,
         method: "POST",
-        data: { postId, content },
+        data: { content },
         success: function (response) {
           // Thêm comment mới vào danh sách mà không cần reload
           $(post_details)
             .find("#container")
             .append(
               `
-                    <div class="flex p-4 border-b">
-                        <img class="rounded-full w-12 h-12 mr-4" src="${user.avatar}" alt="user-avatar">
-                        <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
-                            <div class="rounded-xl p-2 pl-4 pr-4">
-                                <div class="font-bold">${user.name}</div>
-                                <div>${content}</div>
-                            </div>
-                            <div class="comment-like flex text-xl mr-2">
-                                <i class="fa-regular fa-thumbs-up mr-2 cursor-pointer"></i>
-                            </div>
-                        </div>
+                <div class="flex p-4 border-b">
+                  <img class="rounded-full w-12 h-12 mr-4" src="${response.user.avatar_url}" alt="user-avatar">
+                  <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
+                    <div class="rounded-xl p-2 pl-4 pr-4">
+                      <div class="font-bold">${response.user.first_name} ${response.user.last_name}</div>
+                      <div>${response.content}</div>
                     </div>
-                    `
+                    <div class="comment-like flex text-xl mr-2">
+                      <i class="fa-regular fa-thumbs-up mr-2 cursor-pointer"></i>
+                    </div>
+                  </div>
+                </div>
+                `
             );
           form[0].reset(); // Reset form sau khi gửi thành công
         },

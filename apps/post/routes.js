@@ -37,6 +37,9 @@ router.post("/like/:post_id", postController.likePost);
 // [POST] /posts/comment/:post_id
 router.post("/comment/:post_id", postController.commentPost);
 
+// [GET] /posts/comment/:post_id
+router.get("/comment/:post_id", postController.getCommentPost);
+
 // [DELETE] /posts/comment/:post_id/:comment_id
 router.delete(
   "/comment/:post_id/:comment_id",

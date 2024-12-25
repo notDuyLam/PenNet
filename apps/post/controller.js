@@ -164,6 +164,26 @@ const postController = {
       res.status(500).json({ error: error.message });
     }
   },
+  getCommentPost(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const post_id = req.params.post_id;
+
+      if (!post_id) {
+        return res.status(400).json({ error: "Missing post ID" });
+      }
+
+      postService
+        .getCommentsByPostId(post_id)
+        .then((comments) => res.status(200).json(comments))
+        .catch((error) => res.status(500).json({ error: error.message }));
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
   deleteCommentPost(req, res) {
     try {
       if (!req.isAuthenticated()) {

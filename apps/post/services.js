@@ -43,7 +43,7 @@ const postService = {
         ],
       });
       const likes = await Like.findAll({
-        where: { post_id: posts.map((post) => post.id) },
+        where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
         attributes: ["id", "user_id", "post_id"],
         include: [
           {
@@ -59,7 +59,7 @@ const postService = {
         );
       });
       const comments = await Comment.findAll({
-        where: { post_id: posts.map((post) => post.id) },
+        where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
         attributes: ["id", "user_id", "post_id", "content"],
         include: [
           {
@@ -191,9 +191,37 @@ const postService = {
         user_id,
         content,
       });
-      return { message: "Comment added successfully.", content: newComment };
+      const createdComment = await Comment.findOne({
+        where: { id: newComment.id },
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
+      });
+      return createdComment;
     } catch (error) {
       throw new Error("Error adding comment: " + error.message);
+    }
+  },
+  async getCommentsByPostId(post_id) {
+    try {
+      const comments = await Comment.findAll({
+        where: { post_id },
+        attributes: ["id", "user_id", "post_id", "content"],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
+      });
+      return comments;
+    } catch (error) {
+      throw new Error("Error retrieving comments: " + error.message);
     }
   },
   async deleteComment(post_id, user_id, id) {
