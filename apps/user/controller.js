@@ -1,4 +1,5 @@
 const userService = require("./services");
+const postService = require("../post/services");
 const passport = require("passport");
 
 const userController = {
@@ -162,6 +163,10 @@ const userController = {
   },
   async updateUser(req, res) {
     try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
       const userId = req.user.id; // Get user ID from authenticated session
       const { firstName, lastName, date_of_birth, country } = req.body;
       // Prepare the update data
@@ -235,6 +240,10 @@ const userController = {
   },
   async changePassword(req, res) {
     try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
       const userId = req.user.id; // Get user ID from authenticated session
       const { currentPassword, newPassword } = req.body;
 
@@ -260,18 +269,50 @@ const userController = {
     const query = req.query.query;
     try {
       const results = await userService.searchFriends(query);
-      const filteredResults = results.map(user => ({
+      const filteredResults = results.map((user) => ({
         id: user.dataValues.id,
         first_name: user.dataValues.first_name,
         last_name: user.dataValues.last_name,
-        avatar_url: user.dataValues.avatar_url
+        avatar_url: user.dataValues.avatar_url,
       }));
       res.render("search", { query, results: filteredResults });
     } catch (error) {
-      console.error('Error searching friends:', error);
-      res.status(500).send('Internal Server Error');
+      console.error("Error searching friends:", error);
+      res.status(500).send("Internal Server Error");
     }
   },
+  async getFriends(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friends = await userService.getFriends(userId);
+      return res.status(200).json({ friends });
+    } catch (error) {
+      console.error("Error fetching friends:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async sendRequestFriend(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendId = req.params.user_id; // Get friend ID from request parameters
+
+      // Send friend request
+      const result = await userService.sendFriendRequest(userId, friendId);
+      return res.status(200).json({ successMessage: result });
+    } catch (error) {
+      console.error("Error sending friend request:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+
   async getNotifications(req, res) {
     // console.log(req.body);
     const userId = req.user.id; // Assuming user is authenticated and user ID is available
@@ -283,6 +324,103 @@ const userController = {
       res.status(500).send('Internal Server Error');
     }
   }
+  async getFriendRequest(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendRequests = await userService.getFriendRequests(userId);
+      return res.status(200).json({ friendRequests });
+    } catch (error) {
+      console.error("Error fetching friend requests:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async getFriendBlocked(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const blockedFriends = await userService.getBlockedFriends(userId);
+      return res.status(200).json({ blockedFriends });
+    } catch (error) {
+      console.error("Error fetching blocked friends:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async acceptFriendRequest(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendId = req.params.user_id; // Get friend ID from request parameters
+
+      // Accept friend request
+      const result = await userService.acceptFriendRequest(userId, friendId);
+      return res.status(200).json({ successMessage: result });
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async deniedFriendRequest(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendId = req.params.user_id; // Get friend ID from request parameters
+
+      // Deny friend request
+      const result = await userService.denyFriendRequest(userId, friendId);
+      return res.status(200).json({ successMessage: result });
+    } catch (error) {
+      console.error("Error denying friend request:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async blockFriend(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendId = req.params.user_id; // Get friend ID from request parameters
+
+      // Block friend
+      const result = await userService.blockFriend(userId, friendId);
+      return res.status(200).json({ successMessage: result });
+    } catch (error) {
+      console.error("Error blocking friend:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async renderProfilePage(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+      const user_id = req.user.id;
+      const user = req.user;
+      const posts = await postService.getPostsByUserId(user_id);
+      const reviewers = [
+        { id: 1, name: "Reviewer 1" },
+        { id: 2, name: "Reviewer 2" },
+      ];
+      res.render("personProfile", { user, posts, reviewers });
+    } catch (error) {
+      console.error("Error rendering profile page:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
 };
 
 module.exports = userController;

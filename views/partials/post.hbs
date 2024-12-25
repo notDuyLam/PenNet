@@ -2,12 +2,11 @@
     <div class="flex justify-between border-b rounded p-4 w-full">
         <div class="flex items-center">
             <img class="rounded-full w-12 h-12 mr-4"
-                src="{{#if post.author.avatar}}{{post.author.avatar}}{{else}}/images/avatar.png{{/if}}"
+                src="{{#if post.user.avatar_url}}{{post.user.avatar_url}}{{else}}/images/avatar.png{{/if}}"
                 alt="user-avatar">
-
             <div>
                 <div>
-                    {{post.author.first_name}} {{post.author.last_name}} post.author_name
+                    {{post.user.first_name}} {{post.user.last_name}}
                 </div>
             </div>
         </div>
@@ -34,11 +33,22 @@
                 </a>
 
             </div>
-            <div>{{post.time}} 7 hour ago</div>
+            <div>{{formatDate post.updatedAt}}</div>
         </div>
     </div>
-    <div class="pl-8 pr-8 pt-4 pb-8 h-52 overflow-auto">
-        {{post.content}} abc
+    <div class="pl-8 pr-8 pt-4 pb-8">
+        <div class="text-lg leading-relaxed text-gray-800">
+            {{post.content}}
+        </div>
+    </div>
+    <div class="pl-8 pr-8 pt-4 pb-8">
+        {{#if post.attachments.length}}
+            <div class="{{gridClass post.attachments.length}}">
+                {{#each post.attachments}}
+                <img src="{{this.media_url}}" alt="post-attachment" class="w-full h-full rounded object-contain">
+                {{/each}}
+            </div>
+        {{/if}}
     </div>
     <div class="flex justify-between pl-8 pr-8">
         <div class="post-comment flex items-center m-8 cursor-pointer rounded border-gray-400 w-36 text-xl">

@@ -22,6 +22,10 @@ document.getElementById("edit-button").addEventListener("click", function () {
   document.getElementById("last_name").removeAttribute("disabled");
   document.getElementById("edit-button").classList.add("hidden");
   document.getElementById("save-button").classList.remove("hidden");
+  document.getElementById("dob").removeAttribute("readonly");
+  document.getElementById("dob").removeAttribute("disabled");
+  document.getElementById("country").removeAttribute("readonly");
+  document.getElementById("country").removeAttribute("disabled");
 });
 
 document
@@ -29,6 +33,11 @@ document
   .addEventListener("click", async function () {
     const firstName = document.getElementById("first_name").value;
     const lastName = document.getElementById("last_name").value;
+    const dob = document.getElementById("dob").value;
+    const date_of_birth = new Date(
+      document.getElementById("dob").value
+    ).toISOString();
+    const country = document.getElementById("country").value;
 
     try {
       const response = await fetch("/users/profile", {
@@ -36,7 +45,12 @@ document
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: new URLSearchParams({ firstName, lastName }),
+        body: new URLSearchParams({
+          firstName,
+          lastName,
+          date_of_birth,
+          country,
+        }),
       });
 
       if (response.ok) {
@@ -46,12 +60,19 @@ document
         document.getElementById("first_name").setAttribute("disabled", true);
         document.getElementById("last_name").setAttribute("readonly", true);
         document.getElementById("last_name").setAttribute("disabled", true);
+        document.getElementById("dob").setAttribute("readonly", true);
+        document.getElementById("dob").setAttribute("disabled", true);
+        document.getElementById("country").setAttribute("readonly", true);
+        document.getElementById("country").setAttribute("disabled", true);
         document.getElementById("edit-button").classList.remove("hidden");
         document.getElementById("save-button").classList.add("hidden");
         document.getElementById("first_name").value = firstName;
         document.getElementById("last_name").value = lastName;
-        document.querySelector(".fullName").textContent =
-          firstName + " " + lastName;
+        document.querySelectorAll(".fullName").forEach((element) => {
+          element.textContent = firstName + " " + lastName;
+        });
+        document.getElementById("dob").value = dob;
+        document.getElementById("country").value = country;
         alert("Profile updated successfully");
       } else {
         const errorResult = await response.json();
@@ -72,8 +93,8 @@ document
       const reader = new FileReader();
       reader.onload = function (e) {
         document.querySelectorAll(".profile-image img").forEach((img) => {
-            img.src = e.target.result;
-        });        
+          img.src = e.target.result;
+        });
         document.getElementById("upload-button").classList.add("hidden");
         document.querySelector(".save").classList.remove("hidden");
       };
@@ -171,3 +192,25 @@ document
       alert("An error occurred while changing the password");
     }
   });
+
+// Khi trang đã sẵn sàng
+document.addEventListener("DOMContentLoaded", function () {
+  // Gắn Flatpickr vào input
+  const dobInput = document.getElementById("dob");
+  const calendarIcon = document.getElementById("dob-calendar");
+
+  // Khởi tạo Flatpickr
+  const datepicker = flatpickr(dobInput, {
+    dateFormat: "Y-m-d", // Định dạng ngày
+    defaultDate: dobInput.value, // Lấy giá trị ban đầu
+    onChange: function (selectedDates, dateStr) {
+      // Cập nhật giá trị khi chọn ngày
+      dobInput.value = dateStr;
+    },
+  });
+
+  // Hiển thị lịch khi nhấp vào biểu tượng
+  calendarIcon.addEventListener("click", () => {
+    datepicker.open();
+  });
+});

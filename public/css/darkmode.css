@@ -1,0 +1,117 @@
+/* Global styles for Dark and Light Mode */
+body.dark-mode {
+    background-color: #121212; /* Nền tối */
+    color: #ffffff;           /* Chữ sáng */
+}
+
+body.light-mode {
+    background-color: #ffffff; /* Nền sáng */
+    color: #000000;           /* Chữ tối */
+}
+
+/* Background color adjustments */
+body.dark-mode [class*="bg-"] {
+    background-color: #1f1f1f !important; /* Mặc định cho các thành phần có nền */
+}
+
+body.dark-mode .bg-gray-50 {
+    background-color: #121212 !important;
+}
+
+body.dark-mode .bg-gray-200 {
+    background-color: #2a2a2a !important;
+    color: #e0e0e0; /* Màu chữ trên nền */
+}
+
+body.dark-mode .bg-gray-300 {
+    background-color: #3a3a3a !important;
+}
+
+body.dark-mode .bg-blue-500 {
+    background-color: #1d4ed8 !important;
+}
+
+/* Text color adjustments */
+body.dark-mode [class*="text-gray-"] {
+    color: #e0e0e0 !important; /* Mặc định cho các thành phần có màu chữ */
+}
+
+body.dark-mode .text-gray-800 {
+    color: #f0f0f0 !important;
+}
+
+body.dark-mode .text-gray-500 {
+    color: #a1a1a1 !important;
+}
+
+/* Borders adjustments */
+body.dark-mode [class*="border"] {
+    border-color: #333333 !important; /* Mặc định cho đường viền */
+}
+
+/* Input fields */
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode select {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+    border-color: #444444 !important;
+}
+
+/* Buttons */
+body.dark-mode button {
+    background-color: #1f1f1f !important;
+    color: #ffffff !important;
+    border: 1px solid #444444 !important;
+}
+
+body.dark-mode button:hover {
+    background-color: #333333 !important;
+    border-color: #666666 !important;
+}
+
+/* Links */
+body.dark-mode a {
+    color: #d2d2d2 !important; /* Màu xanh nhạt cho liên kết */
+}
+
+body.dark-mode a:hover {
+    color: #d2d2d2 !important;
+}
+
+/* Tables */
+body.dark-mode table {
+    background-color: #1f1f1f;
+    color: #ffffff;
+    border-color: #333333;
+}
+
+body.dark-mode th,
+body.dark-mode td {
+    border-color: #444444 !important;
+}
+
+/* Headers and Sections */
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5,
+body.dark-mode h6 {
+    color: #ffffff !important;
+}
+
+/* Adjust default padding/margins for better spacing */
+body.dark-mode .p-4 {
+    padding: 1rem !important;
+    background-color: #2a2a2a !important;
+}
+
+body.dark-mode .m-4 {
+    margin: 1rem !important;
+}
+
+/* Placeholder text in forms */
+body.dark-mode ::placeholder {
+    color: #888888 !important; /* Placeholder mờ */
+}

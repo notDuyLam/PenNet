@@ -182,17 +182,26 @@ const userService = {
   async updateUser(userId, updateData) {
     try {
       const { first_name, last_name, date_of_birth, country } = updateData;
+      const user = await User.findOne({
+        where: { id: userId },
+        include: [{ model: UserInfo, as: "userInfo" }],
+      });
+      if (!user) {
+        throw new Error("User not found");
+      }
+
       const updateUserInfo = {
-        date_of_birth: date_of_birth,
-        country: country,
+        date_of_birth: date_of_birth || user.userInfo.date_of_birth,
+        country: country || user.userInfo.country,
       };
       const updateUser = {
-        first_name: first_name,
-        last_name: last_name,
+        first_name: first_name || user.first_name,
+        last_name: last_name || user.last_name,
       };
+
       await UserInfo.update(updateUserInfo, { where: { user_id: userId } });
       await User.update(updateUser, { where: { id: userId } });
-      const user = await User.findOne({
+      const updatedUser = await User.findOne({
         where: { id: userId },
         include: [
           {
@@ -201,10 +210,10 @@ const userService = {
           },
         ],
       });
-      if (!user) {
+      if (!updatedUser) {
         throw new Error("User not found");
       }
-      return user;
+      return updatedUser;
     } catch (error) {
       throw new Error("Error updating user: " + error.message);
     }
@@ -262,13 +271,13 @@ const userService = {
         where: {
           [Op.or]: [
             { first_name: { [Op.like]: `%${query}%` } },
-            { last_name: { [Op.like]: `%${query}%` } }
-          ]
-        }
+            { last_name: { [Op.like]: `%${query}%` } },
+          ],
+        },
       });
       return friends;
     } catch (error) {
-      console.error('Error searching friends:', error);
+      console.error("Error searching friends:", error);
       throw error;
     }
   },
@@ -305,7 +314,7 @@ const userService = {
     try {
 
       // Fetch accepted friends
-      const acceptedFriends = await UserRela.findAll({
+      const acceptedFriends = await UserRela.findAll(
         where: {
           user_from: userId,
           status: "accepted",
@@ -487,6 +496,228 @@ const userService = {
       throw error;
     }
   }
+
+  async getFriends(userId) {
+    try {
+      // Tìm User trước
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // Tìm sentRequests
+      const sentRequests = await UserRela.findAll({
+
+
+
+        include: [
+          {
+            model: User,
+            as: "toUser", // Sử dụng alias 'toUser'
+            attributes: {
+              exclude: [
+                "password_hash",
+                "isVerify",
+                "verificationToken",
+                "resetPasswordToken",
+                "resetPasswordExpires",
+                "email",
+              ],
+            },
+          },
+        ],
+      });
+
+      // Tìm receivedRequests
+      const receivedRequests = await UserRela.findAll({
+        where: {
+          user_to: userId,
+          status: "accepted",
+
+
+
+
+
+            as: "fromUser", // Sử dụng alias 'fromUser'
+            attributes: {
+              exclude: [
+                "password_hash",
+                "isVerify",
+                "verificationToken",
+                "resetPasswordToken",
+                "resetPasswordExpires",
+                "email",
+              ],
+            },
+          },
+        ],
+      });
+
+      // Kết hợp danh sách bạn bè từ cả hai loại yêu cầu
+      const friends = [
+        ...sentRequests.map((rel) => rel.toUser),
+        ...receivedRequests.map((rel) => rel.fromUser),
+      ];
+
+      return friends;
+    } catch (error) {
+      throw new Error("Error fetching friends: " + error.message);
+    }
+  },
+  async sendFriendRequest(userId, friendId) {
+    try {
+      const existingRequest = await UserRela.findOne({
+        where: {
+          user_from: userId,
+          user_to: friendId,
+        },
+      });
+
+      if (existingRequest) {
+        return { message: "Friend request already sent" };
+      }
+
+      const newRequest = await UserRela.create({
+        user_from: userId,
+        user_to: friendId,
+        status: "pending",
+      });
+
+      return newRequest;
+    } catch (error) {
+      throw new Error("Error sending friend request: " + error.message);
+    }
+  },
+  async getFriendRequests(userId) {
+    try {
+      const receivedRequests = await UserRela.findAll({
+        where: {
+          user_to: userId,
+          status: "pending",
+        },
+        include: [
+          {
+            model: User,
+            as: "fromUser", // Sử dụng alias 'fromUser'
+            attributes: {
+              exclude: [
+                "password_hash",
+                "isVerify",
+                "verificationToken",
+                "resetPasswordToken",
+                "resetPasswordExpires",
+                "email",
+              ],
+            },
+          },
+        ],
+      });
+
+      return receivedRequests.map((rel) => rel.fromUser);
+    } catch (error) {
+      throw new Error("Error fetching friend requests: " + error.message);
+    }
+  },
+  async getBlockedFriends(userId) {
+    try {
+      const blockedUsers = await UserRela.findAll({
+        where: {
+          user_from: userId,
+          status: "blocked",
+        },
+        include: [
+          {
+            model: User,
+            as: "toUser",
+            attributes: {
+              exclude: [
+                "password_hash",
+                "isVerify",
+                "verificationToken",
+                "resetPasswordToken",
+                "resetPasswordExpires",
+                "email",
+              ],
+            },
+          },
+        ],
+      });
+
+      return blockedUsers.map((rel) => rel.toUser);
+    } catch (error) {
+      throw new Error("Error fetching blocked friends: " + error.message);
+    }
+  },
+  async acceptFriendRequest(userId, friendId) {
+    try {
+      const friendRequest = await UserRela.findOne({
+        where: {
+          user_from: friendId,
+          user_to: userId,
+          status: "pending",
+        },
+      });
+
+      if (!friendRequest) {
+        return { message: "Friend request not found" };
+      }
+
+      friendRequest.status = "accepted";
+      await friendRequest.save();
+
+      return { message: "Friend request accepted" };
+    } catch (error) {
+      throw new Error("Error accepting friend request: " + error.message);
+    }
+  },
+  async denyFriendRequest(userId, friendId) {
+    try {
+      const friendRequest = await UserRela.findOne({
+        where: {
+          user_from: friendId,
+          user_to: userId,
+          status: "pending",
+        },
+      });
+
+      if (!friendRequest) {
+        return { message: "Friend request not found" };
+      }
+
+      await friendRequest.destroy();
+
+      return { message: "Friend request denied" };
+    } catch (error) {
+      throw new Error("Error denying friend request: " + error.message);
+    }
+  },
+  async blockFriend(userId, friendId) {
+    try {
+      const existingRelation = await UserRela.findOne({
+        where: {
+          user_from: userId,
+          user_to: friendId,
+        },
+      });
+
+      if (!existingRelation) {
+        await UserRela.create({
+          user_from: userId,
+          user_to: friendId,
+          status: "blocked",
+        });
+        return { message: "Friend blocked successfully" };
+      }
+
+      existingRelation.status = "blocked";
+      await existingRelation.save();
+
+      return { message: "Friend blocked successfully" };
+    } catch (error) {
+      throw new Error("Error blocking friend: " + error.message);
+    }
+  },
+
 };
 
 module.exports = userService;

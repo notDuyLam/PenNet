@@ -5,6 +5,8 @@
 </style>
 
 {{> header}}
+
+
 <div class="m-10 flex justify-between">
     <!-- SideMenu -->
     <div class="mr-6 min-w-[16rem] w-64 flex-shrink-0 flex flex-col">
@@ -26,8 +28,8 @@
                     <i class="fa-solid fa-camera"></i>
                 </div>
 
-                <div class="ml-8 mb-4 font-medium text-2xl">
-                    {{#if user.name}}{{user.name}}{{else}}User Name{{/if}}
+                <div class="ml-8 mb-4 font-medium text-2xl fullName">
+                    {{#if user.first_name}}{{user.first_name}} {{user.last_name}}{{else}}User Name{{/if}}
                 </div>
                 <div class="ml-auto flex ">
                     <div class="flex flex-col items-center mr-8">
@@ -72,12 +74,9 @@
             <div id="tab" class="flex-grow w-1/2 mr-6 flex flex-col">
                 {{!-- my post --}}
                 <div id="my-post-tab" class="hidden tap-item">
-                    <div id="post-list" class=" w-full flex flex-col overflow-auto scroll-custom border rounded-lg"
-                        style="height:36rem">
-                        {{#each posts}}
+                    {{#each posts}}
                         {{> post post=this}}
-                        {{/each}}
-                    </div>
+                    {{/each}}
                 </div>
 
                 {{!-- edit profile --}}
@@ -90,6 +89,12 @@
                     </div>
 
                     <form id="profile-form" action="/users/profile">
+                        <div class="form-group mb-4">
+                            <label for="email" class="block text-gray-700 p-2 text-lg font-bold">Email</label>
+                            <input name="email" type="email" id="email"
+                                class="form-control border rounded w-full py-2 px-3 text-gray-700"
+                                placeholder="Enter your email" value="{{user.email}}" readonly disabled>
+                        </div>
                         <div class="flex mb-4">
                             <div class="form-group w-1/2 pr-2">
                                 <label for="first_name" class="block text-gray-700 p-2 text-lg font-bold">First
@@ -107,10 +112,21 @@
                             </div>
                         </div>
                         <div class="form-group mb-4">
-                            <label for="email" class="block text-gray-700 p-2 text-lg font-bold">Email</label>
-                            <input name="email" type="email" id="email"
+                            <label for="dob" class="block text-gray-700 p-2 text-lg font-bold">Date of Birth</label>
+                            <div class="relative">
+                                <input name="dob" type="text" id="dob"
+                                    class="form-control border rounded w-full py-2 px-3 text-gray-700"
+                                    value="{{user.date_of_birth}}" readonly disabled>
+                                <div id="dob-calendar" class="absolute top-0 right-0 mt-2 mr-2 cursor-pointer">
+                                    <i class="fa-solid fa-calendar"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="country" class="block text-gray-700 p-2 text-lg font-bold">Country</label>
+                            <input name="country" type="text" id="country"
                                 class="form-control border rounded w-full py-2 px-3 text-gray-700"
-                                placeholder="Enter your email" value="{{user.email}}" readonly disabled>
+                                placeholder="Enter your country" value="{{user.country}}" readonly disabled>
                         </div>
                     </form>
 
@@ -219,18 +235,19 @@
     $(document).ready(function () {
 
         // Hàm để gửi yêu cầu và nhận nhiều post mới
-        function getNewPosts() {
-            $.ajax({
-                url: '/Dang/test2', // API để nhận các post mới
-                method: 'GET',
-                success: function (response) {
-                    if (response.html) {
-                        // Nếu server trả về HTML, bạn có thể chèn vào post-list
-                        $('#post-list').append(response.html);
-                    }
-                }
-            });
-        }
+        
+        // function getNewPosts() {
+        //     $.ajax({
+        //         url: '/Dang/test2', // API để nhận các post mới
+        //         method: 'GET',
+        //         success: function (response) {
+        //             if (response.html) {
+        //                 // Nếu server trả về HTML, bạn có thể chèn vào post-list
+        //                 $('#post-list').append(response.html);
+        //             }
+        //         }
+        //     });
+        // }
 
         const tab = 'My post';
 
@@ -257,7 +274,7 @@
             switch (tab) {
                 case 'My post':
                     $('#my-post-tab').removeClass('hidden');
-                    getNewPosts();
+                    // getNewPosts();
                     break;
                 case 'Edit Profile':
                     $('#edit-profile-tab').removeClass('hidden');
@@ -279,3 +296,5 @@
     });
 </script>
 <script src="/js/profile.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
