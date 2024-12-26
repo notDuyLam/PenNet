@@ -84,7 +84,7 @@ router.get("/friends", userController.renderFriendsPage);
 router.get("/block", userController.renderBlockPage);
 
 // [DELETE] /users/:id
-router.delete("/users/:id", userController.deleteUser);
+router.delete("/:id", userController.deleteUser);
 
 
 module.exports = router;

@@ -28,7 +28,6 @@
         </div>
         <div>
           <button class="add-friend-btn bg-green-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Add Friend</button>
-          {{log ../user}}
           {{#if ../user.isAdmin}}
           <button class="delete-user-btn bg-red-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Delete User</button>
           {{/if}}
@@ -50,6 +49,7 @@
 
     $('.delete-user-btn').on('click', async function() {
       const userId = $(this).data('id');
+      console.log('Deleting user ID:', userId);
       if (confirm('Are you sure you want to delete this user?')) {
         try {
           const response = await fetch(`/users/${userId}`, {

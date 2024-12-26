@@ -474,6 +474,7 @@ const userController = {
     }
   },
   async deleteUser(req, res) {
+    console.log("Delete user");
     try {
       const userId = req.params.id;
       const result = await userService.deleteUser(userId);
