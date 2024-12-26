@@ -32,21 +32,19 @@
       <table class="w-full text-left">
         <thead>
           <tr class="border-b">
-            <th class="p-4 text-gray-500">Name</th>
-            <th class="p-4 text-gray-500">Phone Number</th>
-            <th class="p-4 text-gray-500">Email</th>
-            <th class="p-4 text-gray-500">Country</th>
-            <th class="p-4 text-gray-500">Status</th>
+            <th class="py-4 text-gray-500 text-center">Name</th>
+            <th class="py-4 text-gray-500 text-center">Email</th>
+            <th class="py-4 text-gray-500 text-center">Country</th>
+            <th class="py-4 text-gray-500 text-center">Status</th>
           </tr>
         </thead>
         <tbody>
           {{#each blockList}}
-          <tr class="border-b hover:bg-gray-50">
-            <td class="p-4 font-medium">{{this.first_name}} {{this.last_name}}</td>
-            <td class="p-4">{{this.phone}}</td>
-            <td class="p-4 text-blue-500">{{this.email}}</td>
-            <td class="p-4">{{this.country}}</td>
-            <td class="p-4">
+          <tr class="border-b hover:bg-gray-50" id="{{this.id}}">
+            <td class="py-4 text-center font-medium">{{this.first_name}} {{this.last_name}}</td>
+            <td class="py-4 text-center text-blue-500">{{this.email}}</td>
+            <td class="py-4 text-center">{{#if this.userInfo.country}}{{this.userInfo.country}}{{else}}N/A{{/if}}</td>
+            <td class="py-4 text-center">
               <button class="bg-red-100 text-red-600 px-4 py-1 rounded-full hover:bg-red-200">
                 Unblock
               </button>
@@ -57,7 +55,7 @@
       </table>
     </div>
 
-    <!-- Pagination -->
+    {{!-- <!-- Pagination -->
     <div class="flex justify-end gap-2 mt-6">
       <button class="px-3 py-1 text-gray-500">◀</button>
       <button class="px-3 py-1 bg-purple-600 text-white rounded-full">1</button>
@@ -66,6 +64,7 @@
       <button class="px-3 py-1 text-gray-500">4</button>
       <button class="px-3 py-1 text-gray-500">...</button>
       <button class="px-3 py-1 text-gray-500">▶</button>
-    </div>
+    </div> --}}
   </div>
 </div>
+<script src="/js/block.js"></script>

@@ -390,6 +390,23 @@ const userController = {
       return res.status(500).json({ errorMessage: "Server error" });
     }
   },
+  async deleteBlockFriend(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendId = req.params.user_id; // Get friend ID from request parameters
+
+      // Unblock friend
+      const result = await userService.unblockFriend(userId, friendId);
+      return res.status(200).json({ successMessage: result });
+    } catch (error) {
+      console.error("Error unblocking friend:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
   async renderProfilePage(req, res) {
     try {
       if (!req.isAuthenticated()) {
@@ -420,6 +437,20 @@ const userController = {
       res.render("friendList", { user, friends, friendRequests });
     } catch (error) {
       console.error("Error fetching friends:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async renderBlockPage(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+      const user = req.user;
+      const userId = req.user.id; // Get user ID from authenticated session
+      const blockList = await userService.getBlockedFriends(userId);
+      res.render("block", { user, blockList });
+    } catch (error) {
+      console.error("Error rendering blocked friends page:", error);
       return res.status(500).json({ errorMessage: "Server error" });
     }
   },

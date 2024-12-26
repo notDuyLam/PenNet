@@ -65,13 +65,22 @@ router.delete(
 // [GET] /users/friends-blocked
 router.get("/friends-blocked", userController.getFriendBlocked);
 
-// [POST] /users/friend-request/denied/:user_id
+// [POST] /users/friend-request/block/:user_id
 router.post("/friend-request/block/:user_id", userController.blockFriend);
+
+// [DELETE] /users/friend-request/block/:user_id
+router.delete(
+  "/friend-request/block/:user_id",
+  userController.deleteBlockFriend
+);
 
 // [GET] /users/profile
 router.get("/profile", userController.renderProfilePage);
 
 // [GET] /users/friends
 router.get("/friends", userController.renderFriendsPage);
+
+// [GET] /users/block
+router.get("/block", userController.renderBlockPage);
 
 module.exports = router;

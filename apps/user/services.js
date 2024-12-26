@@ -660,13 +660,18 @@ const userService = {
                 "verificationToken",
                 "resetPasswordToken",
                 "resetPasswordExpires",
-                "email",
               ],
             },
+            include: [
+              {
+                model: UserInfo,
+                as: "userInfo",
+                attributes: ["country"],
+              },
+            ],
           },
         ],
       });
-
       return blockedUsers.map((rel) => rel.toUser);
     } catch (error) {
       throw new Error("Error fetching blocked friends: " + error.message);
@@ -753,6 +758,27 @@ const userService = {
       return { message: "Friend blocked successfully" };
     } catch (error) {
       throw new Error("Error blocking friend: " + error.message);
+    }
+  },
+  async unblockFriend(userId, friendId) {
+    try {
+      const existingRelation = await UserRela.findOne({
+        where: {
+          user_from: userId,
+          user_to: friendId,
+          status: "blocked",
+        },
+      });
+
+      if (!existingRelation) {
+        return { message: "No blocked relation found" };
+      }
+
+      await existingRelation.destroy();
+
+      return { message: "Friend unblocked successfully" };
+    } catch (error) {
+      throw new Error("Error unblocking friend: " + error.message);
     }
   },
 };
