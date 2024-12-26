@@ -462,8 +462,13 @@ const userController = {
       if (!req.isAuthenticated()) {
         return res.redirect("/users/login");
       }
-      const posts = await postService.getPublicPosts();
-
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendPosts = await postService.getFriendPosts(userId);
+      const nonFriendPublicPosts = await postService.getNonFriendPublicPosts(
+        userId,
+        10
+      );
+      const posts = [...friendPosts, ...nonFriendPublicPosts];
       res.render("home", {
         user: req.user,
         posts: posts,

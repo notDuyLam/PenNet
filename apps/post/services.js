@@ -3,6 +3,7 @@ const Like = require("./like/model");
 const Comment = require("./comment/model");
 const Attachment = require("./attachment/model");
 const User = require("../user/model");
+const UserRela = require("../user/user_rela/model");
 const { Op } = require("sequelize");
 
 const postService = {
@@ -38,7 +39,7 @@ const postService = {
           {
             model: User,
             as: "user",
-            attributes: ["first_name", "last_name", "avatar_url"],
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
           },
         ],
         order: [["createdAt", "DESC"]],
@@ -260,7 +261,7 @@ const postService = {
       throw new Error("Error updating comment: " + error.message);
     }
   },
-  async getPublicPosts() {
+  async getPublicPosts(userId) {
     try {
       const posts = await Post.findAll({
         where: { access_modifier: "public" },
@@ -309,6 +310,197 @@ const postService = {
       return posts;
     } catch (error) {
       throw new Error("Error retrieving public posts: " + error.message);
+    }
+  },
+  async getNonFriendPublicPosts(user_id, limit) {
+    try {
+      // Get the list of friend IDs
+      const sentRequests = await UserRela.findAll({
+        where: {
+          user_from: user_id,
+          status: "accepted",
+        },
+        attributes: ["user_to"],
+      });
+
+      const receivedRequests = await UserRela.findAll({
+        where: {
+          user_to: user_id,
+          status: "accepted",
+        },
+        attributes: ["user_from"],
+      });
+
+      const friendIds = [
+        ...sentRequests.map((rel) => rel.user_to),
+        ...receivedRequests.map((rel) => rel.user_from),
+      ];
+
+      // Get public posts not from friends
+      const posts = await Post.findAll({
+        where: {
+          user_id: { [Op.notIn]: friendIds },
+          access_modifier: "public",
+        },
+        include: [
+          { model: Attachment, as: "attachments" },
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+        limit: limit,
+      });
+
+      const likes = await Like.findAll({
+        where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
+        attributes: ["id", "user_id", "post_id"],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
+      });
+
+      posts.forEach((post) => {
+        post.dataValues.likes = likes.filter(
+          (like) => like.post_id === post.id
+        );
+      });
+
+      const comments = await Comment.findAll({
+        where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
+        attributes: ["id", "user_id", "post_id", "content"],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
+      });
+
+      posts.forEach((post) => {
+        post.dataValues.comments = comments.filter(
+          (comment) => comment.post_id === post.id
+        );
+      });
+
+      return posts;
+    } catch (error) {
+      throw new Error(
+        "Error retrieving non-friend public posts: " + error.message
+      );
+    }
+  },
+  async getFriendPosts(user_id) {
+    try {
+      // Kiểm tra người dùng có tồn tại
+      const user = await User.findByPk(user_id);
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // Tìm danh sách bạn bè từ cả yêu cầu gửi và nhận
+      const sentRequests = await UserRela.findAll({
+        where: {
+          user_from: user_id,
+          status: "accepted",
+        },
+        include: [
+          {
+            model: User,
+            as: "toUser",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
+      });
+
+      const receivedRequests = await UserRela.findAll({
+        where: {
+          user_to: user_id,
+          status: "accepted",
+        },
+        include: [
+          {
+            model: User,
+            as: "fromUser",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
+      });
+
+      // Kết hợp danh sách bạn bè
+      const friends = [
+        ...sentRequests.map((rel) => rel.toUser),
+        ...receivedRequests.map((rel) => rel.fromUser),
+      ];
+      const friendIds = friends.map((friend) => friend.id);
+
+      // Lấy bài viết của bạn bè
+      const posts = await Post.findAll({
+        where: {
+          user_id: { [Op.in]: friendIds },
+          access_modifier: { [Op.in]: ["public", "friends_only"] },
+        },
+        include: [
+          { model: Attachment, as: "attachments" },
+          {
+            model: User,
+            as: "user",
+            attributes: ["first_name", "last_name", "avatar_url"],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+      });
+
+      // Lấy thông tin lượt thích
+      const likes = await Like.findAll({
+        where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
+        attributes: ["id", "user_id", "post_id"],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
+      });
+
+      // Gắn thông tin lượt thích vào bài viết
+      posts.forEach((post) => {
+        post.dataValues.likes = likes.filter(
+          (like) => like.post_id === post.id
+        );
+      });
+
+      // Lấy thông tin bình luận
+      const comments = await Comment.findAll({
+        where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
+        attributes: ["id", "user_id", "post_id", "content"],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
+      });
+
+      // Gắn thông tin bình luận vào bài viết
+      posts.forEach((post) => {
+        post.dataValues.comments = comments.filter(
+          (comment) => comment.post_id === post.id
+        );
+      });
+
+      return posts;
+    } catch (error) {
+      throw new Error("Error retrieving friend posts: " + error.message);
     }
   },
 };
