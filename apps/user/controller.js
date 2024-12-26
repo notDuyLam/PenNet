@@ -266,8 +266,12 @@ const userController = {
     }
   },
   async searchFriends(req, res) {
-    const query = req.query.query;
     try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+      const user = req.user;
+      const query = req.query.query;
       const results = await userService.searchFriends(query);
       const filteredResults = results.map((user) => ({
         id: user.dataValues.id,
@@ -275,7 +279,7 @@ const userController = {
         last_name: user.dataValues.last_name,
         avatar_url: user.dataValues.avatar_url,
       }));
-      res.render("search", { query, results: filteredResults });
+      res.render("search", { query, user, results: filteredResults });
     } catch (error) {
       console.error("Error searching friends:", error);
       res.status(500).send("Internal Server Error");

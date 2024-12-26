@@ -13,32 +13,55 @@
   </div>
 
   {{!-- Main Content --}}
-    <main class="flex-grow px-6 py-4">
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold">Results for "{{query}}"</h1>
-        </div>
-        <ul class="space-y-4">
+  <main class="flex-grow px-6 py-4">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold">Results for "{{query}}"</h1>
+    </div>
+          <!-- Main Content -->
+    <div class="flex-1 p-6">
+      <!-- Table -->
+      <div class="bg-white rounded-lg shadow">
+        <table class="w-full text-left">
+          <thead>
+            <tr class="border-b">
+            <th class="py-4 text-gray-500 text-center">Name</th>
+            <th class="py-4 text-gray-500 text-center">Status</th>
+            </tr>
+          </thead>
+          <tbody>
             {{#each results}}
-            <li class="flex items-center justify-between p-4 border-b border-gray-300">
-                <div class="flex items-center">
-                <img src="{{this.avatar_url}}" alt="{{this.first_name}} {{this.last_name}}" class="w-16 h-16 rounded-full mr-4">
-                <div>
-                    <p class="text-xl font-semibold">{{this.first_name}} {{this.last_name}}</p>
-                </div>
-                </div>
-                <button class="add-friend-btn bg-green-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Add Friend</button>
-            </li>
+            <tr class="border-b">
+                <td class="py-4 text-center flex items-center justify-center">
+                <img src="{{this.avatar_url}}" alt="Avatar" class="w-10 h-10 rounded-full mr-4">
+                <span>{{this.first_name}} {{this.last_name}}</span>
+                </td>
+              <td class="py-4 text-center">
+            <button class="add-friend-btn bg-green-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Add Friend</button>
+              </td>
+            </tr>
             {{/each}}
-        </ul>
-    </main>
+          </tbody>
+        </table>
+      </div>
+  </div>
+  </main>
+
 </div>
 
 <script>
   $(document).ready(() => {
     $('.add-friend-btn').on('click', function() {
       const userId = $(this).data('id');
-      // Add friend logic here
-      alert('Friend request sent to user ID: ' + userId);
+      $.ajax({
+        url: '/users/send-request-friend/' + userId,
+        method: 'POST',
+        success: function(response) {
+            alert('Friend request sent successfully');
+        },
+        error: function(error) {
+          alert('Error sending friend request');
+        }
+      });
     });
   });
 </script>
