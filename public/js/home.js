@@ -41,7 +41,7 @@ document
   .querySelector("#post-form")
   .addEventListener("submit", async function (event) {
     event.preventDefault();
-
+    alert("Please wait while your post is being submitted...");
     const form = event.target;
     const formData = new FormData();
     const fileInput = document.getElementById("image-upload");
@@ -53,9 +53,6 @@ document
         formData.append("images", files[i]);
       }
     }
-
-    console.log(formData);
-
     try {
       const response = await fetch(form.action, {
         method: form.method,
