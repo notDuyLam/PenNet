@@ -318,7 +318,9 @@ const postService = {
       const sentRequests = await UserRela.findAll({
         where: {
           user_from: user_id,
-          status: "accepted",
+          status: {
+            [Op.in]: ["accepted", "blocked"], // Tìm các trạng thái "accepted" hoặc "blocked"
+          },
         },
         attributes: ["user_to"],
       });
@@ -326,7 +328,9 @@ const postService = {
       const receivedRequests = await UserRela.findAll({
         where: {
           user_to: user_id,
-          status: "accepted",
+          status: {
+            [Op.in]: ["accepted", "blocked"], // Tìm các trạng thái "accepted" hoặc "blocked"
+          },
         },
         attributes: ["user_from"],
       });
