@@ -260,6 +260,57 @@ const postService = {
       throw new Error("Error updating comment: " + error.message);
     }
   },
+  async getPublicPosts() {
+    try {
+      const posts = await Post.findAll({
+        where: { access_modifier: "public" },
+        include: [
+          { model: Attachment, as: "attachments" },
+          {
+            model: User,
+            as: "user",
+            attributes: ["first_name", "last_name", "avatar_url"],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
+      });
+      const likes = await Like.findAll({
+        where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
+        attributes: ["id", "user_id", "post_id"],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
+      });
+      posts.forEach((post) => {
+        post.dataValues.likes = likes.filter(
+          (like) => like.post_id === post.id
+        );
+      });
+      const comments = await Comment.findAll({
+        where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
+        attributes: ["id", "user_id", "post_id", "content"],
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
+      });
+      posts.forEach((post) => {
+        post.dataValues.comments = comments.filter(
+          (comment) => comment.post_id === post.id
+        );
+      });
+      return posts;
+    } catch (error) {
+      throw new Error("Error retrieving public posts: " + error.message);
+    }
+  },
 };
 
 module.exports = postService;

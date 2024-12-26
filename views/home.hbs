@@ -35,12 +35,11 @@
                 </button>
             </div>
         </form>
-        <div class="w-full flex flex-col overflow-auto scroll-custom border rounded-lg" style="height:36rem">
-            {{!-- {{#each user.post}} --}}
-            {{> post user=user}}
-            {{> post user=user}}
-            {{!-- {{/each}} --}}
-        </div>
+
+            {{#each posts}}
+                {{> post post=this user=user}}
+            {{/each}}
+
     </div>
     
     {{> suggestedFriends user=user}}
