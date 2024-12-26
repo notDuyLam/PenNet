@@ -260,3 +260,23 @@ $(document).on("click", "#edit-post", function (e) {
       });
   });
 });
+
+$(document).on("click", "#delete-post", function (e) {
+  e.preventDefault();
+  const postId = $(this).closest("[data-post-id]").data("post-id");
+
+  if (confirm("Are you sure you want to delete this post?")) {
+    $.ajax({
+      url: `/posts/${postId}`,
+      method: "DELETE",
+      success: function () {
+        alert("Post deleted successfully!");
+        $(`[data-post-id="${postId}"]`).remove();
+      },
+      error: function (error) {
+        console.error("Failed to delete post:", error);
+        alert("Failed to delete the post. Please try again!");
+      },
+    });
+  }
+});
