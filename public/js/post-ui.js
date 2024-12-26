@@ -167,17 +167,25 @@ $(document).on("click", ".post-more-btn", function () {
 $(document).on("click", "#edit-post", function (e) {
   e.preventDefault();
   // fetch lấy post từ post id
-  const postId = $(this).closest("[data-post-id]").data("post-id") || "111";
-  // ví dụ 1 post
-  const post = {
-    author: {
-      avatar: "sth",
-      first_name: "fname",
-      last_name: "lname",
+  const postId = $(this).closest("[data-post-id]").data("post-id");
+
+  let data;
+
+  // Fetch the post data
+  $.ajax({
+    url: `/posts/${postId}`,
+    method: "GET",
+    async: false, // Make the request synchronous
+    success: function (response) {
+      data = response;
     },
-    content: "abc",
-    time: "2 second ago",
-  };
+    error: function (error) {
+      console.error("Failed to fetch post:", error);
+      alert("Failed to load post. Please try again!");
+    },
+  });
+
+  const post = data;
 
   const edit_post_container = $(`
         <div class="w-full h-full fixed top-0 left-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -191,17 +199,14 @@ $(document).on("click", "#edit-post", function (e) {
                         <div class="flex justify-between border-b rounded p-4 w-full">
                             <div class="flex items-center">
                                 <img class="rounded-full w-12 h-12 mr-4"
-                                    src="${post.author.avatar}"
+                                    src="${post.user.avatar_url}"
                                     alt="user-avatar"
                                 >
                                 <div>
                                     <div>
-                                        ${post.author.first_name} ${post.author.last_name}
+                                        ${post.user.first_name} ${post.user.last_name}
                                     </div>
                                 </div>
-                            </div>
-                            <div class="flex justify-end">
-                                <div>${post.time}</div>
                             </div>
                         </div>
                         <form id="edit-post-form">
@@ -230,21 +235,28 @@ $(document).on("click", "#edit-post", function (e) {
     e.preventDefault();
 
     // Lấy dữ liệu từ form
-    const content = $('#edit-post-form textarea[name="content"]').val();
-
-    $.ajax({
-      url: "/edit-post", // Endpoint xử lý trên server
-      method: "POST",
-      data: { postId, content }, // Gửi postId và nội dung chỉnh sửa
-      success: function (response) {
+    const content = $("#edit-post-form textarea").val();
+    fetch(`/posts/${postId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded", // Gửi dữ liệu dạng x-www-form-urlencoded
+      },
+      body: new URLSearchParams({
+        content,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
         alert("Post updated successfully!");
         edit_post_container.remove(); // Đóng modal sau khi cập nhật thành công
         $("body").removeClass("no-scroll");
-      },
-      error: function (error) {
+        // Update the post content on the page
+        const postElement = $(`[data-post-id="${postId}"]`);
+        postElement.find(".text-lg").text(content);
+      })
+      .catch((error) => {
         console.error("Failed to update post:", error);
         alert("Failed to update the post. Please try again!");
-      },
-    });
+      });
   });
 });

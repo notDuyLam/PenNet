@@ -16,9 +16,9 @@
                 <div class="mr-4">Setting</div>
                 <i class="fa-solid fa-gear"></i>
             </button>
-            <div id="items" class="absolute right-0 hidden  w-48 
+            <div id="items" class="absolute right-0 hidden w-48 
                     bg-white border rounded-xl shadow-lg 
-                    group-hover:block ">
+                    group-hover:block z-50">
                 <a href="#" id="darkmode" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                     <div class="flex items-center">
                         <i class="fa-solid fa-moon"></i>
@@ -43,7 +43,7 @@
                         <div class="ml-2">Notification</div>
                     </div>
                 </a>
-                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                <a href="/users/logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                     <div class="flex items-center">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         <div class="ml-2">Logout</div>
@@ -59,7 +59,6 @@
         $('#dropdown').on('click', () => {
             $('#items').toggleClass('hidden');
         });
-
 
         $('#notification').on('click', (e) => {
             e.preventDefault();

@@ -119,7 +119,14 @@ const postService = {
     try {
       const post = await Post.findOne({
         where: { id: post_id },
-        include: [{ model: Attachment, as: "attachments" }],
+        include: [
+          { model: Attachment, as: "attachments" },
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
       });
       if (!post) {
         throw new Error("Post not found!");

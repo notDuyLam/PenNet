@@ -85,7 +85,7 @@ const postController = {
         return res.redirect("/users/login");
       }
       const post_id = req.params.post_id;
-      const user_id = req.user.id; // Get user ID from authenticated session
+      const user_id = req.user.id;
       const data = {
         content: req.body.content,
         access_modifier: req.body.access_modifier,
@@ -106,13 +106,11 @@ const postController = {
       if (!req.isAuthenticated()) {
         return res.redirect("/users/login");
       }
-
       const post_id = req.params.post_id;
 
       if (!post_id) {
         return res.status(400).json({ error: "Missing post ID" });
       }
-
       postService
         .getPostById(post_id)
         .then((post) => res.status(200).json(post))
