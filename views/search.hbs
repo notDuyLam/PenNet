@@ -13,24 +13,31 @@
   </div>
 
   {{!-- Main Content --}}
-    <main class="flex-grow px-6 py-4">
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold">Results for "{{query}}"</h1>
+  <main class="flex-grow px-6 py-4">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold">Results for "{{query}}"</h1>
+    </div>
+    <ul class="space-y-4">
+      {{#each results}}
+      <li class="flex items-center justify-between p-4 border-b border-gray-300">
+        <div class="flex items-center">
+          <img src="{{this.avatar_url}}" alt="{{this.first_name}} {{this.last_name}}" class="w-16 h-16 rounded-full mr-4">
+          <div>
+            <p class="text-xl font-semibold">{{this.first_name}} {{this.last_name}}</p>
+          </div>
         </div>
-        <ul class="space-y-4">
-            {{#each results}}
-            <li class="flex items-center justify-between p-4 border-b border-gray-300">
-                <div class="flex items-center">
-                <img src="{{this.avatar_url}}" alt="{{this.first_name}} {{this.last_name}}" class="w-16 h-16 rounded-full mr-4">
-                <div>
-                    <p class="text-xl font-semibold">{{this.first_name}} {{this.last_name}}</p>
-                </div>
-                </div>
-                <button class="add-friend-btn bg-green-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Add Friend</button>
-            </li>
-            {{/each}}
-        </ul>
-    </main>
+        <div>
+          <button class="add-friend-btn bg-green-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Add Friend</button>
+          {{log ../user}}
+          {{#if ../user.isAdmin}}
+          <button class="delete-user-btn bg-red-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Delete User</button>
+          {{/if}}
+        </div>
+      </li>
+      {{/each}}
+    </ul>
+
+  </main>
 </div>
 
 <script>
@@ -39,6 +46,26 @@
       const userId = $(this).data('id');
       // Add friend logic here
       alert('Friend request sent to user ID: ' + userId);
+    });
+
+    $('.delete-user-btn').on('click', async function() {
+      const userId = $(this).data('id');
+      if (confirm('Are you sure you want to delete this user?')) {
+        try {
+          const response = await fetch(`/users/${userId}`, {
+            method: 'DELETE',
+          });
+          if (response.ok) {
+            alert('User deleted successfully');
+            location.reload();
+          } else {
+            alert('Error deleting user');
+          }
+        } catch (error) {
+          console.error('Error deleting user:', error);
+          alert('Error deleting user');
+        }
+      }
     });
   });
 </script>
