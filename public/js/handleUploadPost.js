@@ -10,6 +10,10 @@ function gridClass(length) {
       return "grid-cols-4";
   }
 }
+function formatDate(dateString) {
+  const options = { year: "numeric", month: "long", day: "numeric" };
+  return new Date(dateString).toLocaleDateString(undefined, options);
+}
 
 document.getElementById("load-more").addEventListener("click", function () {
   const pageNumberElement = document.querySelector("#Paging p");
@@ -17,15 +21,18 @@ document.getElementById("load-more").addEventListener("click", function () {
 
   const userIdElement = document.getElementById("user_id");
   const user = { id: userIdElement.textContent };
-
+  console.log(user.id);
   fetch(`/api/users/posts?page=${pageNumber}`)
     .then((response) => response.json())
     .then((data) => {
       if (!data.posts || data.posts.length === 0) {
         alert("No more posts to load");
       } else {
-        console.log(data);
         data.posts.forEach((post) => {
+          console.log(`Post ID: ${post.id}`);
+          console.log(
+            `Like ID: ${post.likes.map((like) => like.user_id).join(", ")}`
+          );
           const postElement = document.createElement("div");
           postElement.setAttribute("data-post-id", post.id);
           postElement.className = "w-full border flex flex-col rounded mb-4";
@@ -46,7 +53,7 @@ document.getElementById("load-more").addEventListener("click", function () {
                     </div>
                 </div>
                 ${
-                  post.user.id === user.id
+                  post.user.id == user.id
                     ? `
                 <div class="relative flex flex-col justify-end">
                     <div class="post-more-btn flex justify-end cursor-pointer">
@@ -102,11 +109,15 @@ document.getElementById("load-more").addEventListener("click", function () {
             </div>
             <div class="flex justify-between pl-8 pr-8">
                 <div class="flex justify-between post-like m-8 text-3xl cursor-pointer">
+                
                     ${
-                      post.dataValues && post.dataValues.likes.includes(user.id)
+                      post.likes.some((like) => {
+                        return like.user_id == user.id;
+                      })
                         ? `
+
                     <i class="fa-solid fa-thumbs-up text-blue-600 fa-solid text-xl"></i>
-                    <div class="ml-4 text-xl like-count"> ${post.dataValues.likes.length} </div>
+                    <div class="ml-4 text-xl like-count"> ${post.likes.length} </div>
                     `
                         : `
                     <i class="fa-regular fa-thumbs-up text-xl"></i>
@@ -119,7 +130,7 @@ document.getElementById("load-more").addEventListener("click", function () {
                         <i class="fa-regular fa-comment"></i>
                     </div>
                     <div class="ml-4 text-xl comment-count"> ${
-                      post.dataValues ? post.dataValues.comments.length : 0
+                      post ? post.comments.length : 0
                     } </div>
                 </div>
             </div>
