@@ -77,6 +77,13 @@ $(document).ready(() => {
         const query = $('#search').val();
         window.location.href = `/search?query=${query}`; // Ensure the query parameter matches
     });
+
+    $('#search').on('keypress', (e) => {
+        if (e.which === 13) { // Enter key pressed
+            const query = $('#search').val();
+            window.location.href = `/search?query=${query}`; // Ensure the query parameter matches
+        }
+    });
 });
 </script>
 
