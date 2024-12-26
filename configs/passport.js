@@ -100,6 +100,7 @@ module.exports = function (passport) {
         email: user.email,
         date_of_birth: user.userInfo.date_of_birth,
         country: user.userInfo.country,
+        isAdmin: user.isAdmin,
       });
     });
   });

@@ -269,13 +269,17 @@ const userController = {
     const query = req.query.query;
     try {
       const results = await userService.searchFriends(query);
-      const filteredResults = results.map((user) => ({
-        id: user.dataValues.id,
-        first_name: user.dataValues.first_name,
-        last_name: user.dataValues.last_name,
-        avatar_url: user.dataValues.avatar_url,
+      const filteredResults = results.map((userTarget) => ({
+        id: userTarget.dataValues.id,
+        first_name: userTarget.dataValues.first_name,
+        last_name: userTarget.dataValues.last_name,
+        avatar_url: userTarget.dataValues.avatar_url,
       }));
-      res.render("search", { query, results: filteredResults });
+      res.render("search", { 
+        user: req.user,
+        query, 
+        results: filteredResults
+      });
     } catch (error) {
       console.error("Error searching friends:", error);
       res.status(500).send("Internal Server Error");
@@ -300,7 +304,6 @@ const userController = {
   },
 
   async getNotifications(req, res) {
-    // console.log(req.body);
     const userId = req.user.id; // Assuming user is authenticated and user ID is available
     try {
       const notifications = await userService.getNotifications(userId);
@@ -467,6 +470,16 @@ const userController = {
       });
     } catch (error) {
       console.error("Error rendering home page:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async deleteUser(req, res) {
+    try {
+      const userId = req.params.id;
+      const result = await userService.deleteUser(userId);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("Error deleting user:", error);
       return res.status(500).json({ errorMessage: "Server error" });
     }
   },
