@@ -20,6 +20,20 @@ $(document).on("click", ".post-like, .comment-like", function () {
   $.ajax({
     url: `/posts/like/${postId}`,
     method: "POST",
+    success: function (response) {
+      const likeCountElement = $(this).find(".like-count");
+      let likeCount = parseInt(likeCountElement.text());
+      if (isLike) {
+        likeCount += 1;
+      } else {
+        likeCount -= 1;
+      }
+      likeCountElement.text(likeCount);
+    }.bind(this),
+    error: function (error) {
+      console.error("Failed to like/unlike post:", error);
+      alert("Failed to like/unlike the post. Please try again!");
+    },
   });
 });
 
