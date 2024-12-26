@@ -21,7 +21,7 @@ const postController = {
       const { content, access_modifier } = req.body;
       const imageUrls = req.imageUrls;
 
-      if (!user_id || !content) {
+      if (!user_id || (!content && !imageUrls)) {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
