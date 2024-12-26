@@ -5,11 +5,7 @@ const userController = require("./user/controller");
 const router = express.Router();
 
 // Home route
-router.get("/", (req, res) => {
-  res.render("home", {
-    user: req.user,
-  });
-});
+router.get("/", userController.renderHomePage);
 
 router.get("/user/id=:id", (req, res) => {
   res.render("personProfile", {});

@@ -454,6 +454,22 @@ const userController = {
       return res.status(500).json({ errorMessage: "Server error" });
     }
   },
+  async renderHomePage(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+      const posts = await postService.getPublicPosts();
+
+      res.render("home", {
+        user: req.user,
+        posts: posts,
+      });
+    } catch (error) {
+      console.error("Error rendering home page:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
 };
 
 module.exports = userController;
