@@ -11,8 +11,6 @@ const Conversation = require("../conversation/model");
 const UserRela = require("./user_rela/model");
 const { Op, Sequelize } = require("sequelize");
 
-
-
 const userService = {
   // Tạo người dùng mới
   async createUser(userData) {
@@ -285,7 +283,13 @@ const userService = {
     const post = await Post.findByPk(postId);
     const user = await User.findByPk(userId);
     const message = `${user.first_name} ${user.last_name} liked your post.`;
-    await this.createNotification(post.userId, 'like', message, user.avatar_url, `${user.first_name} ${user.last_name}`);
+    await this.createNotification(
+      post.userId,
+      "like",
+      message,
+      user.avatar_url,
+      `${user.first_name} ${user.last_name}`
+    );
   },
 
   async notifyComment(userId, postId, commentId) {
@@ -293,37 +297,54 @@ const userService = {
     const user = await User.findByPk(userId);
     const comment = await Comment.findByPk(commentId);
     const message = `${user.first_name} ${user.last_name} commented: "${comment.content}" on your post.`;
-    await this.createNotification(post.userId, 'comment', message, user.avatar_url, `${user.first_name} ${user.last_name}`);
+    await this.createNotification(
+      post.userId,
+      "comment",
+      message,
+      user.avatar_url,
+      `${user.first_name} ${user.last_name}`
+    );
   },
 
   async notifyBirthday(userId, friendId) {
     const user = await User.findByPk(userId);
     const friend = await User.findByPk(friendId);
     const message = `Today is ${friend.first_name} ${friend.last_name}'s birthday.`;
-    await this.createNotification(userId, 'birthday', message, friend.avatar_url, `${friend.first_name} ${friend.last_name}`);
+    await this.createNotification(
+      userId,
+      "birthday",
+      message,
+      friend.avatar_url,
+      `${friend.first_name} ${friend.last_name}`
+    );
   },
 
   async notifyMessage(senderId, receiverId, messageContent) {
     const sender = await User.findByPk(senderId);
     const message = `${sender.first_name} ${sender.last_name} sent you a message: "${messageContent}".`;
-    await this.createNotification(receiverId, 'message', message, sender.avatar_url, `${sender.first_name} ${sender.last_name}`);
+    await this.createNotification(
+      receiverId,
+      "message",
+      message,
+      sender.avatar_url,
+      `${sender.first_name} ${sender.last_name}`
+    );
   },
 
   async getNotifications(userId) {
     // console.log(userId);
     try {
-
       // Fetch accepted friends
       const acceptedFriends = await UserRela.findAll({
         where: {
           user_from: userId,
           status: "accepted",
         },
-        attributes: ['user_to'], // Only need user_to
+        attributes: ["user_to"], // Only need user_to
       });
 
       // Extract list of friend IDs
-      const friendIds = acceptedFriends.map(rel => rel.user_to);
+      const friendIds = acceptedFriends.map((rel) => rel.user_to);
 
       // Find all records in UserInfo with user_id in friendIds
       // and date_of_birth matching today, join with User table to get first_name and last_name
@@ -336,12 +357,18 @@ const userService = {
           user_id: { [Op.in]: friendIds },
           [Op.and]: [
             Sequelize.where(
-              Sequelize.fn('EXTRACT', Sequelize.literal('MONTH FROM date_of_birth')),
+              Sequelize.fn(
+                "EXTRACT",
+                Sequelize.literal("MONTH FROM date_of_birth")
+              ),
               todayMonth
             ),
 
             Sequelize.where(
-              Sequelize.fn('EXTRACT', Sequelize.literal('DAY FROM date_of_birth')),
+              Sequelize.fn(
+                "EXTRACT",
+                Sequelize.literal("DAY FROM date_of_birth")
+              ),
               todayDay
             ),
           ],
@@ -349,27 +376,23 @@ const userService = {
         include: [
           {
             model: User,
-            as: 'user',
-            attributes: ['first_name', 'last_name'], // Get necessary info from User table
+            as: "user",
+            attributes: ["first_name", "last_name"], // Get necessary info from User table
           },
         ],
-        attributes: ['user_id', 'date_of_birth'], // Get necessary info from UserInfo table
+        attributes: ["user_id", "date_of_birth"], // Get necessary info from UserInfo table
       });
-
-      
-
-
 
       // Tìm tất cả các post có user_id = userId trong bảng Post
       const userPosts = await Post.findAll({
         where: { user_id: userId },
-        attributes: ['id'], // Chỉ cần lấy post_id
+        attributes: ["id"], // Chỉ cần lấy post_id
       });
 
       // Trích xuất danh sách post_id
-      const postIds = userPosts.map(post => post.id);
+      const postIds = userPosts.map((post) => post.id);
 
-      // Tìm tất cả các like có post_id thuộc danh sách postIds 
+      // Tìm tất cả các like có post_id thuộc danh sách postIds
       // và user_id khác với userId
       const likes = await Like.findAll({
         where: {
@@ -379,11 +402,11 @@ const userService = {
         include: [
           {
             model: Post,
-            as: 'post',
+            as: "post",
             include: [
               {
                 model: User,
-                as: 'user',
+                as: "user",
               },
             ],
           },
@@ -398,11 +421,11 @@ const userService = {
         include: [
           {
             model: Post,
-            as: 'post',
+            as: "post",
             include: [
               {
                 model: User,
-                as: 'user',
+                as: "user",
               },
             ],
           },
@@ -412,13 +435,15 @@ const userService = {
       // Lấy danh sách conversation_id từ bảng Participant
       const participantConversations = await Participant.findAll({
         where: { user_id: userId },
-        attributes: ['conversation_id'], // Chỉ lấy trường conversation_id
+        attributes: ["conversation_id"], // Chỉ lấy trường conversation_id
       });
 
       // Trích xuất danh sách conversation_id
-      const conversationIds = participantConversations.map(pc => pc.conversation_id);
+      const conversationIds = participantConversations.map(
+        (pc) => pc.conversation_id
+      );
 
-      // Tìm tất cả các Message có conversation_id trùng với danh sách conversationIds 
+      // Tìm tất cả các Message có conversation_id trùng với danh sách conversationIds
       // và user_id khác với userId
       const messages = await Message.findAll({
         where: {
@@ -428,12 +453,10 @@ const userService = {
         include: [
           {
             model: Conversation,
-            as: 'conversation',
+            as: "conversation",
           },
         ],
       });
-
-
 
       const notifications = [];
 
@@ -441,11 +464,11 @@ const userService = {
         const sender = await User.findByPk(like.user_id);
         // const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
         notifications.push({
-          type: 'like',
+          type: "like",
           message: `${sender.first_name} ${sender.last_name} liked your post.`,
           profileImage: sender.avatar_url,
           name: `${sender.first_name} ${sender.last_name}`,
-          createdAt: like.createdAt
+          createdAt: like.createdAt,
         });
       }
 
@@ -453,11 +476,11 @@ const userService = {
         const sender = await User.findByPk(comment.user_id);
         // const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
         notifications.push({
-          type: 'comment',
+          type: "comment",
           message: `${sender.first_name} ${sender.last_name} comment "${comment.content}" on your post.`,
           profileImage: sender.avatar_url,
           name: `${sender.first_name} ${sender.last_name}`,
-          createdAt: comment.createdAt
+          createdAt: comment.createdAt,
         });
       }
 
@@ -465,11 +488,11 @@ const userService = {
         const sender = await User.findByPk(message.user_id);
         // const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
         notifications.push({
-          type: 'message',
+          type: "message",
           message: `${sender.first_name} ${sender.last_name} sent you a message: "${message.content}".`,
           profileImage: sender.avatar_url,
           name: `${sender.first_name} ${sender.last_name}`,
-          createdAt: message.createdAt
+          createdAt: message.createdAt,
         });
       }
 
@@ -477,11 +500,11 @@ const userService = {
         const sender = await User.findByPk(birthday.user_id);
         // const receiver = message.conversation.participants.find(p => p.user_id !== userId).user;
         notifications.push({
-          type: 'birthday',
+          type: "birthday",
           message: `Today is ${sender.first_name} ${sender.last_name} birthday!!! Let's celebrate!`,
           profileImage: sender.avatar_url,
           name: `${sender.first_name} ${sender.last_name}`,
-          createdAt: new Date()
+          createdAt: new Date(),
         });
       }
 
@@ -490,7 +513,7 @@ const userService = {
 
       return notifications;
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error("Error fetching notifications:", error);
       throw error;
     }
   },
@@ -659,7 +682,18 @@ const userService = {
           status: "pending",
         },
       });
-
+      const friend = await User.findByPk(friendId, {
+        attributes: {
+          exclude: [
+            "password_hash",
+            "isVerify",
+            "verificationToken",
+            "resetPasswordToken",
+            "resetPasswordExpires",
+            "email",
+          ],
+        },
+      });
       if (!friendRequest) {
         return { message: "Friend request not found" };
       }
@@ -667,7 +701,7 @@ const userService = {
       friendRequest.status = "accepted";
       await friendRequest.save();
 
-      return { message: "Friend request accepted" };
+      return { message: "Friend request accepted", info: friend };
     } catch (error) {
       throw new Error("Error accepting friend request: " + error.message);
     }

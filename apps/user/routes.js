@@ -44,13 +44,10 @@ router.patch("/profile", userController.updateUser);
 
 // Make friends
 
-// [GET] /users/friends
-router.get("/friends", userController.getFriends);
-
-// [POST] /users/make-friends/:user_id
+// [POST] /users/send-request-friend/:user_id
 router.post("/send-request-friend/:user_id", userController.sendRequestFriend);
 
-// [GET] /users/friend-request
+// [GET] /users/friends-request
 router.get("/friends-request", userController.getFriendRequest);
 
 // [POST] /users/friend-request/accept/:user_id
@@ -59,8 +56,8 @@ router.post(
   userController.acceptFriendRequest
 );
 
-// [POST] /users/friend-request/denied/:user_id
-router.post(
+// [DELETE] /users/friend-request/denied/:user_id
+router.delete(
   "/friend-request/denied/:user_id",
   userController.deniedFriendRequest
 );
@@ -73,5 +70,8 @@ router.post("/friend-request/block/:user_id", userController.blockFriend);
 
 // [GET] /users/profile
 router.get("/profile", userController.renderProfilePage);
+
+// [GET] /users/friends
+router.get("/friends", userController.renderFriendsPage);
 
 module.exports = router;

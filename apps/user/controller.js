@@ -281,20 +281,6 @@ const userController = {
       res.status(500).send("Internal Server Error");
     }
   },
-  async getFriends(req, res) {
-    try {
-      if (!req.isAuthenticated()) {
-        return res.redirect("/users/login");
-      }
-
-      const userId = req.user.id; // Get user ID from authenticated session
-      const friends = await userService.getFriends(userId);
-      return res.status(200).json({ friends });
-    } catch (error) {
-      console.error("Error fetching friends:", error);
-      return res.status(500).json({ errorMessage: "Server error" });
-    }
-  },
   async sendRequestFriend(req, res) {
     try {
       if (!req.isAuthenticated()) {
@@ -320,8 +306,8 @@ const userController = {
       const notifications = await userService.getNotifications(userId);
       res.render("notification", { user: req.user, notifications });
     } catch (error) {
-      console.error('Error fetching notifications:', error);
-      res.status(500).send('Internal Server Error');
+      console.error("Error fetching notifications:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
     }
   },
   async getFriendRequest(req, res) {
@@ -363,7 +349,8 @@ const userController = {
 
       // Accept friend request
       const result = await userService.acceptFriendRequest(userId, friendId);
-      return res.status(200).json({ successMessage: result });
+
+      return res.status(200).json({ result });
     } catch (error) {
       console.error("Error accepting friend request:", error);
       return res.status(500).json({ errorMessage: "Server error" });
@@ -418,6 +405,21 @@ const userController = {
       res.render("personProfile", { user, posts, reviewers });
     } catch (error) {
       console.error("Error rendering profile page:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async renderFriendsPage(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+      const user = req.user;
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friends = await userService.getFriends(userId);
+      const friendRequests = await userService.getFriendRequests(userId);
+      res.render("friendList", { user, friends, friendRequests });
+    } catch (error) {
+      console.error("Error fetching friends:", error);
       return res.status(500).json({ errorMessage: "Server error" });
     }
   },
