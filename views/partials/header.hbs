@@ -55,36 +55,29 @@
 </nav>
 
 <script>
-    $(document).ready(() => {
-        $('#dropdown').on('click', () => {
-            $('#items').toggleClass('hidden');
-        });
-
-        $('#notification').on('click', (e) => {
-            e.preventDefault();
-            if ($('#notification i').hasClass('fa-bell')) {
-                // bật -> tắt
-                $('#notification i').removeClass('fa-bell');
-                $('#notification i').addClass('fa-bell-slash');
-            }
-            else {
-                // tắt -> bật
-                $('#notification i').removeClass('fa-bell-slash');
-                $('#notification i').addClass('fa-bell');
-            }
-        });
-    })
-    $(document).ready(() => {
-        $('#dropdown').on('click', () => {
-            $('#items').toggleClass('hidden');
-        });
-        $('#search-btn').on('click', () => {
-            const query = $('#search').val();
-            window.location.href = `/search?query=${query}`; // Ensure the query parameter matches
-        });
+$(document).ready(() => {
+    $('#dropdown').on('click', () => {
+        $('#items').toggleClass('hidden');
     });
 
+    $('#notification').on('click', (e) => {
+        e.preventDefault();
+        if ($('#notification i').hasClass('fa-bell')) {
+            // bật -> tắt
+            $('#notification i').removeClass('fa-bell');
+            $('#notification i').addClass('fa-bell-slash');
+        } else {
+            // tắt -> bật
+            $('#notification i').removeClass('fa-bell-slash');
+            $('#notification i').addClass('fa-bell');
+        }
+    });
 
+    $('#search-btn').on('click', () => {
+        const query = $('#search').val();
+        window.location.href = `/search?query=${query}`; // Ensure the query parameter matches
+    });
+});
 </script>
 
 <script src="/js/darkmode.js"></script>
