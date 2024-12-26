@@ -781,6 +781,27 @@ const userService = {
       throw new Error("Error unblocking friend: " + error.message);
     }
   },
+  async deleteUser(userId) {
+    try {
+      const user = await User.findByPk(userId);
+  
+      if (!user) {
+        throw new Error('User not found');
+      }
+  
+      // Delete related records in userInfo table
+      await UserInfo.destroy({ where: { user_id: userId } });
+  
+      // Delete related records in userRela table
+      await UserRela.destroy({ where: { user_from: userId } });
+      await UserRela.destroy({ where: { user_to: userId } });
+  
+      await user.destroy();
+      return { message: 'User and related records deleted successfully' };
+    } catch (error) {
+      throw new Error(`Error deleting user: ${error.message}`);
+    }
+  },
 };
 
 module.exports = userService;

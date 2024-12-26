@@ -52,6 +52,10 @@ User.init(
     resetPasswordExpires: {
       type: DataTypes.DATE,
     },
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     sequelize,
