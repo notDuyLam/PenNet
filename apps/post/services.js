@@ -312,7 +312,7 @@ const postService = {
       throw new Error("Error retrieving public posts: " + error.message);
     }
   },
-  async getNonFriendPublicPosts(user_id, limit) {
+  async getNonFriendPublicPosts(user_id, filter) {
     try {
       // Get the list of friend IDs
       const sentRequests = await UserRela.findAll({
@@ -337,6 +337,7 @@ const postService = {
       ];
 
       // Get public posts not from friends
+      const { index, limit } = filter;
       const posts = await Post.findAll({
         where: {
           user_id: { [Op.notIn]: friendIds },
@@ -351,6 +352,7 @@ const postService = {
           },
         ],
         order: [["createdAt", "DESC"]],
+        offset: index * limit,
         limit: limit,
       });
 

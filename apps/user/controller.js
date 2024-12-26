@@ -462,11 +462,15 @@ const userController = {
       if (!req.isAuthenticated()) {
         return res.redirect("/users/login");
       }
+      const filter = {
+        index: 0,
+        limit: 5,
+      };
       const userId = req.user.id; // Get user ID from authenticated session
       const friendPosts = await postService.getFriendPosts(userId);
       const nonFriendPublicPosts = await postService.getNonFriendPublicPosts(
         userId,
-        10
+        filter
       );
       const posts = [...friendPosts, ...nonFriendPublicPosts];
       res.render("home", {
@@ -485,6 +489,24 @@ const userController = {
       return res.status(200).json(result);
     } catch (error) {
       console.error("Error deleting user:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async getMorePost(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+      const page = parseInt(req.query.page) || 1; // Get page number from query parameters
+      const filter = {
+        index: page,
+        limit: 5,
+      };
+      const userId = req.user.id; // Get user ID from authenticated session
+      const posts = await postService.getNonFriendPublicPosts(userId, filter);
+      return res.status(200).json({ posts });
+    } catch (error) {
+      console.error("Error fetching more posts:", error);
       return res.status(500).json({ errorMessage: "Server error" });
     }
   },

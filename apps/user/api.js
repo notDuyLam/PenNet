@@ -18,4 +18,7 @@ router.patch(
 // [PATCH] /api/users/change-password
 router.patch("/change-password", userController.changePassword);
 
+// [GET] /api/users/posts?page=${pageNumber + 1}
+router.get("/posts", userController.getMorePost);
+
 module.exports = router;

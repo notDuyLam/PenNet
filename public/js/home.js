@@ -64,12 +64,12 @@ document
 
       if (response.ok) {
         // Handle successful response
-        console.log("Post submitted successfully");
+        alert("Post submitted successfully");
       } else {
         // Handle error response
-        console.error("Error submitting post");
+        alert("Error submitting post");
       }
     } catch (error) {
-      console.error("Error submitting post", error);
+      alert("Error submitting post", error);
     }
   });

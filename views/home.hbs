@@ -36,12 +36,23 @@
             </div>
         </form>
 
-            {{#each posts}}
-                {{> post post=this user=../user}}
-            {{/each}}
+            <div class="posts-container">
+                {{#each posts}}
+                    {{> post post=this user=../user}}
+                {{/each}}
+            </div>
+
+            <div class="flex justify-center mt-4" id="Paging">
+                <p class="hidden">1</p>
+                <button id="load-more" class="rounded-xl pl-4 pr-4 pt-0.5 pb-0.5 bg-blue-700 text-white">
+                Load More
+                </button>
+            </div>
 
     </div>
     
     {{> suggestedFriends user=user}}
 </div>
 <script src="/js/home.js"></script>
+<script src="/js/handleUploadPost.js"></script>
+
