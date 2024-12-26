@@ -36,34 +36,39 @@
             <div>{{formatDate post.updatedAt}}</div>
         </div>
     </div>
-    <div class="pl-8 pr-8 pt-4 pb-8">
+    <div class="pl-8 pr-8 pt-4 pb-2">
         <div class="text-lg leading-relaxed text-gray-800">
             {{post.content}}
         </div>
     </div>
-    <div class="pl-8 pr-8 pt-4 pb-8">
+    <div class="pl-8 pr-8 pt-4 pb-2">
         {{#if post.attachments.length}}
             <div class="{{gridClass post.attachments.length}}">
                 {{#each post.attachments}}
-                <img src="{{this.media_url}}" alt="post-attachment" class="w-full h-full rounded object-contain">
+                <div class="max-h-96 bg-gray-200">
+                    <img src="{{this.media_url}}" alt="post-attachment" class="w-full h-full rounded object-contain">
+                </div>
                 {{/each}}
             </div>
         {{/if}}
     </div>
     <div class="flex justify-between pl-8 pr-8">
+        <div class="flex justify-between post-like m-8 text-3xl cursor-pointer">
+            {{#if (includes post.dataValues.likes user.id)}}
+            <i class="fa-solid fa-thumbs-up text-blue-600 fa-solid text-xl"></i>
+            <div class="ml-4 text-xl like-count"> {{post.dataValues.likes.length}} </div>
+            {{else}}
+            <i class="fa-regular fa-thumbs-up text-xl"></i>
+            <div class="ml-4 text-xl like-count"> 0 </div>
+            {{/if}}
+            
+        </div>
+
         <div class="post-comment flex items-center m-8 cursor-pointer rounded border-gray-400 w-36 text-xl">
             <div class="w-4">
                 <i class="fa-regular fa-comment"></i>
             </div>
-            <div class="ml-4"> Comment </div>
-        </div>
-
-        <div class="post-like m-8 text-3xl cursor-pointer">
-            {{#if (includes post.dataValues.likes user.id)}}
-            <i class="fa-solid fa-thumbs-up text-blue-600 fa-solid"></i>
-            {{else}}
-            <i class="fa-regular fa-thumbs-up"></i>
-            {{/if}}
+            <div class="ml-4 text-xl comment-count"> {{post.dataValues.comments.length}} </div>
         </div>
     </div>
 </div>
