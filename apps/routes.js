@@ -1,5 +1,7 @@
 const express = require("express");
 const userController = require("./user/controller");
+const { ensureAuthenticated } = require('../middlewares/auth');
+
 
 // cài đặt router
 const router = express.Router();
@@ -92,6 +94,6 @@ router.get("/Dang/test2", (req, res) => {
 });
 
 router.get("/search", userController.searchFriends);
-router.get("/notification", userController.getNotifications);
+router.get("/notification", ensureAuthenticated,  userController.getNotifications);
 
 module.exports = router;
