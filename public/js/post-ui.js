@@ -44,8 +44,6 @@ $(document).on("click", ".post-comment", function () {
     avatar: $(".image-avatar").first().attr("src"),
   };
 
-  console.log(user.name);
-
   // Lấy postId từ thuộc tính data-post-id
   const postId = $(this).closest("[data-post-id]").data("post-id");
 
@@ -134,6 +132,13 @@ $(document).on("click", ".post-comment", function () {
         method: "POST",
         data: { content },
         success: function (response) {
+          // Update the comment count
+          const commentCountElement = $(`[data-post-id="${postId}"]`).find(
+            ".comment-count"
+          );
+          let commentCount = parseInt(commentCountElement.text());
+          commentCount += 1;
+          commentCountElement.text(commentCount);
           // Thêm comment mới vào danh sách mà không cần reload
           $(post_details)
             .find("#container")
