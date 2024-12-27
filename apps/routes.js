@@ -1,6 +1,6 @@
 const express = require("express");
 const userController = require("./user/controller");
-const { ensureAuthenticated } = require('../middlewares/auth');
+const { ensureAuthenticated , checkBan } = require('../middlewares/auth');
 
 
 // cài đặt router

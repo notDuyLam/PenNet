@@ -514,6 +514,16 @@ const userController = {
       return res.status(500).json({ errorMessage: "Server error" });
     }
   },
+  async renderBanPage(req, res) {
+    try {
+      res.render('ban', {
+        user: req.user, // Ensure req.user contains isBanned property
+      });
+    } catch (error) {
+      console.error("Error rendering ban page:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
 };
 
 module.exports = userController;

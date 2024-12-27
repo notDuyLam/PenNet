@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const { checkBan } = require('../../middlewares/auth');
+
 
 const userController = require("./controller");
 
@@ -38,6 +40,10 @@ router.post("/reset-password", userController.resetPassword);
 
 // [POST] /users/logout
 router.get("/logout", userController.logoutUser);
+
+// Middleware check if user is banned
+router.use(checkBan);
+
 
 // [PATCH] /users/profile
 router.patch("/profile", userController.updateUser);
