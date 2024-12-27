@@ -112,7 +112,7 @@ const postService = {
 
       return posts;
     } catch (error) {
-      return { error: "Error retrieving posts: " + error.message };
+      throw new Error("Error retrieving posts: " + error.message);
     }
   },
   async getUserById(user_id) {
@@ -148,7 +148,7 @@ const postService = {
       await post.destroy();
       return { message: "Post deleted successfully." };
     } catch (error) {
-      return { error: "Error deleting post: " + error.message };
+      throw new Error("Error deleting post: " + error.message);
     }
   },
   async updatePost(post_id, user_id, data) {
@@ -166,7 +166,7 @@ const postService = {
       });
       return updatedPost;
     } catch (error) {
-      return { error: "Error updating post: " + error.message };
+      throw new Error("Error updating post: " + error.message);
     }
   },
   async getPostById(post_id) {
@@ -211,7 +211,7 @@ const postService = {
       post.dataValues.comments = comments;
       return post;
     } catch (error) {
-      return { error: "Error retrieving post: " + error.message };
+      throw new Error("Error retrieving post: " + error.message);
     }
   },
   async likePost(post_id, user_id) {
@@ -237,7 +237,7 @@ const postService = {
       await post.increment("like_count");
       return { message: "Post liked successfully.", like };
     } catch (error) {
-      return { error: "Error liking post: " + error.message };
+      throw new Error("Error liking post: " + error.message);
     }
   },
   async addComment(post_id, user_id, content) {
@@ -246,7 +246,7 @@ const postService = {
         where: { id: post_id },
       });
       if (!post) {
-        return { error: "Post not found!" };
+        throw new Error("Post not found!");
       }
       const newComment = await Comment.create({
         post_id,
@@ -265,7 +265,7 @@ const postService = {
       });
       return createdComment;
     } catch (error) {
-      return { error: "Error adding comment: " + error.message };
+      throw new Error("Error adding comment: " + error.message);
     }
   },
   async getCommentsByPostId(post_id) {
@@ -283,7 +283,7 @@ const postService = {
       });
       return comments;
     } catch (error) {
-      return { error: "Error retrieving comments: " + error.message };
+      throw new Error("Error retrieving comments: " + error.message);
     }
   },
   async deleteComment(post_id, user_id, id) {
@@ -297,7 +297,7 @@ const postService = {
       await comment.destroy();
       return { message: "Comment deleted successfully." };
     } catch (error) {
-      return { error: "Error deleting comment: " + error.message };
+      throw new Error("Error deleting comment: " + error.message);
     }
   },
   async updateComment(post_id, user_id, id, content) {
@@ -311,7 +311,7 @@ const postService = {
       await comment.update({ content });
       return { message: "Comment updated successfully.", content: comment };
     } catch (error) {
-      return { error: "Error updating comment: " + error.message };
+      throw new Error("Error updating comment: " + error.message);
     }
   },
   async getPublicPosts(userId) {
@@ -362,7 +362,7 @@ const postService = {
       });
       return posts;
     } catch (error) {
-      return { error: "Error retrieving public posts: " + error.message };
+      throw new Error("Error retrieving public posts: " + error.message);
     }
   },
   async getNonFriendPublicPosts(user_id, filter) {
@@ -451,9 +451,9 @@ const postService = {
 
       return posts;
     } catch (error) {
-      return {
-        error: "Error retrieving non-friend public posts: " + error.message,
-      };
+      throw new Error(
+        "Error retrieving non-friend public posts: " + error.message
+      );
     }
   },
   async getFriendPosts(user_id) {
@@ -559,7 +559,7 @@ const postService = {
 
       return posts;
     } catch (error) {
-      return { error: "Error retrieving friend posts: " + error.message };
+      throw new Error("Error retrieving friend posts: " + error.message);
     }
   },
 };
