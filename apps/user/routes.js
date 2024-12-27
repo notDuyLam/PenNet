@@ -41,6 +41,10 @@ router.post("/reset-password", userController.resetPassword);
 // [POST] /users/logout
 router.get("/logout", userController.logoutUser);
 
+// [POST] /users/ban/:id
+router.post("/ban/:id", userController.banUser);
+
+
 // Middleware check if user is banned
 router.use(checkBan);
 

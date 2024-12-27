@@ -833,6 +833,22 @@ const userService = {
       throw new Error(`Error deleting user: ${error.message}`);
     }
   },
+  async banUser(userId) {
+    try {
+      const user = await User.findByPk(userId);
+  
+      if (!user) {
+        throw new Error('User not found');
+      }
+  
+      user.isBanned = true;
+      await user.save();
+  
+      return { message: 'User banned successfully' };
+    } catch (error) {
+      throw new Error(`Error banning user: ${error.message}`);
+    }
+  },
 };
 
 module.exports = userService;

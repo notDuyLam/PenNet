@@ -524,6 +524,17 @@ const userController = {
       return res.status(500).json({ errorMessage: "Server error" });
     }
   },
+  async banUser(req, res) {
+    try {
+      const userId = req.params.id;
+      console.log("Banning user:", userId);
+      const result = await userService.banUser(userId);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("Error banning user:", error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
 };
 
 module.exports = userController;
