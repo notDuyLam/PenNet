@@ -1,5 +1,6 @@
 {{!-- filepath: /e:/Hoc/Subjects on school/NMCNPM/Project/Source/Penet/views/partials/post.hbs --}}
 <div data-post-id="{{post.id}}" class="w-full border flex flex-col rounded mb-4">
+
     <div class="flex justify-between border-b rounded p-4 w-full">
         <a href="/users/profile/{{post.user.id}}" class="flex items-center">
             <img class="rounded-full w-12 h-12 mr-4"
@@ -36,7 +37,7 @@
                 <div class="ml-2"><span>Delete post</span></div>
                 </div>
             </a>
-            <div class="text-sm text-red-600 mt-2 items-center">(Admin)</div>
+            <div class="text-sm text-red-600 mt-2 items-center">(Admin Privilege)</div>
             {{/if}}
             <div>{{formatDate post.updatedAt}}</div>
         </div>
