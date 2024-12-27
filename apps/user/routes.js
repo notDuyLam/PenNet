@@ -43,6 +43,8 @@ router.get("/logout", userController.logoutUser);
 
 // [POST] /users/ban/:id
 router.post("/ban/:id", userController.banUser);
+router.post("/unban/:id", userController.unbanUser);
+
 
 
 // Middleware check if user is banned

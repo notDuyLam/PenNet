@@ -535,6 +535,16 @@ const userController = {
       return res.status(500).json({ message: error.message });
     }
   },
+  async unbanUser(req, res) {
+    try {
+      const userId = req.params.id;
+      const result = await userService.unbanUser(userId);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("Error unbanning user:", error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
 };
 
 module.exports = userController;

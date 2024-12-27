@@ -44,8 +44,12 @@
               <button class="add-friend-btn bg-green-500 text-white px-4 py-2 rounded text-lg w-32" data-id="{{this.id}}">Add Friend</button>
             {{/if}}
             {{#if ../user.isAdmin}}
-            <button class="delete-user-btn bg-red-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Delete User</button>
-            <button class="ban-user-btn bg-red-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Ban</button>
+              <button class="delete-user-btn bg-red-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Delete User</button>
+              {{#if this.isBanned}}
+                <button class="unban-user-btn bg-yellow-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Unban</button>
+              {{else}}
+                <button class="ban-user-btn bg-red-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Ban</button>
+              {{/if}}
             {{/if}}
             
               </td>
