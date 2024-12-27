@@ -331,7 +331,7 @@ $(document).on("click", "#edit-post", function (e) {
     });
 
     // removeImageSources: mảng chưa src các ảnh cần xóa
-    // formData: chưa các file (ảnh) cần thêm vào
+    // formData: chứa các file (ảnh) cần thêm vào
 
     fetch(`/posts/${postId}`, {
       method: "PATCH",
