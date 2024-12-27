@@ -528,7 +528,6 @@ const userController = {
   async banUser(req, res) {
     try {
       const userId = req.params.id;
-      console.log("Banning user:", userId);
       const result = await userService.banUser(userId);
       return res.status(200).json(result);
     } catch (error) {

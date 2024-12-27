@@ -363,7 +363,6 @@ const userService = {
   },
 
   async getNotifications(userId) {
-    // console.log(userId);
     try {
       // Fetch accepted friends
       const acceptedFriends = await UserRela.findAll({
