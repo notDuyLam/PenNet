@@ -4,6 +4,7 @@ const Comment = require("./comment/model");
 const Attachment = require("./attachment/model");
 const User = require("../user/model");
 const UserRela = require("../user/user_rela/model");
+const UserInfo = require("../user/user_info/model");
 const { Op } = require("sequelize");
 
 const postService = {
@@ -30,10 +31,38 @@ const postService = {
       throw new Error("Error creating post: " + error.message);
     }
   },
-  async getPostsByUserId(user_id) {
+  async getPostsByUserId(view_id, user_id) {
     try {
+      let whereClause = { user_id };
+
+      if (view_id !== user_id) {
+        // Check if the users are friends or blocked
+        const userRelationship = await UserRela.findOne({
+          where: {
+            [Op.or]: [
+              { user_from: view_id, user_to: user_id },
+              { user_from: user_id, user_to: view_id },
+            ],
+          },
+        });
+
+        if (userRelationship) {
+          if (userRelationship.status === "blocked") {
+            return [];
+          } else if (userRelationship.status === "accepted") {
+            whereClause.access_modifier = {
+              [Op.in]: ["public", "friends_only"],
+            };
+          } else {
+            whereClause.access_modifier = "public";
+          }
+        } else {
+          whereClause.access_modifier = "public";
+        }
+      }
+
       const posts = await Post.findAll({
-        where: { user_id },
+        where: whereClause,
         include: [
           { model: Attachment, as: "attachments" },
           {
@@ -44,6 +73,7 @@ const postService = {
         ],
         order: [["createdAt", "DESC"]],
       });
+
       const likes = await Like.findAll({
         where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
         attributes: ["id", "user_id", "post_id"],
@@ -55,11 +85,13 @@ const postService = {
           },
         ],
       });
+
       posts.forEach((post) => {
         post.dataValues.likes = likes.filter(
           (like) => like.post_id === post.id
         );
       });
+
       const comments = await Comment.findAll({
         where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
         attributes: ["id", "user_id", "post_id", "content"],
@@ -71,14 +103,35 @@ const postService = {
           },
         ],
       });
+
       posts.forEach((post) => {
         post.dataValues.comments = comments.filter(
           (comment) => comment.post_id === post.id
         );
       });
+
       return posts;
     } catch (error) {
-      throw new Error("Error retrieving posts: " + error.message);
+      return { error: "Error retrieving posts: " + error.message };
+    }
+  },
+  async getUserById(user_id) {
+    try {
+      const user = await User.findOne({
+        where: { id: user_id },
+        include: [
+          {
+            model: UserInfo,
+            as: "userInfo", // Chỉ định alias đã định nghĩa
+          },
+        ],
+      });
+      if (!user) {
+        return null;
+      }
+      return user;
+    } catch (error) {
+      throw new Error("Error retrieving user: " + error.message);
     }
   },
   async deletePost(post_id, user_id) {
@@ -87,7 +140,7 @@ const postService = {
         where: { id: post_id, user_id },
       });
       if (!post) {
-        throw new Error("Post not found!");
+        return { error: "Post not found!" };
       }
       await Attachment.destroy({
         where: { post_id },
@@ -95,7 +148,7 @@ const postService = {
       await post.destroy();
       return { message: "Post deleted successfully." };
     } catch (error) {
-      throw new Error("Error deleting post: " + error.message);
+      return { error: "Error deleting post: " + error.message };
     }
   },
   async updatePost(post_id, user_id, data) {
@@ -104,7 +157,7 @@ const postService = {
         where: { id: post_id, user_id },
       });
       if (!post) {
-        throw new Error("Post not found!");
+        return { error: "Post not found!" };
       }
       await post.update(data);
       const updatedPost = await Post.findOne({
@@ -113,7 +166,7 @@ const postService = {
       });
       return updatedPost;
     } catch (error) {
-      throw new Error("Error updating post: " + error.message);
+      return { error: "Error updating post: " + error.message };
     }
   },
   async getPostById(post_id) {
@@ -130,7 +183,7 @@ const postService = {
         ],
       });
       if (!post) {
-        throw new Error("Post not found!");
+        return { error: "Post not found!" };
       }
       const likes = await Like.findAll({
         where: { post_id },
@@ -158,7 +211,7 @@ const postService = {
       post.dataValues.comments = comments;
       return post;
     } catch (error) {
-      throw new Error("Error retrieving post: " + error.message);
+      return { error: "Error retrieving post: " + error.message };
     }
   },
   async likePost(post_id, user_id) {
@@ -167,7 +220,7 @@ const postService = {
         where: { id: post_id },
       });
       if (!post) {
-        throw new Error("Post not found!");
+        return { error: "Post not found!" };
       }
       const existingLike = await Like.findOne({
         where: { user_id, post_id },
@@ -184,7 +237,7 @@ const postService = {
       await post.increment("like_count");
       return { message: "Post liked successfully.", like };
     } catch (error) {
-      throw new Error("Error liking post: " + error.message);
+      return { error: "Error liking post: " + error.message };
     }
   },
   async addComment(post_id, user_id, content) {
@@ -193,7 +246,7 @@ const postService = {
         where: { id: post_id },
       });
       if (!post) {
-        throw new Error("Post not found!");
+        return { error: "Post not found!" };
       }
       const newComment = await Comment.create({
         post_id,
@@ -212,7 +265,7 @@ const postService = {
       });
       return createdComment;
     } catch (error) {
-      throw new Error("Error adding comment: " + error.message);
+      return { error: "Error adding comment: " + error.message };
     }
   },
   async getCommentsByPostId(post_id) {
@@ -230,7 +283,7 @@ const postService = {
       });
       return comments;
     } catch (error) {
-      throw new Error("Error retrieving comments: " + error.message);
+      return { error: "Error retrieving comments: " + error.message };
     }
   },
   async deleteComment(post_id, user_id, id) {
@@ -239,12 +292,12 @@ const postService = {
         where: { id, post_id, user_id },
       });
       if (!comment) {
-        throw new Error("Comment not found!");
+        return { error: "Comment not found!" };
       }
       await comment.destroy();
       return { message: "Comment deleted successfully." };
     } catch (error) {
-      throw new Error("Error deleting comment: " + error.message);
+      return { error: "Error deleting comment: " + error.message };
     }
   },
   async updateComment(post_id, user_id, id, content) {
@@ -253,12 +306,12 @@ const postService = {
         where: { id, post_id, user_id },
       });
       if (!comment) {
-        throw new Error("Comment not found!");
+        return { error: "Comment not found!" };
       }
       await comment.update({ content });
       return { message: "Comment updated successfully.", content: comment };
     } catch (error) {
-      throw new Error("Error updating comment: " + error.message);
+      return { error: "Error updating comment: " + error.message };
     }
   },
   async getPublicPosts(userId) {
@@ -309,7 +362,7 @@ const postService = {
       });
       return posts;
     } catch (error) {
-      throw new Error("Error retrieving public posts: " + error.message);
+      return { error: "Error retrieving public posts: " + error.message };
     }
   },
   async getNonFriendPublicPosts(user_id, filter) {
@@ -398,9 +451,9 @@ const postService = {
 
       return posts;
     } catch (error) {
-      throw new Error(
-        "Error retrieving non-friend public posts: " + error.message
-      );
+      return {
+        error: "Error retrieving non-friend public posts: " + error.message,
+      };
     }
   },
   async getFriendPosts(user_id) {
@@ -408,7 +461,7 @@ const postService = {
       // Kiểm tra người dùng có tồn tại
       const user = await User.findByPk(user_id);
       if (!user) {
-        throw new Error("User not found");
+        return { error: "User not found" };
       }
 
       // Tìm danh sách bạn bè từ cả yêu cầu gửi và nhận
@@ -458,7 +511,7 @@ const postService = {
           {
             model: User,
             as: "user",
-            attributes: ["first_name", "last_name", "avatar_url"],
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
           },
         ],
         order: [["createdAt", "DESC"]],
@@ -506,7 +559,7 @@ const postService = {
 
       return posts;
     } catch (error) {
-      throw new Error("Error retrieving friend posts: " + error.message);
+      return { error: "Error retrieving friend posts: " + error.message };
     }
   },
 };

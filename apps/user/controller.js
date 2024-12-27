@@ -415,14 +415,16 @@ const userController = {
       if (!req.isAuthenticated()) {
         return res.redirect("/users/login");
       }
-      const user_id = req.user.id;
       const user = req.user;
-      const posts = await postService.getPostsByUserId(user_id);
+      const user_id = req.params.user_id;
+      const view_id = user.id;
+      const posts = await postService.getPostsByUserId(view_id, user_id);
+      const user_info = await postService.getUserById(user_id);
       const reviewers = [
         { id: 1, name: "Reviewer 1" },
         { id: 2, name: "Reviewer 2" },
       ];
-      res.render("personProfile", { user, posts, reviewers });
+      res.render("personProfile", { user, user_info, posts, reviewers });
     } catch (error) {
       console.error("Error rendering profile page:", error);
       return res.status(500).json({ errorMessage: "Server error" });

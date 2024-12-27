@@ -1,15 +1,15 @@
 <div data-post-id="{{post.id}}" class="w-full border flex flex-col rounded mb-4">
     <div class="flex justify-between border-b rounded p-4 w-full">
-        <div class="flex items-center">
+        <a href="/users/profile/{{post.user.id}}" class="flex items-center">
             <img class="rounded-full w-12 h-12 mr-4"
-                src="{{#if post.user.avatar_url}}{{post.user.avatar_url}}{{else}}/images/avatar.png{{/if}}"
-                alt="user-avatar">
+            src="{{#if post.user.avatar_url}}{{post.user.avatar_url}}{{else}}/images/avatar.png{{/if}}"
+            alt="user-avatar">
             <div>
-                <div class="font-medium text-xl fullName">
-                    {{post.user.first_name}} {{post.user.last_name}}
-                </div>
+            <div class="font-medium text-xl fullName">
+                {{post.user.first_name}} {{post.user.last_name}}
             </div>
-        </div>
+            </div>
+        </a>
         {{#if (eq post.user.id user.id)}}
         <div class="relative flex flex-col justify-end">
             <div class="post-more-btn flex justify-end cursor-pointer">
