@@ -1,14 +1,5 @@
 function gridClass(length) {
-  switch (length) {
-    case 1:
-      return "grid-cols-1";
-    case 2:
-      return "grid-cols-2";
-    case 3:
-      return "grid-cols-3";
-    default:
-      return "grid-cols-4";
-  }
+  return length > 1 ? "grid grid-cols-2 gap-4" : "grid grid-cols-1 gap-4";
 }
 function formatDate(dateString) {
   const options = { year: "numeric", month: "long", day: "numeric" };
