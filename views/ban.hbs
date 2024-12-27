@@ -1,0 +1,21 @@
+{{!-- filepath: /e:/Hoc/Subjects on school/NMCNPM/Project/Source/Penet/views/ban.hbs --}}
+{{> header}}
+
+{{#if user.isBanned}}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+    <h1 class="text-3xl font-bold text-red-600 mb-4">Account Banned</h1>
+    <p class="text-lg text-gray-700 mb-4">Your account has been banned. Please contact an admin to resolve this issue.</p>
+    <p class="text-lg text-gray-700">Email: <a href="mailto:admin@example.com" class="text-blue-500">admin@example.com</a></p>
+  </div>
+</div>
+{{else}}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+    <h1 class="text-3xl font-bold text-green-600 mb-4">Welcome Back!</h1>
+    <p class="text-lg text-gray-700 mb-4">Your account is active. Enjoy your time!</p>
+  </div>
+</div>
+{{/if}}
+
+{{> footer}}
