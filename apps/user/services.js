@@ -274,7 +274,7 @@ const userService = {
           ],
           id: { [Op.ne]: userId }, // Loại bỏ id trùng với userId
         },
-        attributes: ["id", "first_name", "last_name", "avatar_url"],
+        attributes: ["id", "first_name", "last_name", "avatar_url", "isBanned"],
       });
 
       if (!friends || friends.length === 0) {

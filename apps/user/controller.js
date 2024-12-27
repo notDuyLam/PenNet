@@ -280,6 +280,7 @@ const userController = {
         last_name: userTarget.last_name,
         avatar_url: userTarget.avatar_url,
         isFriend: userTarget.isFriend,
+        isBanned: userTarget.isBanned,
       }));
       res.render("search", { query, user, results: filteredResults });
     } catch (error) {

@@ -45,6 +45,7 @@
             {{/if}}
             {{#if ../user.isAdmin}}
               <button class="delete-user-btn bg-red-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Delete User</button>
+              {{log this}}
               {{#if this.isBanned}}
                 <button class="unban-user-btn bg-yellow-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Unban</button>
               {{else}}
