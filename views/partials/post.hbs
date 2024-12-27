@@ -1,5 +1,5 @@
 {{!-- filepath: /e:/Hoc/Subjects on school/NMCNPM/Project/Source/Penet/views/partials/post.hbs --}}
-<div data-post-id="{{post.id}}" class="w-full border flex flex-col rounded mb-4">
+<div data-post-id="{{post.id}}" class="w-full border flex flex-col border-gray-300 rounded mb-4">
 
     <div class="flex justify-between border-b rounded p-4 w-full">
         <a href="/users/profile/{{post.user.id}}" class="flex items-center">
@@ -18,7 +18,7 @@
             </div>
             <div 
             id="items" 
-            class="absolute right-0 top-5 bg-white border rounded-xl shadow-lg 
+            class="items absolute right-0 top-5 bg-white border rounded-xl shadow-lg 
             group-hover:block w-48 hidden"
             >
             {{#if (eq post.user.id user.id)}}
