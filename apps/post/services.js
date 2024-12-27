@@ -562,6 +562,25 @@ const postService = {
       throw new Error("Error retrieving friend posts: " + error.message);
     }
   },
+  async deletePostAdmin(postId){
+    try {
+      // Delete related records in likes, comments, and attachments tables
+      await Like.destroy({ where: { post_id: postId } });
+      await Comment.destroy({ where: { post_id: postId } });
+      await Attachment.destroy({ where: { post_id: postId } });
+  
+      // Delete the post
+      const result = await Post.destroy({ where: { id: postId } });
+  
+      if (result === 0) {
+        throw new Error('Post not found');
+      }
+  
+      return { message: 'Post and related records deleted successfully' };
+    } catch (error) {
+      throw new Error(`Error deleting post: ${error.message}`);
+    }
+  },
 };
 
 module.exports = postService;
