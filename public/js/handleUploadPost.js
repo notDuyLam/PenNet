@@ -29,10 +29,6 @@ document.getElementById("load-more").addEventListener("click", function () {
         alert("No more posts to load");
       } else {
         data.posts.forEach((post) => {
-          console.log(`Post ID: ${post.id}`);
-          console.log(
-            `Like ID: ${post.likes.map((like) => like.user_id).join(", ")}`
-          );
           const postElement = document.createElement("div");
           postElement.setAttribute("data-post-id", post.id);
           postElement.className = "w-full border flex flex-col rounded mb-4";
