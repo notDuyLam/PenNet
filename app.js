@@ -51,7 +51,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // config hbs
 const hbs = require("./configs/handlebarsConfig");
-const routes = require("./apps/routes");
 app.engine("hbs", hbs.engine);
 app.set("view engine", "hbs");
 app.set("views", "./views");
@@ -59,7 +58,7 @@ app.set("views", "./views");
 // Định nghĩa các routes
 app.use("/users", require("./apps/user/routes"));
 app.use("/posts", require("./apps/post/routes"));
-app.use("/", routes);
+app.use("/", require("./apps/routes"));
 
 // APIs
 app.use("/api/users", require("./apps/user/api"));

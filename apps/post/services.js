@@ -562,21 +562,59 @@ const postService = {
       throw new Error("Error retrieving friend posts: " + error.message);
     }
   },
-  async deletePostAdmin(postId){
+  async getSuggestedFriends(user_id) {
+    try {
+      // Get the list of friend IDs
+      const sentRequests = await UserRela.findAll({
+        where: {
+          user_from: user_id,
+          status: { [Op.in]: ["accepted", "pending"] },
+        },
+        attributes: ["user_to"],
+      });
+
+      const receivedRequests = await UserRela.findAll({
+        where: {
+          user_to: user_id,
+          status: { [Op.in]: ["accepted", "pending"] },
+        },
+        attributes: ["user_from"],
+      });
+
+      const friendIds = [
+        ...sentRequests.map((rel) => rel.user_to),
+        ...receivedRequests.map((rel) => rel.user_from),
+      ];
+
+      // Get users who are not friends
+      const suggestedFriends = await User.findAll({
+        where: {
+          id: { [Op.notIn]: [user_id, ...friendIds] },
+        },
+        attributes: ["id", "first_name", "last_name", "avatar_url"],
+        limit: 5,
+      });
+
+      return suggestedFriends;
+    } catch (error) {
+      throw new Error("Error retrieving suggested friends: " + error.message);
+    }
+  },
+  async deletePostAdmin(postId) {
     try {
       // Delete related records in likes, comments, and attachments tables
       await Like.destroy({ where: { post_id: postId } });
       await Comment.destroy({ where: { post_id: postId } });
       await Attachment.destroy({ where: { post_id: postId } });
-  
+
       // Delete the post
       const result = await Post.destroy({ where: { id: postId } });
-  
+
       if (result === 0) {
-        throw new Error('Post not found');
+        throw new Error("Post not found");
       }
-  
-      return { message: 'Post and related records deleted successfully' };
+
+      return { message: "Post and related records deleted successfully" };
     } catch (error) {
       throw new Error(`Error deleting post: ${error.message}`);
     }

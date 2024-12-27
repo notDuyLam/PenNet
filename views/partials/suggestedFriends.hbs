@@ -3,23 +3,44 @@
     Suggested Friends
   </div>
   <div class="flex flex-col pt-4">
-    {{!-- {{#each user.suggestedFriends}} --}}
-    <div class="flex m-4 ml-8 justify-between">
-      <div class="flex">
-        <img class="rounded-full w-8 h-8 mr-4" src="{{user.avatar}}" />
-        <div>
-          <div>
-            {{user.first_name}}
-            {{user.last_name}}
+    {{#each user}}
+      <div class="flex m-4 ml-8 justify-between" id="{{this.id}}">
+        <a href="/users/profile/{{this.id}}">   
+          <div class="flex justify-center items-center">
+            <img class="rounded-full w-8 h-8 mr-4" src="{{this.avatar_url}}" />
+            <div>
+              {{this.first_name}}
+              {{this.last_name}}
+            </div>
           </div>
+        </a>
+        <div
+          class="rounded bg-gray-300 h-8 w-8 mr-4 flex justify-center items-center"
+        >
+          <i class="fa-solid fa-plus"></i>
         </div>
       </div>
-      <div
-        class="rounded bg-gray-300 h-8 w-8 mr-4 flex justify-center items-center"
-      >
-        <i class="fa-solid fa-plus"></i>
-      </div>
-    </div>
-    {{!-- {{/each}} --}}
+    {{/each}}
   </div>
 </div>
+<script>
+  document.querySelectorAll('.fa-plus').forEach(button => {
+    button.addEventListener('click', function() {
+      const userId = this.closest('.flex').parentElement.id;
+      fetch(`/users/send-request-friend/${userId}`, {
+        method: 'POST',
+      })
+      .then(response => {
+        if (response.ok) {
+          this.closest('.flex').parentElement.remove();
+          alert('Friend request sent!');
+        } else {
+          alert('Failed to send friend request.');
+        }
+      })
+      .catch(error => {
+        alert('Failed to send friend request.');
+      });
+    });
+  });
+</script>
