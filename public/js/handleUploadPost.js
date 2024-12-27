@@ -38,20 +38,24 @@ document.getElementById("load-more").addEventListener("click", function () {
           postElement.className = "w-full border flex flex-col rounded mb-4";
           postElement.innerHTML = `
             <div class="flex justify-between border-b rounded p-4 w-full">
-                <div class="flex items-center">
-                    <img class="rounded-full w-12 h-12 mr-4"
-                        src="${
-                          post.user.avatar_url
-                            ? post.user.avatar_url
-                            : "/images/avatar.png"
-                        }"
-                        alt="user-avatar">
-                    <div>
-                        <div class="font-medium text-xl fullName">
-                            ${post.user.first_name} ${post.user.last_name}
-                        </div>
-                    </div>
-                </div>
+                <a href="/users/profile/${
+                  post.user.id
+                }" class="flex items-center">
+                  <div class="flex items-center">
+                      <img class="rounded-full w-12 h-12 mr-4"
+                          src="${
+                            post.user.avatar_url
+                              ? post.user.avatar_url
+                              : "/images/avatar.png"
+                          }"
+                          alt="user-avatar">
+                      <div>
+                          <div class="font-medium text-xl fullName">
+                              ${post.user.first_name} ${post.user.last_name}
+                          </div>
+                      </div>
+                  </div>
+                </a>
                 ${
                   post.user.id == user.id
                     ? `
