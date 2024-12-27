@@ -101,6 +101,7 @@ module.exports = function (passport) {
         date_of_birth: user.userInfo.date_of_birth,
         country: user.userInfo.country,
         isAdmin: user.isAdmin,
+        isBanned: user.isBanned,
       });
     });
   });

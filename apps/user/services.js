@@ -274,7 +274,7 @@ const userService = {
           ],
           id: { [Op.ne]: userId }, // Loại bỏ id trùng với userId
         },
-        attributes: ["id", "first_name", "last_name", "avatar_url"],
+        attributes: ["id", "first_name", "last_name", "avatar_url", "isBanned"],
       });
 
       if (!friends || friends.length === 0) {
@@ -363,7 +363,6 @@ const userService = {
   },
 
   async getNotifications(userId) {
-    // console.log(userId);
     try {
       // Fetch accepted friends
       const acceptedFriends = await UserRela.findAll({
@@ -831,6 +830,38 @@ const userService = {
       return { message: "User and related records deleted successfully" };
     } catch (error) {
       throw new Error(`Error deleting user: ${error.message}`);
+    }
+  },
+  async banUser(userId) {
+    try {
+      const user = await User.findByPk(userId);
+  
+      if (!user) {
+        throw new Error('User not found');
+      }
+  
+      user.isBanned = true;
+      await user.save();
+  
+      return { message: 'User banned successfully' };
+    } catch (error) {
+      throw new Error(`Error banning user: ${error.message}`);
+    }
+  },
+  async unbanUser(userId) {
+    try {
+      const user = await User.findByPk(userId);
+  
+      if (!user) {
+        throw new Error('User not found');
+      }
+  
+      user.isBanned = false;
+      await user.save();
+  
+      return { message: 'User banned successfully' };
+    } catch (error) {
+      throw new Error(`Error banning user: ${error.message}`);
     }
   },
 };

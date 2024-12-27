@@ -1,10 +1,14 @@
 const express = require("express");
 const userController = require("./user/controller");
-const { ensureAuthenticated } = require('../middlewares/auth');
-
+const { ensureAuthenticated, checkBan } = require("../middlewares/auth");
 
 // cài đặt router
 const router = express.Router();
+
+router.get("/ban", userController.renderBanPage);
+
+// Middleware check if user is banned
+router.use(checkBan);
 
 // Home route
 router.get("/", userController.renderHomePage);
@@ -14,14 +18,6 @@ router.get("/user/id=:id", (req, res) => {
 });
 
 // Login route
-router.get("/login", (req, res) => {
-  res.render("login", {});
-});
-
-// Signup route
-router.get("/signup", (req, res) => {
-  res.render("signup", {});
-});
 
 // friendRequest route
 // router.get("/friends", (req, res) => {
@@ -94,6 +90,11 @@ router.get("/Dang/test2", (req, res) => {
 });
 
 router.get("/search", userController.searchFriends);
-router.get("/notification", ensureAuthenticated,  userController.getNotifications);
+
+router.get(
+  "/notification",
+  ensureAuthenticated,
+  userController.getNotifications
+);
 
 module.exports = router;

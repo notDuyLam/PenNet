@@ -280,6 +280,7 @@ const userController = {
         last_name: userTarget.last_name,
         avatar_url: userTarget.avatar_url,
         isFriend: userTarget.isFriend,
+        isBanned: userTarget.isBanned,
       }));
       res.render("search", { query, user, results: filteredResults });
     } catch (error) {
@@ -306,10 +307,11 @@ const userController = {
   },
 
   async getNotifications(req, res) {
-    const userId = req.user.id; // Assuming user is authenticated and user ID is available
     try {
+      const userId = req.user.id; // Assuming user is authenticated and user ID is available
+      const suggestedFriends = await postService.getSuggestedFriends(userId);
       const notifications = await userService.getNotifications(userId);
-      res.render("notification", { user: req.user, notifications });
+      res.render("notification", { user: req.user, notifications, suggestedFriends });
     } catch (error) {
       console.error("Error fetching notifications:", error);
       return res.status(500).json({ errorMessage: "Server error" });
@@ -422,11 +424,12 @@ const userController = {
       const view_id = user.id;
       const posts = await postService.getPostsByUserId(view_id, user_id);
       const user_info = await postService.getUserById(user_id);
+      const suggestedFriends = await postService.getSuggestedFriends(view_id);
       const reviewers = [
         { id: 1, name: "Reviewer 1" },
         { id: 2, name: "Reviewer 2" },
       ];
-      res.render("personProfile", { user, user_info, posts, reviewers });
+      res.render("personProfile", { user, user_info, posts, reviewers, suggestedFriends: suggestedFriends });
     } catch (error) {
       console.error("Error rendering profile page:", error);
       return res.status(500).json({ errorMessage: "Server error" });
@@ -472,6 +475,7 @@ const userController = {
       };
       const userId = req.user.id; // Get user ID from authenticated session
       const friendPosts = await postService.getFriendPosts(userId);
+      const suggestedFriends = await postService.getSuggestedFriends(userId);
       const nonFriendPublicPosts = await postService.getNonFriendPublicPosts(
         userId,
         filter
@@ -480,6 +484,7 @@ const userController = {
       res.render("home", {
         user: req.user,
         posts: posts,
+        suggestedFriends: suggestedFriends,
       });
     } catch (error) {
       console.error("Error rendering home page:", error);
@@ -512,6 +517,36 @@ const userController = {
     } catch (error) {
       console.error("Error fetching more posts:", error);
       return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async renderBanPage(req, res) {
+    try {
+      res.render("ban", {
+        user: req.user, // Ensure req.user contains isBanned property
+      });
+    } catch (error) {
+      console.error("Error rendering ban page:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async banUser(req, res) {
+    try {
+      const userId = req.params.id;
+      const result = await userService.banUser(userId);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("Error banning user:", error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+  async unbanUser(req, res) {
+    try {
+      const userId = req.params.id;
+      const result = await userService.unbanUser(userId);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("Error unbanning user:", error);
+      return res.status(500).json({ message: error.message });
     }
   },
 };

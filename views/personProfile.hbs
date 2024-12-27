@@ -19,16 +19,18 @@
     </div>
     <div class="flex-grow">
         <div class="flex flex-col border rounded-lg max-h-1/2">
-            <div class="profile-image relative ml-8 flex-grow flex items-center">
-                <img class="h-32 w-32 rounded-full m-8"
-                    src="{{#if user_info.dataValues.avatar_url}}{{user_info.dataValues.avatar_url}}{{else}}/images/avatar.png{{/if}}"
-                    alt="{{user_info.dataValues.avatar_url}}"></img>
-                {{#if (eq user_info.dataValues.id user.id)}}
-                <div id="change-avatar" class="absolute bottom-8 rounded-full 
-                    bg-gray-300 h-8 w-8 flex justify-center items-center cursor-pointer" style="left:8rem">
-                    <i class="fa-solid fa-camera"></i>
+            <div class="profile-image ml-8 flex-grow flex items-center">
+                <div class="relative">
+                    <img class="h-32 w-32 rounded-full m-8"
+                        src="{{#if user_info.dataValues.avatar_url}}{{user_info.dataValues.avatar_url}}{{else}}/images/avatar.png{{/if}}"
+                        alt="{{user_info.dataValues.avatar_url}}"></img>
+                    {{#if (eq user_info.dataValues.id user.id)}}
+                    <div id="change-avatar" class="absolute bottom-8 right-8 rounded-full 
+                        bg-gray-300 h-8 w-8 flex justify-center items-center cursor-pointer">
+                        <i class="fa-solid fa-camera"></i>
+                    </div>
+                    {{/if}}
                 </div>
-                {{/if}}
                 <h1 class="hidden" id="user_id" >{{user.id}}</h1> 
                 <div class="ml-8 mb-4 font-medium text-2xl fullName">
                     {{#if user_info.dataValues.first_name}}{{user_info.dataValues.first_name}} {{user_info.dataValues.last_name}}{{else}}User Name{{/if}}
@@ -224,7 +226,7 @@
                 </div>
 
             </div>
-            {{> suggestedFriends user=user}}
+            {{> suggestedFriends user=suggestedFriends}}
         </div>
     </div>
 </div>
