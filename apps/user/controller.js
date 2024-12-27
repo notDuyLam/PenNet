@@ -280,6 +280,7 @@ const userController = {
         last_name: userTarget.last_name,
         avatar_url: userTarget.avatar_url,
         isFriend: userTarget.isFriend,
+        isBanned: userTarget.isBanned,
       }));
       res.render("search", { query, user, results: filteredResults });
     } catch (error) {
@@ -512,6 +513,36 @@ const userController = {
     } catch (error) {
       console.error("Error fetching more posts:", error);
       return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async renderBanPage(req, res) {
+    try {
+      res.render('ban', {
+        user: req.user, // Ensure req.user contains isBanned property
+      });
+    } catch (error) {
+      console.error("Error rendering ban page:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async banUser(req, res) {
+    try {
+      const userId = req.params.id;
+      const result = await userService.banUser(userId);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("Error banning user:", error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+  async unbanUser(req, res) {
+    try {
+      const userId = req.params.id;
+      const result = await userService.unbanUser(userId);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("Error unbanning user:", error);
+      return res.status(500).json({ message: error.message });
     }
   },
 };
