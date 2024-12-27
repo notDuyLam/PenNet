@@ -271,13 +271,15 @@ const userController = {
         return res.redirect("/users/login");
       }
       const user = req.user;
+      const user_id = req.user.id;
       const query = req.query.query;
-      const results = await userService.searchFriends(query);
+      const results = await userService.searchFriends(user_id, query);
       const filteredResults = results.map((userTarget) => ({
-        id: userTarget.dataValues.id,
-        first_name: userTarget.dataValues.first_name,
-        last_name: userTarget.dataValues.last_name,
-        avatar_url: userTarget.dataValues.avatar_url,
+        id: userTarget.id,
+        first_name: userTarget.first_name,
+        last_name: userTarget.last_name,
+        avatar_url: userTarget.avatar_url,
+        isFriend: userTarget.isFriend,
       }));
       res.render("search", { query, user, results: filteredResults });
     } catch (error) {

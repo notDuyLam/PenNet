@@ -38,7 +38,11 @@
               </a>
               </td>
               <td class="py-4 text-center">
-            <button class="add-friend-btn bg-green-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Add Friend</button>
+            {{#if this.isFriend}}
+                <button class="bg-blue-500 text-white px-4 py-2 rounded text-lg w-32" data-id="{{this.id}}">Friend</button>
+            {{else}}
+              <button class="add-friend-btn bg-green-500 text-white px-4 py-2 rounded text-lg w-32" data-id="{{this.id}}">Add Friend</button>
+            {{/if}}
               </td>
             </tr>
             {{/each}}
