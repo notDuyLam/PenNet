@@ -272,6 +272,7 @@ const userService = {
             { first_name: { [Op.like]: `%${query}%` } },
             { last_name: { [Op.like]: `%${query}%` } },
           ],
+          id: { [Op.ne]: userId }, // Loại bỏ id trùng với userId
         },
         attributes: ["id", "first_name", "last_name", "avatar_url"],
       });
