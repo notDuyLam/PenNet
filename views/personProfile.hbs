@@ -100,18 +100,23 @@
                 <div id="edit-profile-tab" class="hidden tap-item">
                     <div class="section-heading mb-4 ">
                         <h2 class="text-3xl font-bold">Profile</h2>
-                        <span class="text-gray-600 block mt-2">Modify your profile information below. Ensure that your
-                            details are accurate and up-to-date to maintain the integrity of your account.</span>
+                        {{#if (eq user_info.dataValues.id user.id)}}
+                            <span class="text-gray-600 block mt-2">Modify your profile information below. Ensure that your
+                                details are accurate and up-to-date to maintain the integrity of your account.</span>
+                        {{/if}}
 
                     </div>
 
                     <form id="profile-form" action="/users/profile">
-                        <div class="form-group mb-4">
-                            <label for="email" class="block text-gray-700 p-2 text-lg font-bold">Email</label>
-                            <input name="email" type="email" id="email"
-                                class="form-control border rounded w-full py-2 px-3 text-gray-700"
-                                placeholder="Enter your email" value="{{user_info.dataValues.email}}" readonly disabled>
-                        </div>
+                        {{#if (eq user_info.dataValues.id user.id)}}
+                            <div class="form-group mb-4">
+                                <label for="email" class="block text-gray-700 p-2 text-lg font-bold">Email</label>
+                                <input name="email" type="email" id="email"
+                                    class="form-control border rounded w-full py-2 px-3 text-gray-700"
+                                    placeholder="Enter your email" value="{{user_info.dataValues.email}}" readonly disabled>
+                            </div>
+                        {{/if}}
+
                         <div class="flex mb-4">
                             <div class="form-group w-1/2 pr-2">
                                 <label for="first_name" class="block text-gray-700 p-2 text-lg font-bold">First
