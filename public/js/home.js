@@ -1,13 +1,21 @@
+function gridClass(length) {
+  return length > 1 ? "grid grid-cols-2 gap-4" : "grid grid-cols-1 gap-4";
+}
+
 document
   .getElementById("image-upload")
   .addEventListener("change", function (event) {
     const fileInput = event.target;
     const files = fileInput.files;
+
+    // Tạo container cho các ảnh xem trước
     const previewContainer = document.createElement("div");
     previewContainer.id = "image-preview-container";
-    previewContainer.classList.add("flex", "flex-wrap", "mt-4");
 
-    // Clear previous previews
+    // Áp dụng class dựa trên số lượng ảnh
+    previewContainer.className = gridClass(files.length);
+
+    // Clear các ảnh xem trước trước đó
     const existingPreview = document.getElementById("image-preview-container");
     if (existingPreview) {
       existingPreview.remove();
@@ -21,9 +29,40 @@ document
       const reader = new FileReader();
 
       reader.onload = function (e) {
+        // Tạo ảnh xem trước
         const img = document.createElement("img");
         img.src = e.target.result;
-        img.classList.add("h-20", "w-20", "object-cover", "mr-2", "mb-2");
+        img.classList.add("h-200", "w-200", "object-cover", "mr-2", "mb-2");
+
+        // Thêm sự kiện click để mở modal
+        img.addEventListener("click", function () {
+          const modal = document.createElement("div");
+          modal.classList.add(
+            "fixed",
+            "inset-0",
+            "bg-black",
+            "bg-opacity-75",
+            "flex",
+            "items-center",
+            "justify-center",
+            "z-50"
+          );
+
+          const modalImg = document.createElement("img");
+          modalImg.src = e.target.result;
+          modalImg.classList.add("max-w-full", "max-h-full");
+
+          modal.appendChild(modalImg);
+
+          // Đóng modal khi click vào vùng modal
+          modal.addEventListener("click", function () {
+            modal.remove();
+          });
+
+          document.body.appendChild(modal);
+        });
+
+        // Thêm ảnh vào container
         previewContainer.appendChild(img);
       };
 
@@ -31,6 +70,8 @@ document
     }
 
     wrapperDiv.appendChild(previewContainer);
+
+    // Thêm container vào DOM
     const targetDiv = document.querySelector(
       ".flex.items-center.mb-4.data-send"
     );
