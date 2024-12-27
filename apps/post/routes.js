@@ -49,4 +49,6 @@ router.delete(
 // [PATCH] /posts/comment/:post_id/:comment_id
 router.patch("/comment/:post_id/:comment_id", postController.changeCommentPost);
 
+router.delete("/admin/:id", postController.deletePostAdmin);
+
 module.exports = router;

@@ -229,6 +229,20 @@ const postController = {
       res.status(500).json({ error: error.message });
     }
   },
+
+  async deletePostAdmin(req, res) {
+    try {
+      const postId = req.params.id;
+      const result = await postService.deletePostAdmin(postId);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      return res.status(500).json({ message: error.message });
+    }
+  },
+
+  
+
 };
 
 module.exports = postController;
