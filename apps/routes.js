@@ -48,12 +48,6 @@ router.get("/CodeGoogle", (req, res) => {
   res.render("CodeGoogle", {});
 });
 
-router.get("/message", (req, res) => {
-  res.render("message", {
-    user: req.user,
-  });
-});
-
 router.get("/group", (req, res) => {
   res.render("group", {});
 });

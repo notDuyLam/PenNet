@@ -9,6 +9,12 @@ const mongoose = require("mongoose");
 const db = require("./configs/db");
 
 const app = express();
+
+const http = require('http');
+const { Server } = require('socket.io');
+const server = http.createServer(app);
+const io = new Server(server);
+
 const port = 3000;
 
 // Để sử dụng biến môi trường trong file .env
@@ -59,10 +65,12 @@ app.set("views", "./views");
 // Định nghĩa các routes
 app.use("/users", require("./apps/user/routes"));
 app.use("/posts", require("./apps/post/routes"));
+app.use("/conversations", require("./apps/conversation/routes"));
 app.use("/", routes);
 
 // APIs
 app.use("/api/users", require("./apps/user/api"));
+app.use("/api/conversations", require("./apps/conversation/api"));
 
 // Kết nối database
 const {
@@ -91,12 +99,34 @@ const connectDB = async () => {
   }
 };
 
+// Websocket
+io.on('connection', (socket) => {
+  console.log(`User connected: ${socket.id}`);
+
+  // Xử lý tham gia phòng chat
+  socket.on('joinConversation', ({ conversationId }) => {
+      socket.join(conversationId);
+  });
+
+  // Xử lý khi client gửi tin nhắn
+  socket.on('sendMessage', async ({messageId, conversationId, senderId, message }) => {
+
+    const {isValid, newMessage} = await require('./apps/conversation/services').isValidMessage(messageId, conversationId, senderId, message);
+
+    if(isValid) io.to(conversationId).emit('receiveMessage', newMessage);
+  });
+
+  socket.on('disconnect', () => {
+      console.log(`User disconnected: ${socket.id}`);
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 
 (async () => {
   await connectDB();
   // Khởi động server
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
   });
 })();
