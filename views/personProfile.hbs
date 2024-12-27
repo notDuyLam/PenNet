@@ -60,6 +60,13 @@
                     </div>
                 </div>
             </div>
+            {{!-- {{#unless (eq user_info.dataValues.id user.id)}}
+            <div class="ml-auto mb-4 mr-28">
+                <button id="add-friend-button" class="bg-blue-500 text-white py-2 px-4 rounded">
+                    Add Friend
+                </button>
+            </div>
+            {{/unless}} --}}
             <div class="flex border-t p-3 font-medium text-gray-600">
                 {{#if (eq user_info.dataValues.id user.id)}}
                 <div id="myPost" class="tab-btn mr-6 ml-6 cursor-pointer active">

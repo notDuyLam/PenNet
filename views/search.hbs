@@ -31,10 +31,12 @@
           <tbody>
             {{#each results}}
             <tr class="border-b">
-                <td class="py-4 text-center flex items-center justify-center">
+              <td class="py-4 text-center flex items-center justify-center">
+              <a href="/users/profile/{{this.id}}" class="flex items-center">
                 <img src="{{this.avatar_url}}" alt="Avatar" class="w-10 h-10 rounded-full mr-4">
                 <span>{{this.first_name}} {{this.last_name}}</span>
-                </td>
+              </a>
+              </td>
               <td class="py-4 text-center">
             <button class="add-friend-btn bg-green-500 text-white px-4 py-2 rounded text-lg" data-id="{{this.id}}">Add Friend</button>
               </td>
