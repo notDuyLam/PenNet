@@ -181,15 +181,15 @@ $(document).on("click", ".post-comment", function () {
 });
 
 $(document).on("click", ".post-more-btn", function (e) {
-    const $items = $(this).siblings(".items");
-    $(".items").not($items).addClass("hidden");
-    $items.toggleClass("hidden");
-    e.stopPropagation();
+  const $items = $(this).siblings(".items");
+  $(".items").not($items).addClass("hidden");
+  $items.toggleClass("hidden");
+  e.stopPropagation();
 });
 
 // ẩn #items khi nhấn bên ngoài
 $(document).on("click", function () {
-    $(".items").addClass("hidden");
+  $(".items").addClass("hidden");
 });
 
 $(document).on("click", "#edit-post", function (e) {
@@ -231,16 +231,24 @@ $(document).on("click", "#edit-post", function (e) {
                                 >
                                 <div>
                                     <div>
-                                        ${post.user.first_name} ${post.user.last_name}
+                                        ${post.user.first_name} ${
+    post.user.last_name
+  }
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="grow flex flex-col overflow-y-auto scroll-custom">
-                            <div class="${post.attachments.length > 0? 'h-1/3': 'h-full'}">
+                            <div class="${
+                              post.attachments.length > 0 ? "h-1/3" : "h-full"
+                            }">
                                 <form id="edit-post-form">
                                     <textarea class="px-4 overflow-auto w-full h-full scroll-custom resize-none"
-                                        placeholder='${post.content.length > 0? '': "Type something here..."}'
+                                        placeholder='${
+                                          post.content.length > 0
+                                            ? ""
+                                            : "Type something here..."
+                                        }'
                                     >${post.content}</textarea>
                                 </form>
                             </div>
@@ -266,16 +274,14 @@ $(document).on("click", "#edit-post", function (e) {
             </div>
         </div>
     `);
-  if(post.attachments.length > 0)
-  {
+  if (post.attachments.length > 0) {
     let post_pictures = ``;
-    for(let i = 0; i < post.attachments.length; i++)
-    {
+    for (let i = 0; i < post.attachments.length; i++) {
       post_pictures += createPostImgElement(post.attachments[i].media_url);
     }
     $(edit_post_container).find(".picture-container").append(post_pictures);
   }
-  
+
   $("body").append(edit_post_container);
   $("body").addClass("no-scroll");
 
@@ -284,8 +290,8 @@ $(document).on("click", "#edit-post", function (e) {
     $("body").removeClass("no-scroll");
   });
 
-  $(document).on('click', '.image-post .remove-post', function (e) {
-    $(this).parent().addClass('hidden');
+  $(document).on("click", ".image-post .remove-post", function (e) {
+    $(this).parent().addClass("hidden");
   });
 
   $(document).on("change", "#edit-image-upload", function (e) {
@@ -296,66 +302,67 @@ $(document).on("click", "#edit-post", function (e) {
       const reader = new FileReader();
       reader.onload = function (e) {
         const imgElement = $(createPostImgElement(e.target.result));
-        imgElement.attr('getFromFile', `${i}`)
+        imgElement.attr("getFromFile", `${i}`);
         postPictures.append(imgElement);
-      }
+      };
       reader.readAsDataURL(file);
     }
   });
 
-  $(document).off("click", "#submit-form").on("click", "#submit-form", function () {
-    e.preventDefault();
+  $(document)
+    .off("click", "#submit-form")
+    .on("click", "#submit-form", function () {
+      e.preventDefault();
 
-    // Lấy dữ liệu từ form
-    const content = $("#edit-post-form textarea").val();
-    // Lấy ảnh
-    const formData = new FormData();
-    const fileInput = $("#edit-image-upload").get(0);
-    const files = fileInput.files;
+      // Lấy dữ liệu từ form
+      const content = $("#edit-post-form textarea").val();
+      // Lấy ảnh
+      const formData = new FormData();
+      const fileInput = $("#edit-image-upload").get(0);
+      const files = fileInput.files;
 
-    const visibleImages = $('.picture-container .image-post:not(.hidden)');
-    visibleImages.each(function () {
+      const visibleImages = $(".picture-container .image-post:not(.hidden)");
+      visibleImages.each(function () {
         const imgElement = $(this);
-        if(imgElement.attr('getFromFile'))
-        {
-            formData.append("images", files[imgElement.attr('getFromFile')]);
+        if (imgElement.attr("getFromFile")) {
+          formData.append("images", files[imgElement.attr("getFromFile")]);
         }
-    });
-
-    let removeImageSources = [];
-    $('.picture-container .image-post.hidden').each(function () {
-        const imgElement = $(this);
-        if (!imgElement.attr('getFromFile')) {
-            removeImageSources.push(imgElement.attr('src'));
-        }
-    });
-
-    // removeImageSources: mảng chưa src các ảnh cần xóa
-    // formData: chứa các file (ảnh) cần thêm vào
-
-    fetch(`/posts/${postId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded", // Gửi dữ liệu dạng x-www-form-urlencoded
-      },
-      body: new URLSearchParams({
-        content,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        alert("Post updated successfully!");
-        edit_post_container.remove(); // Đóng modal sau khi cập nhật thành công
-        $("body").removeClass("no-scroll");
-        // Update the post content on the page
-        const postElement = $(`[data-post-id="${postId}"]`);
-        postElement.find(".text-lg").text(content);
-      })
-      .catch((error) => {
-        console.error("Failed to update post:", error);
-        alert("Failed to update the post. Please try again!");
       });
-  });
+
+      let removeImageSources = [];
+      $(".picture-container .image-post.hidden").each(function () {
+        const imgElement = $(this).find("img");
+        if (!imgElement.attr("getFromFile")) {
+          removeImageSources.push(imgElement.attr("src"));
+        }
+      });
+
+      console.log(formData.getAll("images"));
+
+      // removeImageSources: mảng chưa src các ảnh cần xóa
+      // formData: chứa các file (ảnh) cần thêm vào
+
+      formData.append("content", content);
+      formData.append("removeImageSources", JSON.stringify(removeImageSources));
+
+      fetch(`/posts/${postId}`, {
+        method: "PATCH",
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          alert("Post updated successfully!");
+          edit_post_container.remove(); // Đóng modal sau khi cập nhật thành công
+          $("body").removeClass("no-scroll");
+          // Update the post content on the page
+          const postElement = $(`[data-post-id="${postId}"]`);
+          postElement.find(".text-lg").text(content);
+        })
+        .catch((error) => {
+          console.error("Failed to update post:", error);
+          alert("Failed to update the post. Please try again!");
+        });
+    });
 });
 
 $(document).on("click", "#delete-post", function (e) {
@@ -378,9 +385,8 @@ $(document).on("click", "#delete-post", function (e) {
   }
 });
 
-function createPostImgElement(url)
-{
-    return `
+function createPostImgElement(url) {
+  return `
         <div class="image-post max-w-44 bg-gray-200 p-2 flex flex-wrap relative">
             <div 
                 class="remove-post absolute top-2 right-2 rounded-full

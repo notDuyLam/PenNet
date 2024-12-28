@@ -153,13 +153,40 @@ const postService = {
   },
   async updatePost(post_id, user_id, data) {
     try {
+      const { content, access_modifier, removeImageSources, images } = data;
+
+      if (removeImageSources) {
+        const removeImageUrls = JSON.parse(removeImageSources);
+        await Attachment.destroy({
+          where: {
+            post_id,
+            media_url: { [Op.in]: removeImageUrls },
+          },
+        });
+      }
+
+      const updateData = {};
+      if (content) {
+        updateData.content = content;
+      }
+      if (access_modifier) {
+        updateData.access_modifier = access_modifier;
+      }
+
       const post = await Post.findOne({
         where: { id: post_id, user_id },
       });
       if (!post) {
         return { error: "Post not found!" };
       }
-      await post.update(data);
+      await post.update(updateData);
+      if (images && images.length > 0) {
+        const newAttachments = images.map((url) => ({
+          post_id,
+          media_url: url,
+        }));
+        await Attachment.bulkCreate(newAttachments);
+      }
       const updatedPost = await Post.findOne({
         where: { id: post_id },
         include: [{ model: Attachment, as: "attachments" }],

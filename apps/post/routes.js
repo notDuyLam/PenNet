@@ -26,7 +26,12 @@ router.get("/your-posts", postController.getPersonalPost);
 router.delete("/:post_id", postController.deletePost);
 
 // [PATCH] /posts/:post_id
-router.patch("/:post_id", postController.changePost);
+router.patch(
+  "/:post_id",
+  uploadPhoto.array("images", 5),
+  resizeAndUploadImage,
+  postController.changePost
+);
 
 // [GET] /posts/:post_id
 router.get("/:post_id", postController.getDetails);

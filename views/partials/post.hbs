@@ -13,6 +13,7 @@
             </div>
         </a>
         <div class="relative flex flex-col justify-end">
+            {{#if (eq post.user.id user.id)}}
             <div class="post-more-btn flex justify-end cursor-pointer">
             <i class="fa-solid fa-ellipsis"></i>
             </div>
@@ -21,15 +22,14 @@
             class="items absolute right-0 top-5 bg-white border rounded-xl shadow-lg 
             group-hover:block w-48 hidden"
             >
-            {{#if (eq post.user.id user.id)}}
             <a href="#" id="edit-post" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
                 <div class="flex items-center">
                 <i class="fa-solid fa-pen-fancy"></i>
                 <div class="ml-2"><span>Edit post</span></div>
                 </div>
             </a>
-            {{/if}}
             </div>
+            {{/if}}
             {{#if user.isAdmin}}
             <a href="#" class="delete-post-btn block px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg text-lg" data-id="{{post.id}}">
                 <div class="flex items-center">

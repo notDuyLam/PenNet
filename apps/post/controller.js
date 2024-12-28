@@ -86,11 +86,14 @@ const postController = {
       }
       const post_id = req.params.post_id;
       const user_id = req.user.id;
+      const imageUrls = req.imageUrls;
       const data = {
         content: req.body.content,
         access_modifier: req.body.access_modifier,
+        removeImageSources: req.body.removeImageSources,
+        images: imageUrls,
       };
-      if (!post_id || !data.content) {
+      if (!post_id) {
         return res.status(400).json({ error: "Missing required fields" });
       }
       postService
@@ -240,9 +243,6 @@ const postController = {
       return res.status(500).json({ message: error.message });
     }
   },
-
-  
-
 };
 
 module.exports = postController;
