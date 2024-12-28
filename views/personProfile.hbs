@@ -33,6 +33,7 @@
                     {{/if}}
                 </div>
                 <h1 class="hidden" id="user_id">{{user.id}}</h1>
+                <h1 class="hidden" id="viewer_id">{{user_info.dataValues.id}}</h1>
                 <div class="ml-8 mb-4 font-medium text-2xl fullName">
                     {{#if user_info.dataValues.first_name}}{{user_info.dataValues.first_name}}
                     {{user_info.dataValues.last_name}}{{else}}User Name{{/if}}
@@ -213,38 +214,40 @@
                 </div>
                 {{!-- your reviews --}}
                 <div id="your-review-tab" class="tap-item hidden">
-                    <div id="reviews-container" class="overflow-y-scroll h-56 scroll-custom">
+                    <div id="reviews-container" class="overflow-y-scroll max-h-56 {{#if reviewers}}min-h-36{{/if}} scroll-custom">
                         {{#each reviewers}}
                         <div class="comment flex p-4 border-b" data-review-id="{{this.id}}">
-                            <img class="rounded-full w-12 h-12 mr-4" src="{{this.avatar}}" alt="user-avatar">
+                            <img class="rounded-full w-12 h-12 mr-4" src="{{this.fromUser.avatar_url}}" alt="user-avatar">
                             <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
                                 <div class="rounded-xl p-2 pl-4 pr-4 w-full">
-                                    <div class="font-bold">{{this.first_name}} {{this.last_name}} name</div>
+                                    <div class="font-bold">{{this.fromUser.first_name}} {{this.fromUser.last_name}}</div>
                                     <div class="w-full flex justify-between items-center">
-                                        <div class="review-content w-full">{{this.content}} abc</div>
+                                        <div class="review-content w-full">{{this.content}}</div>
                                         <button type="submit"
                                             class="submit-btn hidden ml-4 bg-green-500 text-white py-2 px-4 rounded self-end">
                                             Submit
                                         </button>
                                     </div>          
                                 </div>
+
+                                {{#if (or (eq ../user.id this.user_from) (eq ../user.id this.user_to))}}
                                 <div class="review-edit flex text-xl mr-2 relative">
                                     <i class="fa-solid fa-pen-to-square mr-2 cursor-pointer"></i>
                                     <div class="items absolute right-0 w-24 top-6 p-2 z-10 
                                         bg-white border rounded-xl shadow-lg hidden
                                         group-hover:block">
-                                        <div class="edit-review w-full px-4 hover:bg-gray-200 cursor-pointer">
-                                            Edit
-                                        </div>
-                                        <div class="delete-review w-full px-4 hover:bg-gray-200 cursor-pointer">
-                                            Delete
-                                        </div>
+                                        {{#if (eq ../user.id this.user_from)}}
+                                        <div class="edit-review w-full px-4 hover:bg-gray-200 cursor-pointer">Edit</div>
+                                        {{/if}}
+                                        <div class="delete-review w-full px-4 hover:bg-gray-200 cursor-pointer">Delete</div>
                                     </div>
                                 </div>
+                                {{/if}}
                             </div>
                         </div>
                         {{/each}}
                     </div>
+                    {{#if isFriends}}
                     <div class="flex p-4 border-b">
                         <img class="rounded-full w-12 h-12 mr-4" src="{{user.avatar}}" alt="user-avatar">
                         <div class="rounded-xl flex-grow flex bg-gray-200 items-center w-full">
@@ -264,6 +267,7 @@
                             </div>
                         </div>
                     </div>
+                    {{/if}}
                 </div>
 
             </div>

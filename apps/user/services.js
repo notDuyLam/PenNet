@@ -9,6 +9,7 @@ const Message = require("../conversation/message/model");
 const Participant = require("../conversation/participant/model");
 const Conversation = require("../conversation/model");
 const UserRela = require("./user_rela/model");
+const Review = require("./user_review/model");
 const { Op, Sequelize } = require("sequelize");
 
 const userService = {
@@ -835,15 +836,15 @@ const userService = {
   async banUser(userId) {
     try {
       const user = await User.findByPk(userId);
-  
+
       if (!user) {
-        throw new Error('User not found');
+        throw new Error("User not found");
       }
-  
+
       user.isBanned = true;
       await user.save();
-  
-      return { message: 'User banned successfully' };
+
+      return { message: "User banned successfully" };
     } catch (error) {
       throw new Error(`Error banning user: ${error.message}`);
     }
@@ -851,17 +852,113 @@ const userService = {
   async unbanUser(userId) {
     try {
       const user = await User.findByPk(userId);
-  
+
       if (!user) {
-        throw new Error('User not found');
+        throw new Error("User not found");
       }
-  
+
       user.isBanned = false;
       await user.save();
-  
-      return { message: 'User banned successfully' };
+
+      return { message: "User banned successfully" };
     } catch (error) {
       throw new Error(`Error banning user: ${error.message}`);
+    }
+  },
+  async isFriend(userId, reviewedUserId) {
+    try {
+      const relation = await UserRela.findOne({
+        where: {
+          [Op.or]: [
+            { user_from: userId, user_to: reviewedUserId },
+            { user_from: reviewedUserId, user_to: userId },
+          ],
+          status: "accepted",
+        },
+      });
+      return relation !== null;
+    } catch (error) {
+      throw new Error("Error checking friendship: " + error.message);
+    }
+  },
+  async addReview(userId, reviewedUserId, content) {
+    try {
+      const review = await Review.create({
+        user_from: userId,
+        user_to: reviewedUserId,
+        content: content,
+      });
+      return review;
+    } catch (error) {
+      throw new Error("Error adding review: " + error.message);
+    }
+  },
+  async deleteReview(userId, reviewedUserId, reviewId) {
+    try {
+      let review;
+      if (userId == reviewedUserId) {
+        review = await Review.findOne({
+          where: {
+            id: reviewId,
+          },
+        });
+      } else {
+        review = await Review.findOne({
+          where: {
+            id: reviewId,
+            user_from: userId,
+            user_to: reviewedUserId,
+          },
+        });
+      }
+
+      if (!review) {
+        throw new Error("Review not found");
+      }
+
+      await review.destroy();
+      return { message: "Review deleted successfully" };
+    } catch (error) {
+      throw new Error("Error deleting review: " + error.message);
+    }
+  },
+  async editReview(userId, reviewedUserId, reviewId, content) {
+    try {
+      const review = await Review.findOne({
+        where: {
+          id: reviewId,
+          user_from: userId,
+          user_to: reviewedUserId,
+        },
+      });
+
+      if (!review) {
+        throw new Error("Review not found");
+      }
+
+      review.content = content;
+      await review.save();
+
+      return review;
+    } catch (error) {
+      throw new Error("Error editing review: " + error.message);
+    }
+  },
+  async getReviewers(user_id) {
+    try {
+      const reviews = await Review.findAll({
+        where: { user_to: user_id },
+        include: [
+          {
+            model: User,
+            as: "fromUser",
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
+          },
+        ],
+      });
+      return reviews;
+    } catch (error) {
+      throw new Error("Error retrieving reviews: " + error.message);
     }
   },
 };

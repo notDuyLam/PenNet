@@ -59,6 +59,9 @@ const hbs = create({
         return `${day} ${month} ${year}`;
       }
     },
+    or: function (a, b) {
+      return a || b;
+    },
   },
 });
 

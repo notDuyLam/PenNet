@@ -1,6 +1,7 @@
 const User = require('./user/model');                               // Model User
 const UserInfo = require('./user/user_info/model');                 // Model UserInfo
 const UserRela = require('./user/user_rela/model');                 // Model UserRela
+const Review = require("./user/user_review/model")
 
 const Post = require('./post/model');                               // Model Post
 const Like = require('./post/like/model');                          // Model Like
@@ -20,6 +21,25 @@ UserInfo.belongsTo(User, {
   foreignKey: 'user_id',
   as: 'user',
 });
+
+// User - Review
+User.hasMany(Review, {
+  foreignKey: 'user_from',
+  as: 'sentReviews',
+});
+User.hasMany(Review, {
+  foreignKey: 'user_to',
+  as: 'receivedReviews',
+});
+Review.belongsTo(User, {
+  foreignKey: 'user_from',
+  as: 'fromUser',
+});
+Review.belongsTo(User, {
+  foreignKey: 'user_to',
+  as: 'toUser',
+});
+
 
 // User - UserRela
 User.hasMany(UserRela, {

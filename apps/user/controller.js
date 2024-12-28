@@ -1,6 +1,6 @@
 const userService = require("./services");
 const postService = require("../post/services");
-const conversationService = require('../conversation/services');
+const conversationService = require("../conversation/services");
 const passport = require("passport");
 
 const userController = {
@@ -312,7 +312,11 @@ const userController = {
       const userId = req.user.id; // Assuming user is authenticated and user ID is available
       const suggestedFriends = await postService.getSuggestedFriends(userId);
       const notifications = await userService.getNotifications(userId);
-      res.render("notification", { user: req.user, notifications, suggestedFriends });
+      res.render("notification", {
+        user: req.user,
+        notifications,
+        suggestedFriends,
+      });
     } catch (error) {
       console.error("Error fetching notifications:", error);
       return res.status(500).json({ errorMessage: "Server error" });
@@ -359,7 +363,11 @@ const userController = {
       const result = await userService.acceptFriendRequest(userId, friendId);
 
       // Create conversation
-      await conversationService.createConversationWithParticipants(userId, friendId, false);
+      await conversationService.createConversationWithParticipants(
+        userId,
+        friendId,
+        false
+      );
 
       return res.status(200).json({ result });
     } catch (error) {
@@ -429,11 +437,16 @@ const userController = {
       const posts = await postService.getPostsByUserId(view_id, user_id);
       const user_info = await postService.getUserById(user_id);
       const suggestedFriends = await postService.getSuggestedFriends(view_id);
-      const reviewers = [
-        { id: 1, name: "Reviewer 1" },
-        { id: 2, name: "Reviewer 2" },
-      ];
-      res.render("personProfile", { user, user_info, posts, reviewers, suggestedFriends: suggestedFriends });
+      const reviewers = await userService.getReviewers(user_id);
+      const isFriends = await userService.isFriend(view_id, user_id);
+      res.render("personProfile", {
+        user,
+        user_info,
+        posts,
+        reviewers,
+        suggestedFriends: suggestedFriends,
+        isFriends,
+      });
     } catch (error) {
       console.error("Error rendering profile page:", error);
       return res.status(500).json({ errorMessage: "Server error" });
@@ -551,6 +564,81 @@ const userController = {
     } catch (error) {
       console.error("Error unbanning user:", error);
       return res.status(500).json({ message: error.message });
+    }
+  },
+  async addReview(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+      const userId = req.user.id; // Get user ID from authenticated session
+      const { reviewedUserId } = req.params; // Get the user ID to be reviewed from request parameters
+      const { content } = req.body; // Get rating and comment from request body
+      // Check if the user is a friend
+      const isFriend = await userService.isFriend(userId, reviewedUserId);
+      if (!isFriend) {
+        return res
+          .status(403)
+          .json({ errorMessage: "You can only review friends" });
+      }
+      // Add review
+      const review = await userService.addReview(
+        userId,
+        reviewedUserId,
+        content
+      );
+      return res
+        .status(200)
+        .json({ successMessage: "Review added successfully", review });
+    } catch (error) {
+      console.error("Error adding review:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async deleteReview(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+      const userId = req.user.id; // Get user ID from authenticated session
+      const { reviewedUserId, review_id } = req.params; // Get reviewed user ID and review ID from request parameters
+
+      // Delete review
+      const result = await userService.deleteReview(
+        userId,
+        reviewedUserId,
+        review_id
+      );
+      return res
+        .status(200)
+        .json({ successMessage: "Review deleted successfully", result });
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
+  async editReview(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+      const userId = req.user.id; // Get user ID from authenticated session
+      const { reviewedUserId, review_id } = req.params; // Get reviewed user ID and review ID from request parameters
+      const { content } = req.body; // Get updated content from request body
+
+      // Edit review
+      const review = await userService.editReview(
+        userId,
+        reviewedUserId,
+        review_id,
+        content
+      );
+      return res
+        .status(200)
+        .json({ successMessage: "Review edited successfully", review });
+    } catch (error) {
+      console.error("Error editing review:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
     }
   },
 };
