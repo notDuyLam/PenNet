@@ -1,6 +1,7 @@
 <style>
     .active {
-        color: black;
+        text-decoration: underline;
+        font-size: large;
     }
 </style>
 
@@ -31,9 +32,10 @@
                     </div>
                     {{/if}}
                 </div>
-                <h1 class="hidden" id="user_id" >{{user.id}}</h1> 
+                <h1 class="hidden" id="user_id">{{user.id}}</h1>
                 <div class="ml-8 mb-4 font-medium text-2xl fullName">
-                    {{#if user_info.dataValues.first_name}}{{user_info.dataValues.first_name}} {{user_info.dataValues.last_name}}{{else}}User Name{{/if}}
+                    {{#if user_info.dataValues.first_name}}{{user_info.dataValues.first_name}}
+                    {{user_info.dataValues.last_name}}{{else}}User Name{{/if}}
                 </div>
                 <div class="ml-auto flex ">
                     <div class="flex flex-col items-center mr-8">
@@ -80,18 +82,18 @@
                 </div>
                 {{/if}}
                 <div id="editProfile" class="tab-btn mr-6 ml-6 cursor-pointer">
-                   {{#if (eq user_info.dataValues.id user.id)}}
-                        Edit Profile
+                    {{#if (eq user_info.dataValues.id user.id)}}
+                    Edit Profile
                     {{else}}
-                        View Profile
+                    View Profile
                     {{/if}}
                 </div>
                 <div id="yourReviews" class="tab-btn mr-6 ml-6 cursor-pointer">
-                    
+
                     {{#if (eq user_info.dataValues.id user.id)}}
-                        Your Reviews
+                    Your Reviews
                     {{else}}
-                        Other Reviews
+                    Other Reviews
                     {{/if}}
                 </div>
             </div>
@@ -101,7 +103,7 @@
                 {{!-- my post --}}
                 <div id="my-post-tab" class="hidden tap-item">
                     {{#each posts}}
-                        {{> post post=this user=../user}}
+                    {{> post post=this user=../user}}
                     {{/each}}
                 </div>
 
@@ -110,20 +112,20 @@
                     <div class="section-heading mb-4 ">
                         <h2 class="text-3xl font-bold">Profile</h2>
                         {{#if (eq user_info.dataValues.id user.id)}}
-                            <span class="text-gray-600 block mt-2">Modify your profile information below. Ensure that your
-                                details are accurate and up-to-date to maintain the integrity of your account.</span>
+                        <span class="text-gray-600 block mt-2">Modify your profile information below. Ensure that your
+                            details are accurate and up-to-date to maintain the integrity of your account.</span>
                         {{/if}}
 
                     </div>
 
                     <form id="profile-form" action="/users/profile">
                         {{#if (eq user_info.dataValues.id user.id)}}
-                            <div class="form-group mb-4">
-                                <label for="email" class="block text-gray-700 p-2 text-lg font-bold">Email</label>
-                                <input name="email" type="email" id="email"
-                                    class="form-control border rounded w-full py-2 px-3 text-gray-700"
-                                    placeholder="Enter your email" value="{{user_info.dataValues.email}}" readonly disabled>
-                            </div>
+                        <div class="form-group mb-4">
+                            <label for="email" class="block text-gray-700 p-2 text-lg font-bold">Email</label>
+                            <input name="email" type="email" id="email"
+                                class="form-control border rounded w-full py-2 px-3 text-gray-700"
+                                placeholder="Enter your email" value="{{user_info.dataValues.email}}" readonly disabled>
+                        </div>
                         {{/if}}
 
                         <div class="flex mb-4">
@@ -132,14 +134,16 @@
                                     Name</label>
                                 <input name="first_name" type="text" id="first_name"
                                     class="form-control border rounded w-full py-2 px-3 text-gray-700"
-                                    placeholder="Enter your first name" value="{{user_info.dataValues.first_name}}" readonly disabled>
+                                    placeholder="Enter your first name" value="{{user_info.dataValues.first_name}}"
+                                    readonly disabled>
                             </div>
                             <div class="form-group w-1/2 pl-2">
                                 <label for="last_name" class="block text-gray-700 p-2 text-lg font-bold">Last
                                     Name</label>
                                 <input name="last_name" type="text" id="last_name"
                                     class="form-control border rounded w-full py-2 px-3 text-gray-700"
-                                    placeholder="Enter your last name" value="{{user_info.dataValues.last_name}}" readonly disabled>
+                                    placeholder="Enter your last name" value="{{user_info.dataValues.last_name}}"
+                                    readonly disabled>
                             </div>
                         </div>
                         <div class="form-group mb-4">
@@ -156,8 +160,8 @@
                         <div class="form-group mb-4">
                             <label for="country" class="block text-gray-700 p-2 text-lg font-bold">Country</label>
                             <input name="country" type="text" id="country"
-                                class="form-control border rounded w-full py-2 px-3 text-gray-700"
-                                placeholder="" value="{{user_info.dataValues.userInfo.country}}" readonly disabled>
+                                class="form-control border rounded w-full py-2 px-3 text-gray-700" placeholder=""
+                                value="{{user_info.dataValues.userInfo.country}}" readonly disabled>
                         </div>
                     </form>
 
@@ -191,38 +195,75 @@
                     </form>
 
                     {{#if (eq user_info.dataValues.id user.id)}}
-                        <div class="flex justify-center">
-                            <button id="edit-button" class="mt-5 bg-blue-500 text-white py-2 px-4 rounded w-1/3 mx-2">
-                                Edit Information
-                            </button>
-                            <button id="save-button"
-                                class="mt-5 bg-green-500 text-white py-2 px-4 rounded hidden w-1/3 mx-2">
-                                Save Information
-                            </button>
-                            <button id="change-password-button"
-                                class="mt-5 bg-red-500 text-white py-2 px-4 rounded w-1/3 mx-2">
-                                Change Password
-                            </button>
-                        </div>
+                    <div class="flex justify-center">
+                        <button id="edit-button" class="mt-5 bg-blue-500 text-white py-2 px-4 rounded w-1/3 mx-2">
+                            Edit Information
+                        </button>
+                        <button id="save-button"
+                            class="mt-5 bg-green-500 text-white py-2 px-4 rounded hidden w-1/3 mx-2">
+                            Save Information
+                        </button>
+                        <button id="change-password-button"
+                            class="mt-5 bg-red-500 text-white py-2 px-4 rounded w-1/3 mx-2">
+                            Change Password
+                        </button>
+                    </div>
                     {{/if}}
 
                 </div>
                 {{!-- your reviews --}}
                 <div id="your-review-tab" class="tap-item hidden">
-                    {{#each reviewers}}
-                    <div class="comment flex p-4 border-b">
-                        <img class="rounded-full w-12 h-12 mr-4" src="{{this.avatar}}" alt="user-avatar">
-                        <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
-                            <div class="rounded-xl p-2 pl-4 pr-4">
-                                <div class="font-bold">{{username}}</div>
-                                <div>{{reviewer.review}}</div>
+                    <div id="reviews-container" class="overflow-y-scroll h-56 scroll-custom">
+                        {{#each reviewers}}
+                        <div class="comment flex p-4 border-b" data-review-id="{{this.id}}">
+                            <img class="rounded-full w-12 h-12 mr-4" src="{{this.avatar}}" alt="user-avatar">
+                            <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
+                                <div class="rounded-xl p-2 pl-4 pr-4 w-full">
+                                    <div class="font-bold">{{this.first_name}} {{this.last_name}} name</div>
+                                    <div class="w-full flex justify-between items-center">
+                                        <div class="review-content w-full">{{this.content}} abc</div>
+                                        <button type="submit"
+                                            class="submit-btn hidden ml-4 bg-green-500 text-white py-2 px-4 rounded self-end">
+                                            Submit
+                                        </button>
+                                    </div>          
+                                </div>
+                                <div class="review-edit flex text-xl mr-2 relative">
+                                    <i class="fa-solid fa-pen-to-square mr-2 cursor-pointer"></i>
+                                    <div class="items absolute right-0 w-24 top-6 p-2 z-10 
+                                        bg-white border rounded-xl shadow-lg hidden
+                                        group-hover:block">
+                                        <div class="edit-review w-full px-4 hover:bg-gray-200 cursor-pointer">
+                                            Edit
+                                        </div>
+                                        <div class="delete-review w-full px-4 hover:bg-gray-200 cursor-pointer">
+                                            Delete
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="comment-like flex text-xl mr-2">
-                                <i class="fa-regular fa-thumbs-up mr-2 cursor-pointer"></i>
+                        </div>
+                        {{/each}}
+                    </div>
+                    <div class="flex p-4 border-b">
+                        <img class="rounded-full w-12 h-12 mr-4" src="{{user.avatar}}" alt="user-avatar">
+                        <div class="rounded-xl flex-grow flex bg-gray-200 items-center w-full">
+                            <div class="rounded-xl p-2 pl-4 pr-4 grow">
+                                <div class="font-bold">{{user.first_name}} {{user.last_name}}</div>
+                                <form id="comment-form" data-profile-id="{{user.id}}">
+                                    <div class="flex justify-between items-center">
+                                        <input name="content" id="content" type="text" class="w-full p-4 border border-[#ECF0F5] 
+                                    rounded-md text-sm text-[#707988]" placeholder="Comment here" />
+                                        <button type="submit"
+                                            class="ml-4 bg-green-500 text-white py-2 px-4 rounded self-end">
+                                            Submit
+                                        </button>
+                                    </div>
+
+                                </form>
                             </div>
                         </div>
                     </div>
-                    {{/each}}
                 </div>
 
             </div>
@@ -268,7 +309,7 @@
     $(document).ready(function () {
 
         // Hàm để gửi yêu cầu và nhận nhiều post mới
-        
+
         // function getNewPosts() {
         //     $.ajax({
         //         url: '/Dang/test2', // API để nhận các post mới
@@ -327,6 +368,7 @@
         changeTab(tab);
     });
 </script>
+<script src="/js/profileReview.js"></script>
 <script src="/js/profile.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
