@@ -83,3 +83,65 @@ requestList.addEventListener("click", function (event) {
     }
   }
 });
+
+// Lắng nghe sự kiện click trên biểu tượng ba chấm
+document.querySelectorAll("#bacham").forEach((button) => {
+  button.addEventListener("click", function (event) {
+    const menu = button.nextElementSibling;
+
+    // Kiểm tra nếu menu đang hiển thị hay không và toggle hiển thị
+    if (menu.style.display === "block") {
+      menu.style.display = "none"; // Ẩn menu
+    } else {
+      menu.style.display = "block"; // Hiển thị menu
+    }
+
+    // Ngừng sự kiện lan truyền để tránh đóng menu ngay lập tức
+    event.stopPropagation();
+  });
+});
+
+// Đóng menu nếu click ra ngoài
+document.addEventListener("click", function (event) {
+  document.querySelectorAll("#showMenu").forEach((menu) => {
+    const button = menu.previousElementSibling;
+
+    // Kiểm tra nếu người dùng nhấn vào ngoài menu hoặc nút ba chấm
+    if (!menu.contains(event.target) && event.target !== button) {
+      menu.style.display = "none"; // Ẩn menu nếu click ra ngoài
+    }
+  });
+});
+
+// Lắng nghe sự kiện click cho các nút "Unfriend" và "Block"
+document.querySelectorAll("#showMenu").forEach((menu) => {
+  menu.addEventListener("click", function (event) {
+    const friendId = menu.closest("div[id]").parentElement.parentElement.id;
+
+    if (event.target.classList.contains("unfriend-button")) {
+      // Xử lý hành động hủy kết bạn
+      fetch(`/users/friend-request/denied/${friendId}`, { method: "DELETE" })
+        .then((response) => {
+          if (response.ok) {
+            document.getElementById(friendId).remove();
+            alert("Friend has been removed.");
+          } else {
+            alert("Failed to unfriend.");
+          }
+        })
+        .catch((error) => console.error("Error:", error));
+    } else if (event.target.classList.contains("block-button")) {
+      // Xử lý hành động block
+      fetch(`/users/friend-request/block/${friendId}`, { method: "POST" })
+        .then((response) => {
+          if (response.ok) {
+            document.getElementById(friendId).remove();
+            alert("User has been blocked.");
+          } else {
+            alert("Failed to block user.");
+          }
+        })
+        .catch((error) => console.error("Error:", error));
+    }
+  });
+});

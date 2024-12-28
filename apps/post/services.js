@@ -4,6 +4,7 @@ const Comment = require("./comment/model");
 const Attachment = require("./attachment/model");
 const User = require("../user/model");
 const UserRela = require("../user/user_rela/model");
+const UserInfo = require("../user/user_info/model");
 const { Op } = require("sequelize");
 
 const postService = {
@@ -30,10 +31,38 @@ const postService = {
       throw new Error("Error creating post: " + error.message);
     }
   },
-  async getPostsByUserId(user_id) {
+  async getPostsByUserId(view_id, user_id) {
     try {
+      let whereClause = { user_id };
+
+      if (view_id !== user_id) {
+        // Check if the users are friends or blocked
+        const userRelationship = await UserRela.findOne({
+          where: {
+            [Op.or]: [
+              { user_from: view_id, user_to: user_id },
+              { user_from: user_id, user_to: view_id },
+            ],
+          },
+        });
+
+        if (userRelationship) {
+          if (userRelationship.status === "blocked") {
+            return [];
+          } else if (userRelationship.status === "accepted") {
+            whereClause.access_modifier = {
+              [Op.in]: ["public", "friends_only"],
+            };
+          } else {
+            whereClause.access_modifier = "public";
+          }
+        } else {
+          whereClause.access_modifier = "public";
+        }
+      }
+
       const posts = await Post.findAll({
-        where: { user_id },
+        where: whereClause,
         include: [
           { model: Attachment, as: "attachments" },
           {
@@ -44,6 +73,7 @@ const postService = {
         ],
         order: [["createdAt", "DESC"]],
       });
+
       const likes = await Like.findAll({
         where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
         attributes: ["id", "user_id", "post_id"],
@@ -55,11 +85,13 @@ const postService = {
           },
         ],
       });
+
       posts.forEach((post) => {
         post.dataValues.likes = likes.filter(
           (like) => like.post_id === post.id
         );
       });
+
       const comments = await Comment.findAll({
         where: { post_id: { [Op.in]: posts.map((post) => post.id) } },
         attributes: ["id", "user_id", "post_id", "content"],
@@ -71,14 +103,35 @@ const postService = {
           },
         ],
       });
+
       posts.forEach((post) => {
         post.dataValues.comments = comments.filter(
           (comment) => comment.post_id === post.id
         );
       });
+
       return posts;
     } catch (error) {
       throw new Error("Error retrieving posts: " + error.message);
+    }
+  },
+  async getUserById(user_id) {
+    try {
+      const user = await User.findOne({
+        where: { id: user_id },
+        include: [
+          {
+            model: UserInfo,
+            as: "userInfo", // Chỉ định alias đã định nghĩa
+          },
+        ],
+      });
+      if (!user) {
+        return null;
+      }
+      return user;
+    } catch (error) {
+      throw new Error("Error retrieving user: " + error.message);
     }
   },
   async deletePost(post_id, user_id) {
@@ -87,7 +140,7 @@ const postService = {
         where: { id: post_id, user_id },
       });
       if (!post) {
-        throw new Error("Post not found!");
+        return { error: "Post not found!" };
       }
       await Attachment.destroy({
         where: { post_id },
@@ -100,13 +153,40 @@ const postService = {
   },
   async updatePost(post_id, user_id, data) {
     try {
+      const { content, access_modifier, removeImageSources, images } = data;
+
+      if (removeImageSources) {
+        const removeImageUrls = JSON.parse(removeImageSources);
+        await Attachment.destroy({
+          where: {
+            post_id,
+            media_url: { [Op.in]: removeImageUrls },
+          },
+        });
+      }
+
+      const updateData = {};
+      if (content) {
+        updateData.content = content;
+      }
+      if (access_modifier) {
+        updateData.access_modifier = access_modifier;
+      }
+
       const post = await Post.findOne({
         where: { id: post_id, user_id },
       });
       if (!post) {
-        throw new Error("Post not found!");
+        return { error: "Post not found!" };
       }
-      await post.update(data);
+      await post.update(updateData);
+      if (images && images.length > 0) {
+        const newAttachments = images.map((url) => ({
+          post_id,
+          media_url: url,
+        }));
+        await Attachment.bulkCreate(newAttachments);
+      }
       const updatedPost = await Post.findOne({
         where: { id: post_id },
         include: [{ model: Attachment, as: "attachments" }],
@@ -130,7 +210,7 @@ const postService = {
         ],
       });
       if (!post) {
-        throw new Error("Post not found!");
+        return { error: "Post not found!" };
       }
       const likes = await Like.findAll({
         where: { post_id },
@@ -167,7 +247,7 @@ const postService = {
         where: { id: post_id },
       });
       if (!post) {
-        throw new Error("Post not found!");
+        return { error: "Post not found!" };
       }
       const existingLike = await Like.findOne({
         where: { user_id, post_id },
@@ -239,7 +319,7 @@ const postService = {
         where: { id, post_id, user_id },
       });
       if (!comment) {
-        throw new Error("Comment not found!");
+        return { error: "Comment not found!" };
       }
       await comment.destroy();
       return { message: "Comment deleted successfully." };
@@ -253,7 +333,7 @@ const postService = {
         where: { id, post_id, user_id },
       });
       if (!comment) {
-        throw new Error("Comment not found!");
+        return { error: "Comment not found!" };
       }
       await comment.update({ content });
       return { message: "Comment updated successfully.", content: comment };
@@ -408,7 +488,7 @@ const postService = {
       // Kiểm tra người dùng có tồn tại
       const user = await User.findByPk(user_id);
       if (!user) {
-        throw new Error("User not found");
+        return { error: "User not found" };
       }
 
       // Tìm danh sách bạn bè từ cả yêu cầu gửi và nhận
@@ -458,7 +538,7 @@ const postService = {
           {
             model: User,
             as: "user",
-            attributes: ["first_name", "last_name", "avatar_url"],
+            attributes: ["id", "first_name", "last_name", "avatar_url"],
           },
         ],
         order: [["createdAt", "DESC"]],
@@ -507,6 +587,63 @@ const postService = {
       return posts;
     } catch (error) {
       throw new Error("Error retrieving friend posts: " + error.message);
+    }
+  },
+  async getSuggestedFriends(user_id) {
+    try {
+      // Get the list of friend IDs
+      const sentRequests = await UserRela.findAll({
+        where: {
+          user_from: user_id,
+          status: { [Op.in]: ["accepted", "pending"] },
+        },
+        attributes: ["user_to"],
+      });
+
+      const receivedRequests = await UserRela.findAll({
+        where: {
+          user_to: user_id,
+          status: { [Op.in]: ["accepted", "pending"] },
+        },
+        attributes: ["user_from"],
+      });
+
+      const friendIds = [
+        ...sentRequests.map((rel) => rel.user_to),
+        ...receivedRequests.map((rel) => rel.user_from),
+      ];
+
+      // Get users who are not friends
+      const suggestedFriends = await User.findAll({
+        where: {
+          id: { [Op.notIn]: [user_id, ...friendIds] },
+        },
+        attributes: ["id", "first_name", "last_name", "avatar_url"],
+        limit: 5,
+      });
+
+      return suggestedFriends;
+    } catch (error) {
+      throw new Error("Error retrieving suggested friends: " + error.message);
+    }
+  },
+  async deletePostAdmin(postId) {
+    try {
+      // Delete related records in likes, comments, and attachments tables
+      await Like.destroy({ where: { post_id: postId } });
+      await Comment.destroy({ where: { post_id: postId } });
+      await Attachment.destroy({ where: { post_id: postId } });
+
+      // Delete the post
+      const result = await Post.destroy({ where: { id: postId } });
+
+      if (result === 0) {
+        throw new Error("Post not found");
+      }
+
+      return { message: "Post and related records deleted successfully" };
+    } catch (error) {
+      throw new Error(`Error deleting post: ${error.message}`);
     }
   },
 };

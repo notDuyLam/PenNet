@@ -86,11 +86,14 @@ const postController = {
       }
       const post_id = req.params.post_id;
       const user_id = req.user.id;
+      const imageUrls = req.imageUrls;
       const data = {
         content: req.body.content,
         access_modifier: req.body.access_modifier,
+        removeImageSources: req.body.removeImageSources,
+        images: imageUrls,
       };
-      if (!post_id || !data.content) {
+      if (!post_id) {
         return res.status(400).json({ error: "Missing required fields" });
       }
       postService
@@ -227,6 +230,17 @@ const postController = {
         .catch((error) => res.status(500).json({ error: error.message }));
     } catch (error) {
       res.status(500).json({ error: error.message });
+    }
+  },
+
+  async deletePostAdmin(req, res) {
+    try {
+      const postId = req.params.id;
+      const result = await postService.deletePostAdmin(postId);
+      return res.status(200).json(result);
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      return res.status(500).json({ message: error.message });
     }
   },
 };

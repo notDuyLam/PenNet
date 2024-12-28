@@ -6,7 +6,8 @@
     <title>PenNet</title>
     {{! tailwind }}
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/css/scrollCustome.css?v1.0" />
+    <link rel="stylesheet" href="/css/scrollCustome.css" />
+    <link rel="stylesheet" href="/css/spinner.css" />
     <link rel="icon" href="/images/logo.png" type="image/x-icon" />
 
     {{! jquery }}
@@ -22,6 +23,7 @@
   </head>
 
   <body>
+    <div id="user_id" data-is-admin="{{user.isAdmin}}" style="display: none;">{{user.id}}</div>
     {{{body}}}
   </body>
 

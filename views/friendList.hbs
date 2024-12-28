@@ -16,10 +16,10 @@
                 <!-- Requests Section -->
                 <div class="w-full flex flex-row justify-between items-center mt-4 mb-4 border-b border-[#DFE2E8]">
                 <!-- Your Friends Title -->
-                <h3 class="w-1/2 text-center text-sm font-semibold text-[#000000]" id="show-friends">Your Friends</h3>
+                <h3 class="w-1/2 text-center text-sm cursor-pointer font-semibold text-[#000000]" id="show-friends">Your Friends</h3>
 
                 <!-- Requests Title -->
-                <h3 class="w-1/2 text-center text-sm font-normal text-[#313131]" id="show-requests">Requests</h3>
+                <h3 class="w-1/2 text-center text-sm cursor-pointer font-normal text-[#313131]" id="show-requests">Requests</h3>
             </div>
 
             <!-- Danh sách yêu cầu kết bạn (ban đầu ẩn) -->
@@ -48,7 +48,16 @@
                               <div class="relative w-[248px] mt-6 pl-3 font-[Inter-Medium] font-medium text-[20px] leading-normal ">{{this.first_name}} {{this.last_name}}</div>
                               <div class="relative w-fit pl-3 font-normal text-[#B0B0B0] text-[14px] tracking-normal leading-normal whitespace-nowrap">You are now friends</div>
                           </div>
-                          <img src="/images/bacham.png" class="w-20 h-20">
+                           <div class="relative">
+                                <button id="bacham" class="text-gray-600">
+                                    <i class="fas fa-ellipsis-v text-4xl mt-5"></i> <!-- Biểu tượng ba chấm -->
+                                </button>
+    
+                               <div id="showMenu" class="absolute right-0 top-10 bg-white border rounded shadow-md hidden" style="display: none;">
+                                    <button class="block w-full px-4 py-2 text-left hover:bg-gray-100 unfriend-button">Unfriend</button>
+                                    <button class="block w-full px-4 py-2 text-left hover:bg-gray-100 block-button">Block</button>
+                                </div>
+                            </div>
                       </div>
                     {{/each}}
                     <!-- Thêm các bạn bè khác tại đây -->

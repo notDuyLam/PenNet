@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const { checkBan } = require('../../middlewares/auth');
+
 
 const userController = require("./controller");
 
@@ -39,6 +41,16 @@ router.post("/reset-password", userController.resetPassword);
 // [POST] /users/logout
 router.get("/logout", userController.logoutUser);
 
+// [POST] /users/ban/:id
+router.post("/ban/:id", userController.banUser);
+router.post("/unban/:id", userController.unbanUser);
+
+
+
+// Middleware check if user is banned
+router.use(checkBan);
+
+
 // [PATCH] /users/profile
 router.patch("/profile", userController.updateUser);
 
@@ -74,8 +86,8 @@ router.delete(
   userController.deleteBlockFriend
 );
 
-// [GET] /users/profile
-router.get("/profile", userController.renderProfilePage);
+// [GET] /users/profile:user_id
+router.get("/profile/:user_id", userController.renderProfilePage);
 
 // [GET] /users/friends
 router.get("/friends", userController.renderFriendsPage);
@@ -85,6 +97,5 @@ router.get("/block", userController.renderBlockPage);
 
 // [DELETE] /users/:id
 router.delete("/:id", userController.deleteUser);
-
 
 module.exports = router;

@@ -1,23 +1,25 @@
-<div data-post-id="{{post.id}}" class="w-full border flex flex-col rounded mb-4">
+{{!-- filepath: /e:/Hoc/Subjects on school/NMCNPM/Project/Source/Penet/views/partials/post.hbs --}}
+<div data-post-id="{{post.id}}" class="w-full border flex flex-col border-gray-300 rounded mb-4">
+
     <div class="flex justify-between border-b rounded p-4 w-full">
-        <div class="flex items-center">
+        <a href="/users/profile/{{post.user.id}}" class="flex items-center">
             <img class="rounded-full w-12 h-12 mr-4"
-                src="{{#if post.user.avatar_url}}{{post.user.avatar_url}}{{else}}/images/avatar.png{{/if}}"
-                alt="user-avatar">
+            src="{{#if post.user.avatar_url}}{{post.user.avatar_url}}{{else}}/images/avatar.png{{/if}}"
+            alt="user-avatar">
             <div>
-                <div class="font-medium text-xl fullName">
-                    {{post.user.first_name}} {{post.user.last_name}}
-                </div>
+            <div class="font-medium text-xl fullName">
+                {{post.user.first_name}} {{post.user.last_name}}
             </div>
-        </div>
-        {{#if (eq post.user.id user.id)}}
+            </div>
+        </a>
         <div class="relative flex flex-col justify-end">
+            {{#if (eq post.user.id user.id)}}
             <div class="post-more-btn flex justify-end cursor-pointer">
             <i class="fa-solid fa-ellipsis"></i>
             </div>
             <div 
             id="items" 
-            class="absolute right-0 top-5 bg-white border rounded-xl shadow-lg 
+            class="items absolute right-0 top-5 bg-white border rounded-xl shadow-lg 
             group-hover:block w-48 hidden"
             >
             <a href="#" id="edit-post" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
@@ -26,16 +28,19 @@
                 <div class="ml-2"><span>Edit post</span></div>
                 </div>
             </a>
-            <a href="#" id="delete-post" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+            </div>
+            {{/if}}
+            {{#if user.isAdmin}}
+            <a href="#" class="delete-post-btn block px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg text-lg" data-id="{{post.id}}">
                 <div class="flex items-center">
                 <i class="fa-solid fa-trash-can"></i>
                 <div class="ml-2"><span>Delete post</span></div>
                 </div>
             </a>
-            </div>
+            <div class="text-sm text-red-600 mt-2 items-center">(Admin Privilege)</div>
+            {{/if}}
             <div>{{formatDate post.updatedAt}}</div>
         </div>
-        {{/if}}
     </div>
     <div class="pl-8 pr-8 pt-4 pb-2">
         <div class="text-lg leading-relaxed text-gray-800">
@@ -73,3 +78,4 @@
         </div>
     </div>
 </div>
+

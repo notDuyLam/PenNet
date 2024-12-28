@@ -263,19 +263,50 @@ const userService = {
       throw new Error("Error updating password: " + error.message);
     }
   },
-  async searchFriends(query) {
+  async searchFriends(userId, query) {
     try {
+      // Tìm kiếm bạn bè theo query
       const friends = await User.findAll({
         where: {
           [Op.or]: [
             { first_name: { [Op.like]: `%${query}%` } },
             { last_name: { [Op.like]: `%${query}%` } },
           ],
+          id: { [Op.ne]: userId }, // Loại bỏ id trùng với userId
         },
+        attributes: ["id", "first_name", "last_name", "avatar_url", "isBanned"],
       });
-      return friends;
+
+      if (!friends || friends.length === 0) {
+        console.warn("No friends found for the given query.");
+        return [];
+      }
+
+      // Lấy danh sách quan hệ đã được chấp nhận (cả gửi và nhận)
+      const relationships = await UserRela.findAll({
+        where: {
+          [Op.or]: [{ user_from: userId }, { user_to: userId }],
+          status: "accepted",
+        },
+        attributes: ["user_from", "user_to"],
+      });
+
+      const friendIds = new Set(
+        relationships.map((rel) =>
+          rel.user_from === userId ? rel.user_to : rel.user_from
+        )
+      );
+
+      const results = friends.map((friend) => {
+        const friendData = friend?.toJSON ? friend.toJSON() : {};
+        return {
+          ...friendData,
+          isFriend: friendIds.has(friendData.id),
+        };
+      });
+      return results;
     } catch (error) {
-      console.error("Error searching friends:", error);
+      console.error("Error searching friends:", error.message, error.stack);
       throw error;
     }
   },
@@ -332,7 +363,6 @@ const userService = {
   },
 
   async getNotifications(userId) {
-    // console.log(userId);
     try {
       // Fetch accepted friends
       const acceptedFriends = await UserRela.findAll({
@@ -784,22 +814,54 @@ const userService = {
   async deleteUser(userId) {
     try {
       const user = await User.findByPk(userId);
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      // Delete related records in userInfo table
+      await UserInfo.destroy({ where: { user_id: userId } });
+
+      // Delete related records in userRela table
+      await UserRela.destroy({ where: { user_from: userId } });
+      await UserRela.destroy({ where: { user_to: userId } });
+
+      await user.destroy();
+      return { message: "User and related records deleted successfully" };
+    } catch (error) {
+      throw new Error(`Error deleting user: ${error.message}`);
+    }
+  },
+  async banUser(userId) {
+    try {
+      const user = await User.findByPk(userId);
   
       if (!user) {
         throw new Error('User not found');
       }
   
-      // Delete related records in userInfo table
-      await UserInfo.destroy({ where: { user_id: userId } });
+      user.isBanned = true;
+      await user.save();
   
-      // Delete related records in userRela table
-      await UserRela.destroy({ where: { user_from: userId } });
-      await UserRela.destroy({ where: { user_to: userId } });
-  
-      await user.destroy();
-      return { message: 'User and related records deleted successfully' };
+      return { message: 'User banned successfully' };
     } catch (error) {
-      throw new Error(`Error deleting user: ${error.message}`);
+      throw new Error(`Error banning user: ${error.message}`);
+    }
+  },
+  async unbanUser(userId) {
+    try {
+      const user = await User.findByPk(userId);
+  
+      if (!user) {
+        throw new Error('User not found');
+      }
+  
+      user.isBanned = false;
+      await user.save();
+  
+      return { message: 'User banned successfully' };
+    } catch (error) {
+      throw new Error(`Error banning user: ${error.message}`);
     }
   },
 };
