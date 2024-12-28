@@ -1,5 +1,6 @@
 const userService = require("./services");
 const postService = require("../post/services");
+const conversationService = require('../conversation/services');
 const passport = require("passport");
 
 const userController = {
@@ -356,6 +357,9 @@ const userController = {
 
       // Accept friend request
       const result = await userService.acceptFriendRequest(userId, friendId);
+
+      // Create conversation
+      await conversationService.createConversationWithParticipants(userId, friendId, false);
 
       return res.status(200).json({ result });
     } catch (error) {
