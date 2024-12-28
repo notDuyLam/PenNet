@@ -29,13 +29,12 @@ $(document).ready(function () {
     }
 
     // Lấy profileId từ thuộc tính data-profile-id
-    const profileId = form.attr("data-profile-id");
+    const profileId = $("#viewer_id").text().trim();
 
     const response = {
       user: {
-        avatar: "/images/avatar.png",
-        first_name: "John",
-        last_name: "Doe",
+        avatar_url: $(".image-avatar").attr("src"),
+        name: $(".ml-8.mt-4.font-medium.fullName").text().trim(),
       },
       content: content,
     };
@@ -44,7 +43,7 @@ $(document).ready(function () {
                         <img class="rounded-full w-12 h-12 mr-4" src="${response.user.avatar_url}" alt="user-avatar">
                         <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
                             <div class="rounded-xl p-2 pl-4 pr-4">
-                                <div class="font-bold">${response.user.first_name} ${response.user.last_name}</div>
+                                <div class="font-bold">${response.user.name}</div>
                                 <div>${response.content}</div>
                             </div>
                             <div class="review-edit flex text-xl mr-2 relative">
@@ -71,7 +70,7 @@ $(document).ready(function () {
 
     // Gửi dữ liệu comment về server qua AJAX
     $.ajax({
-      url: `/review/${profileId}`,
+      url: `/users/profile/${profileId}/review`,
       method: "POST",
       data: { content },
       success: function (response) {
