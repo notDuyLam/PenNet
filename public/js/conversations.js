@@ -2,6 +2,8 @@ const socket = io('http://localhost:3000');
 
 let sentId = -1;
 
+let isRetrievedConver = false;
+
 async function fetchConversations() {
     try {
         const response = await fetch('/api/conversations');
@@ -17,8 +19,13 @@ async function fetchConversations() {
             listItem.className = 'flex items-center gap-3 px-4 py-2 hover:bg-gray-100 cursor-pointer';
 
             listItem.onclick = () => {
-                conversationSwitch(conversation.conversation_id, conversation.name);
+              conversationSwitch(conversation.conversation_id, conversation.name);
             };
+
+            if(isRetrievedConver == false){
+              conversationSwitch(conversation.conversation_id, conversation.name);
+              isRetrievedConver = true;
+            }
 
             const avatar = document.createElement('div');
             avatar.className = 'w-10 h-10 bg-gray-300 rounded-full';
