@@ -8,6 +8,28 @@ const { Op, Sequelize } = require("sequelize");
 class ConversationService {
     static async createConversationWithParticipants(user1Id, user2Id, isGroup = false) {
         try {
+        const isExisted = await Participant.findOne({
+          include: {
+            model: Conversation,
+            as: 'conversation',
+            include: {
+              model: Participant,
+              as: 'participants',
+              where: {
+                user_id: user2Id,
+              }
+            }
+          },
+          where: {
+            user_id: user1Id,
+          },
+        })
+
+        if (isExisted) {
+          console.log("Conversation is all ready created befrore");
+          return;
+        }
+
         const conversation = await Conversation.create(
             { is_group: isGroup }
         );
