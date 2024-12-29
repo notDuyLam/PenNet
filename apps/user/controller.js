@@ -392,6 +392,23 @@ const userController = {
       return res.status(500).json({ errorMessage: "Server error" });
     }
   },
+  async unFriendUser(req, res) {
+    try {
+      if (!req.isAuthenticated()) {
+        return res.redirect("/users/login");
+      }
+
+      const userId = req.user.id; // Get user ID from authenticated session
+      const friendId = req.params.user_id; // Get friend ID from request parameters
+
+      // Unfriend user
+      const result = await userService.unFriendUser(userId, friendId);
+      return res.status(200).json({ successMessage: result });
+    } catch (error) {
+      console.error("Error unfriending user:", error);
+      return res.status(500).json({ errorMessage: "Server error" });
+    }
+  },
   async blockFriend(req, res) {
     try {
       if (!req.isAuthenticated()) {

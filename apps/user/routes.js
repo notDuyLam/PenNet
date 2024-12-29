@@ -70,6 +70,9 @@ router.delete(
   userController.deniedFriendRequest
 );
 
+// [DELETE] /users/friend/unfriend/:user_id
+router.delete("/friend/unfriend/:user_id", userController.unFriendUser);
+
 // [GET] /users/friends-blocked
 router.get("/friends-blocked", userController.getFriendBlocked);
 

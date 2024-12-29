@@ -742,7 +742,6 @@ const userService = {
       throw new Error("Error accepting friend request: " + error.message);
     }
   },
-
   async denyFriendRequest(userId, friendId) {
     try {
       const friendRequest = await UserRela.findOne({
@@ -764,7 +763,28 @@ const userService = {
       throw new Error("Error denying friend request: " + error.message);
     }
   },
+  async unFriendUser(userId, friendId) {
+    try {
+      const relation = await UserRela.findOne({
+        where: {
+          [Op.or]: [
+            { user_from: userId, user_to: friendId },
+            { user_from: friendId, user_to: userId },
+          ],
+          status: "accepted",
+        },
+      });
 
+      if (!relation) {
+        return { message: "Friendship not found" };
+      }
+
+      await relation.destroy();
+      return { message: "Friendship removed successfully" };
+    } catch (error) {
+      throw new Error("Error removing friendship: " + error.message);
+    }
+  },
   async blockFriend(userId, friendId) {
     try {
       const existingRelation = await UserRela.findOne({

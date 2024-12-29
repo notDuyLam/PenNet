@@ -120,7 +120,7 @@ document.querySelectorAll("#showMenu").forEach((menu) => {
 
     if (event.target.classList.contains("unfriend-button")) {
       // Xử lý hành động hủy kết bạn
-      fetch(`/users/friend-request/denied/${friendId}`, { method: "DELETE" })
+      fetch(`/users/friend/unfriend/${friendId}`, { method: "DELETE" })
         .then((response) => {
           if (response.ok) {
             document.getElementById(friendId).remove();
