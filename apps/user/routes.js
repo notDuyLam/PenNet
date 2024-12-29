@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { checkBan } = require('../../middlewares/auth');
-
+const { checkBan } = require("../../middlewares/auth");
 
 const userController = require("./controller");
 
@@ -45,11 +44,8 @@ router.get("/logout", userController.logoutUser);
 router.post("/ban/:id", userController.banUser);
 router.post("/unban/:id", userController.unbanUser);
 
-
-
 // Middleware check if user is banned
 router.use(checkBan);
-
 
 // [PATCH] /users/profile
 router.patch("/profile", userController.updateUser);
@@ -74,6 +70,9 @@ router.delete(
   userController.deniedFriendRequest
 );
 
+// [DELETE] /users/friend/unfriend/:user_id
+router.delete("/friend/unfriend/:user_id", userController.unFriendUser);
+
 // [GET] /users/friends-blocked
 router.get("/friends-blocked", userController.getFriendBlocked);
 
@@ -97,5 +96,20 @@ router.get("/block", userController.renderBlockPage);
 
 // [DELETE] /users/:id
 router.delete("/:id", userController.deleteUser);
+
+// [POST] /users/profile/:reviewedUserId/review
+router.post("/profile/:reviewedUserId/review", userController.addReview);
+
+// [DELETE] /users/profile/:reviewedUserId/review/:review_id
+router.delete(
+  "/profile/:reviewedUserId/review/:review_id",
+  userController.deleteReview
+);
+
+// [PATCH] /users/profile/:reviewedUserId/review/:review_id
+router.patch(
+  "/profile/:reviewedUserId/review/:review_id",
+  userController.editReview
+);
 
 module.exports = router;

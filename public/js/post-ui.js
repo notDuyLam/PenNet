@@ -215,7 +215,7 @@ $(document).on("click", "#edit-post", function (e) {
   const post = data;
 
   const edit_post_container = $(`
-        <div class="w-full h-full fixed top-0 left-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div class="w-full h-full fixed top-0 left-0 flex items-center justify-center bg-black bg-opacity-50 z-40">
             <div class="flex flex-col w-1/2 h-2/3 bg-white rounded items-center p-4">
                 <div class="text-3xl font-bold ">
                     Edit your post
@@ -337,13 +337,23 @@ $(document).on("click", "#edit-post", function (e) {
         }
       });
 
-      console.log(formData.getAll("images"));
-
-      // removeImageSources: mảng chưa src các ảnh cần xóa
+      // removeImageSources: mảng chứa src các ảnh cần xóa
       // formData: chứa các file (ảnh) cần thêm vào
+
+      if(content.length === 0 && visibleImages.length === 0){
+        alert("Post content is empty!");
+        return;
+      }
 
       formData.append("content", content);
       formData.append("removeImageSources", JSON.stringify(removeImageSources));
+
+      const spinner = $(`
+        <div class="w-full h-full fixed top-0 left-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div class="spinner"> </div> 
+        </div>`);
+      $('body').append(spinner).addClass('no-scroll');
+      console.log($('body').attr('class'));
 
       fetch(`/posts/${postId}`, {
         method: "PATCH",
@@ -351,16 +361,31 @@ $(document).on("click", "#edit-post", function (e) {
       })
         .then((res) => res.json())
         .then((data) => {
-          alert("Post updated successfully!");
-          edit_post_container.remove(); // Đóng modal sau khi cập nhật thành công
-          $("body").removeClass("no-scroll");
           // Update the post content on the page
           const postElement = $(`[data-post-id="${postId}"]`);
           postElement.find(".text-lg").text(content);
+          // Update the post attachments on the page
+          console.log(data);
+          const postPictures = postElement.find(".picture-container");
+          postPictures.empty();
+          postPictures.removeClass("grid-cols-2").removeClass("grid-cols-1");
+          postPictures.addClass(`grid-cols-${data.attachments.length > 1? "2" : "1"}`);
+          if (data.attachments.length > 0) {
+            let post_pictures = ``;
+            for (let i = 0; i < data.attachments.length; i++) {
+              post_pictures += createPostImgElementAfterEdit(data.attachments[i].media_url);
+            }
+            postPictures.append(post_pictures);
+          }
         })
         .catch((error) => {
           console.error("Failed to update post:", error);
           alert("Failed to update the post. Please try again!");
+        })
+        .finally(() => {
+          edit_post_container.remove(); // Đóng modal sau khi cập nhật thành công
+          spinner.remove();
+          $("body").removeClass("no-scroll");
         });
     });
 });
@@ -396,5 +421,11 @@ function createPostImgElement(url) {
                 <span>&times</span>
             </div>
             <img src="${url}" alt="post-pictures" class="w-full h-full rounded object-cover">
+        </div>`;
+}
+function createPostImgElementAfterEdit(url) {
+  return `
+        <div class="max-h-96 bg-gray-200">
+            <img src="${url}" alt="post-attachment" class="w-full h-full rounded object-contain">
         </div>`;
 }

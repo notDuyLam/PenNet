@@ -608,9 +608,24 @@ const postService = {
         attributes: ["user_from"],
       });
 
+      const blockedUsers = await UserRela.findAll({
+        where: {
+          [Op.or]: [
+            { user_from: user_id, status: "blocked" },
+            { user_to: user_id, status: "blocked" },
+          ],
+        },
+        attributes: ["user_from", "user_to"],
+      });
+
+      const blockedUserIds = blockedUsers.map((rel) =>
+        rel.user_from === user_id ? rel.user_to : rel.user_from
+      );
+
       const friendIds = [
         ...sentRequests.map((rel) => rel.user_to),
         ...receivedRequests.map((rel) => rel.user_from),
+        ...blockedUserIds,
       ];
 
       // Get users who are not friends

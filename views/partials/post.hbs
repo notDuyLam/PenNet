@@ -48,15 +48,13 @@
         </div>
     </div>
     <div class="pl-8 pr-8 pt-4 pb-2">
-        {{#if post.attachments.length}}
-            <div class="{{gridClass post.attachments.length}}">
-                {{#each post.attachments}}
-                <div class="max-h-96 bg-gray-200">
-                    <img src="{{this.media_url}}" alt="post-attachment" class="w-full h-full rounded object-contain">
-                </div>
-                {{/each}}
+        <div class="picture-container {{gridClass post.attachments.length}}">
+            {{#each post.attachments}}
+            <div class="max-h-96 bg-gray-200">
+                <img src="{{this.media_url}}" alt="post-attachment" class="w-full h-full rounded object-contain">
             </div>
-        {{/if}}
+            {{/each}}
+        </div>
     </div>
     <div class="flex justify-between pl-8 pr-8">
         <div class="flex justify-between post-like m-8 text-3xl cursor-pointer">
