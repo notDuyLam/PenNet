@@ -686,6 +686,7 @@ const userService = {
             as: "toUser",
             attributes: {
               exclude: [
+                "email",
                 "password_hash",
                 "isVerify",
                 "verificationToken",
@@ -693,13 +694,6 @@ const userService = {
                 "resetPasswordExpires",
               ],
             },
-            include: [
-              {
-                model: UserInfo,
-                as: "userInfo",
-                attributes: ["country"],
-              },
-            ],
           },
         ],
       });

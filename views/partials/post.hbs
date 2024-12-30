@@ -13,7 +13,6 @@
             </div>
         </a>
         <div class="relative flex flex-col justify-end">
-            {{#if (eq post.user.id user.id)}}
             <div class="flex justify-end items-center">
                 <div class="access-modifier">
                     <i class="public fa-solid fa-earth-asia 
@@ -25,6 +24,7 @@
                     <i class="friends-only fa-solid fa-user-group 
                         {{#if (eq post.access_modifier "friends_only")}}{{else}}hidden{{/if}}"></i>
                 </div>
+                {{#if (eq post.user.id user.id)}}
                 <div class="post-more-btn flex justify-end cursor-pointer ml-2">
                     <i class="fa-solid fa-ellipsis"></i>
                 </div>
@@ -40,8 +40,9 @@
                         </div>
                     </a>
                 </div>
+                {{/if}}
             </div>
-            {{/if}}
+
             {{#if user.isAdmin}}
             <a href="#" class="delete-post-btn block px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg text-lg" data-id="{{post.id}}">
                 <div class="flex items-center">
