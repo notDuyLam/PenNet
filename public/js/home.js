@@ -107,6 +107,8 @@ document
       isUpPost = false;
       return;
     }
+    const access_modifier = $('#access_modifier').val();
+    formData.append("access_modifier", access_modifier);
     formData.append("content", content);
     if (files.length > 0) {
       for (let i = 0; i < files.length; i++) {
