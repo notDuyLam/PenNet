@@ -62,12 +62,8 @@ $(document).on("click", ".post-comment", function () {
                 <img class="rounded-full w-12 h-12 mr-4" src="${comment.user.avatar_url}" alt="user-avatar">
                 <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
                     <div class="rounded-xl p-2 pl-4 pr-4">
-                <div class="font-bold">${comment.user.first_name} ${comment.user.last_name}</div>
-                <div>${comment.content}</div>
-                    </div>
-                    <div class="comment-like flex text-xl mr-2 items-center">
-                        <i class="fa-regular fa-thumbs-up mr-2 cursor-pointer"></i>
-                        <div class="mr-4 text-xl like-count"> 0 </div>
+                        <div class="font-bold">${comment.user.first_name} ${comment.user.last_name}</div>
+                        <div>${comment.content}</div>
                     </div>
                 </div>
               </div>
@@ -151,9 +147,6 @@ $(document).on("click", ".post-comment", function () {
                     <div class="rounded-xl p-2 pl-4 pr-4">
                       <div class="font-bold">${response.user.first_name} ${response.user.last_name}</div>
                       <div>${response.content}</div>
-                    </div>
-                    <div class="comment-like flex text-xl mr-2">
-                      <i class="fa-regular fa-thumbs-up mr-2 cursor-pointer"></i>
                     </div>
                   </div>
                 </div>

@@ -547,7 +547,14 @@ const userController = {
       };
       const userId = req.user.id; // Get user ID from authenticated session
       const posts = await postService.getNonFriendPublicPosts(userId, filter);
-      return res.status(200).json({ posts });
+    //return res.status(200).json({ posts });
+      return res.status(200).render('partials/posts', { posts, user: req.user, layout: false }, (err, html) => {
+        if (err) {
+            console.error("Error rendering more posts:", err);
+            return res.status(500).send("Error rendering posts");
+          }
+          res.json({ html: html });
+      });
     } catch (error) {
       console.error("Error fetching more posts:", error);
       return res.status(500).json({ errorMessage: "Server error" });
