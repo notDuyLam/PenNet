@@ -23,6 +23,15 @@
                 overflow-auto resize-none scroll-custom" 
                 placeholder="What 's on your mind?"
                 ></textarea>
+                <div class="flex self-start">
+                    <select id="access_modifier" name="access_modifier" 
+                        class="w-full rounded-md bg-inherit outline-none cursor-pointer"
+                    >
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                        <option value="friends_only">Friends Only</option>
+                    </select>
+                </div>
             </div>
             <div class="flex justify-around">
                 <label for="image-upload" class="cursor-pointer flex items-center">

@@ -14,20 +14,32 @@
         </a>
         <div class="relative flex flex-col justify-end">
             {{#if (eq post.user.id user.id)}}
-            <div class="post-more-btn flex justify-end cursor-pointer">
-            <i class="fa-solid fa-ellipsis"></i>
-            </div>
-            <div 
-            id="items" 
-            class="items absolute right-0 top-5 bg-white border rounded-xl shadow-lg 
-            group-hover:block w-48 hidden"
-            >
-            <a href="#" id="edit-post" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
-                <div class="flex items-center">
-                <i class="fa-solid fa-pen-fancy"></i>
-                <div class="ml-2"><span>Edit post</span></div>
+            <div class="flex justify-end items-center">
+                <div class="access-modifier">
+                    <i class="public fa-solid fa-earth-asia 
+                        {{#if (eq post.access_modifier "public")}}{{else}}hidden{{/if}}"></i>
+
+                    <i class="private fa-solid fa-lock 
+                        {{#if (eq post.access_modifier "private")}}{{else}}hidden{{/if}}"></i>
+
+                    <i class="friends-only fa-solid fa-user-group 
+                        {{#if (eq post.access_modifier "friends_only")}}{{else}}hidden{{/if}}"></i>
                 </div>
-            </a>
+                <div class="post-more-btn flex justify-end cursor-pointer ml-2">
+                    <i class="fa-solid fa-ellipsis"></i>
+                </div>
+                <div 
+                id="items" 
+                class="items absolute right-0 top-5 bg-white border rounded-xl shadow-lg 
+                group-hover:block w-48 hidden"
+                >
+                    <a href="#" id="edit-post" class="block px-4 py-2 text-gray-800 hover:bg-gray-200">
+                        <div class="flex items-center">
+                        <i class="fa-solid fa-pen-fancy"></i>
+                        <div class="ml-2"><span>Edit post</span></div>
+                        </div>
+                    </a>
+                </div>
             </div>
             {{/if}}
             {{#if user.isAdmin}}

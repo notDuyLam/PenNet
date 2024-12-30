@@ -224,17 +224,33 @@ $(document).on("click", "#edit-post", function (e) {
                 <div class="grow flex justify-between border-b rounded w-full overflow-hidden">
                     <div class="flex flex-col w-full">
                         <div class="flex justify-between border-b rounded p-4 w-full">
-                            <div class="flex items-center">
-                                <img class="rounded-full w-12 h-12 mr-4"
-                                    src="${post.user.avatar_url}"
-                                    alt="user-avatar"
-                                >
-                                <div>
+                            <div class="flex items-center justify-between w-full">
+                                <div class="flex items-center">
+                                    <img class="rounded-full w-12 h-12 mr-4"
+                                        src="${post.user.avatar_url}"
+                                        alt="user-avatar"
+                                    >
                                     <div>
-                                        ${post.user.first_name} ${
-    post.user.last_name
-  }
+                                        <div>
+                                            ${post.user.first_name} ${post.user.last_name}
+                                        </div>
                                     </div>
+                                </div>
+                                
+                                <div>
+                                    <select name="access_modifier" id="access_modifier"
+                                        class="w-full rounded-md bg-inherit outline-none cursor-pointer"
+                                    >
+                                        <option value="public" ${post.access_modifier === "public" ? "selected" : ""}>
+                                            Public
+                                        </option>
+                                        <option value="private" ${post.access_modifier === "private" ? "selected" : ""}>
+                                            Private
+                                        </option>
+                                        <option value="friends_only" ${post.access_modifier === "friends_only" ? "selected" : ""}>
+                                            Friends Only
+                                        </option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -337,14 +353,17 @@ $(document).on("click", "#edit-post", function (e) {
         }
       });
 
+      const access_modifier = $('#access_modifier').val();
+
       // removeImageSources: mảng chứa src các ảnh cần xóa
       // formData: chứa các file (ảnh) cần thêm vào
 
-      if(content.length === 0 && visibleImages.length === 0){
-        alert("Post content is empty!");
+      if(content.length === 0 && visibleImages.length === 0 && access_modifier === post.access_modifier){
+        alert("Nothing has been changed!");
         return;
       }
 
+      formData.append("access_modifier", access_modifier);
       formData.append("content", content);
       formData.append("removeImageSources", JSON.stringify(removeImageSources));
 
@@ -377,6 +396,24 @@ $(document).on("click", "#edit-post", function (e) {
             }
             postPictures.append(post_pictures);
           }
+          // update access modifier
+          let access_modifier;
+          if(data.access_modifier === "public"){
+            access_modifier = "public";
+          }
+          else if(data.access_modifier === "private"){
+            access_modifier = "private";
+          }
+          else if(data.access_modifier === "friends_only"){
+            access_modifier = "friends-only";
+          }
+          postElement.find(".access-modifier i").each(function () {
+            $(this).addClass("hidden");
+          })
+          console.log(access_modifier);
+          console.log(postElement.find(".access-modifier").attr("class"));
+          console.log(postElement.find(".access-modifier").find(`.${access_modifier}`).attr("class"));
+          postElement.find(".access-modifier").find(`.${access_modifier}`).removeClass("hidden");
         })
         .catch((error) => {
           console.error("Failed to update post:", error);
