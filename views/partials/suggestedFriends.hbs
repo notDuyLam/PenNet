@@ -1,46 +1,69 @@
-<div class="border rounded flex flex-col flex-grow self-start">
-  <div class="border-b p-4 pl-8 font-bold text-lg">
-    Suggested Friends
-  </div>
-  <div class="flex flex-col pt-4">
-    {{#each user}}
-      <div class="flex m-4 ml-8 justify-between" id="{{this.id}}">
-        <a href="/users/profile/{{this.id}}">   
-          <div class="flex justify-center items-center">
-            <img class="rounded-full w-8 h-8 mr-4" src="{{this.avatar_url}}" />
-            <div>
-              {{this.first_name}}
-              {{this.last_name}}
-            </div>
-          </div>
-        </a>
-        <div
-          class="rounded bg-gray-300 h-8 w-8 mr-4 flex justify-center items-center"
-        >
-          <i class="fa-solid fa-plus"></i>
+<div class="relative">
+    <button id="toggleBtnSuggestedFriends" class="md:hidden p-2 m-2 border rounded focus:outline-none">
+        <i class="fa-solid fa-user-plus"></i>
+    </button>
+
+    <div id="suggestedFriends" class="small-menu right-0 hidden md:static md:block border rounded flex flex-col flex-grow self-start min-w-[16rem] w-64 bg-white">
+        <div class="border-b p-4 pl-8 font-bold text-lg">
+            Suggested Friends
         </div>
-      </div>
-    {{/each}}
-  </div>
+        <div class="flex flex-col pt-4">
+            {{#each user}}
+            <div class="flex m-4 ml-8 justify-between" id="{{this.id}}">
+                <a href="/users/profile/{{this.id}}">
+                    <div class="flex justify-center items-center">
+                        <img class="rounded-full w-8 h-8 mr-4" src="{{this.avatar_url}}" />
+                        <div>
+                            {{this.first_name}}
+                            {{this.last_name}}
+                        </div>
+                    </div>
+                </a>
+                <div class="rounded bg-gray-300 h-8 w-8 mr-4 flex justify-center items-center">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
 </div>
 <script>
-  document.querySelectorAll('.fa-plus').forEach(button => {
-    button.addEventListener('click', function() {
-      const userId = this.closest('.flex').parentElement.id;
-      fetch(`/users/send-request-friend/${userId}`, {
-        method: 'POST',
-      })
-      .then(response => {
-        if (response.ok) {
-          this.closest('.flex').parentElement.remove();
-          alert('Friend request sent!');
-        } else {
-          alert('Failed to send friend request.');
-        }
-      })
-      .catch(error => {
-        alert('Failed to send friend request.');
-      });
+    document.querySelectorAll('.fa-plus').forEach(button => {
+        button.addEventListener('click', function () {
+            const userId = this.closest('.flex').parentElement.id;
+            fetch(`/users/send-request-friend/${userId}`, {
+                method: 'POST',
+            })
+                .then(response => {
+                    if (response.ok) {
+                        this.closest('.flex').parentElement.remove();
+                        alert('Friend request sent!');
+                    } else {
+                        alert('Failed to send friend request.');
+                    }
+                })
+                .catch(error => {
+                    alert('Failed to send friend request.');
+                });
+        });
     });
-  });
+    $(document).ready(function () {
+        $('#toggleBtnSuggestedFriends').click(function (e) {
+            $('.small-menu:not(#suggestedFriends)').addClass('hidden');
+            $('.small-menu:not(#suggestedFriends)').removeClass('absolute');
+
+            $('#suggestedFriends').toggleClass('hidden');
+            $('#suggestedFriends').toggleClass('absolute');
+            e.stopPropagation();
+        });
+        $(document).on('click', function (e) {
+            if (!$(e.target).closest('#suggestedFriends').length) {
+                if ($('#suggestedFriends').hasClass('hidden')) {
+                    return;
+                }
+                $('#suggestedFriends').toggleClass('hidden');
+                $('#suggestedFriends').toggleClass('absolute');
+            }
+        })
+    })
 </script>
