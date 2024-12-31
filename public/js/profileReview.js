@@ -3,7 +3,7 @@ import { sendNotification } from "./notification.js";
 $(document).ready(function () {
   // Xử lý sự kiện click vào nút edit review
   $(document).on("click", ".review-edit i", function (e) {
-    $(".items").addClass("hidden"); // Ẩn tất cả các phần tử .items
+    $(".items").not($(this).siblings(".items")).addClass("hidden"); // Ẩn tất cả các phần tử .items
     $(this).siblings(".items").toggleClass("hidden"); // Hiển thị/tắt phần tử .items gần nhất
     e.stopPropagation();
   });
@@ -33,57 +33,28 @@ $(document).ready(function () {
     // Lấy profileId từ thuộc tính data-profile-id
     const profileId = $("#viewer_id").text().trim();
 
-    const response = {
-      user: {
-        avatar_url: $(".image-avatar").attr("src"),
-        name: $(".ml-8.mt-4.font-medium.fullName").text().trim(),
-      },
-      content: content,
-    };
-    const newReview = `
-                    <div class="comment flex p-4 border-b">
-                        <img class="rounded-full w-12 h-12 mr-4" src="${response.user.avatar_url}" alt="user-avatar">
-                        <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
-                            <div class="rounded-xl p-2 pl-4 pr-4">
-                                <div class="font-bold">${response.user.name}</div>
-                                <div>${response.content}</div>
-                            </div>
-                            <div class="review-edit flex text-xl mr-2 relative">
-                                <i class="fa-solid fa-pen-to-square mr-2 cursor-pointer"></i>
-                                <div class="items absolute right-0 w-24 top-6 p-2 z-10 
-                                    bg-white border rounded-xl shadow-lg hidden
-                                    group-hover:block">
-                                    <div class="edit-review w-full px-4 hover:bg-gray-200 cursor-pointer">
-                                        Edit
-                                    </div>
-                                    <div class="delete-review w-full px-4 hover:bg-gray-200 cursor-pointer">
-                                        Delete
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>`;
-
-    form
-      .closest("#your-review-tab")
-      .find("#reviews-container")
-      .append(newReview);
-    form[0].reset(); // Reset form sau khi gửi thành công
-
     // Gửi dữ liệu comment về server qua AJAX
     $.ajax({
       url: `/users/profile/${profileId}/review`,
       method: "POST",
       data: { content },
       success: function (response) {
+        const avatar_url = $(".image-avatar").attr("src");
+        const name = $(".ml-8.mt-4.font-medium.fullName").text().trim();
         // Thêm review
         const newReview = `
-                    <div class="comment flex p-4 border-b">
-                        <img class="rounded-full w-12 h-12 mr-4" src="${response.user.avatar_url}" alt="user-avatar">
+                    <div class="comment flex p-4 border-b" data-review-id="${response.review.id}">
+                        <img class="rounded-full w-12 h-12 mr-4" src="${avatar_url}" alt="user-avatar">
                         <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
-                            <div class="rounded-xl p-2 pl-4 pr-4">
-                                <div class="font-bold">${response.user.first_name} ${response.user.last_name}</div>
-                                <div>${response.content}</div>
+                            <div class="rounded-xl p-2 pl-4 pr-4 w-full">
+                                <div class="font-bold">${name}</div>
+                                <div class="w-full flex justify-between items-center">
+                                    <div class="review-content w-full">${content}</div>
+                                    <button type="submit"
+                                        class="submit-btn hidden ml-4 bg-green-500 text-white py-2 px-4 rounded self-end">
+                                        Submit
+                                    </button>
+                                </div>
                             </div>
                             <div class="review-edit flex text-xl mr-2 relative">
                                 <i class="fa-solid fa-pen-to-square mr-2 cursor-pointer"></i>
@@ -101,7 +72,7 @@ $(document).ready(function () {
                         </div>
                     </div>`;
 
-        form.closest("#reviews-container").append(newReview);
+        form.closest("#your-review-tab").find("#reviews-container").append(newReview);
         form[0].reset(); // Reset form sau khi gửi thành công
         sendNotification("success", "Comment added successfully!");
       },
