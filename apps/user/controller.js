@@ -456,6 +456,8 @@ const userController = {
       const suggestedFriends = await postService.getSuggestedFriends(view_id);
       const reviewers = await userService.getReviewers(user_id);
       const isFriends = await userService.isFriend(view_id, user_id);
+      const followers = await userService.getNumFollower(user_id);
+      const following = await userService.getNumFollowing(user_id);
       res.render("personProfile", {
         user,
         user_info,
@@ -463,6 +465,8 @@ const userController = {
         reviewers,
         suggestedFriends: suggestedFriends,
         isFriends,
+        followers,
+        following,
       });
     } catch (error) {
       console.error("Error rendering profile page:", error);
@@ -547,14 +551,20 @@ const userController = {
       };
       const userId = req.user.id; // Get user ID from authenticated session
       const posts = await postService.getNonFriendPublicPosts(userId, filter);
-    //return res.status(200).json({ posts });
-      return res.status(200).render('partials/posts', { posts, user: req.user, layout: false }, (err, html) => {
-        if (err) {
-            console.error("Error rendering more posts:", err);
-            return res.status(500).send("Error rendering posts");
+      //return res.status(200).json({ posts });
+      return res
+        .status(200)
+        .render(
+          "partials/posts",
+          { posts, user: req.user, layout: false },
+          (err, html) => {
+            if (err) {
+              console.error("Error rendering more posts:", err);
+              return res.status(500).send("Error rendering posts");
+            }
+            res.json({ html: html });
           }
-          res.json({ html: html });
-      });
+        );
     } catch (error) {
       console.error("Error fetching more posts:", error);
       return res.status(500).json({ errorMessage: "Server error" });

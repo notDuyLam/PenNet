@@ -895,6 +895,32 @@ const userService = {
       throw new Error("Error checking friendship: " + error.message);
     }
   },
+  async getNumFollower(userId) {
+    try {
+      const followersCount = await UserRela.count({
+        where: {
+          user_to: userId,
+          status: "accepted",
+        },
+      });
+      return followersCount;
+    } catch (error) {
+      throw new Error("Error fetching follower count: " + error.message);
+    }
+  },
+  async getNumFollowing(userId) {
+    try {
+      const followingCount = await UserRela.count({
+        where: {
+          user_from: userId,
+          status: "accepted",
+        },
+      });
+      return followingCount;
+    } catch (error) {
+      throw new Error("Error fetching following count: " + error.message);
+    }
+  },
   async addReview(userId, reviewedUserId, content) {
     try {
       const review = await Review.create({
