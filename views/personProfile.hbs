@@ -22,7 +22,7 @@
         <div class="flex flex-col border rounded-lg max-h-1/2">
             <div class="profile-image ml-8 flex-grow flex items-center">
                 <div class="relative md:m-8 m-4">
-                    <img class="h-auto w-full max-w-[8rem] rounded-full"
+                    <img class="h-32 w-32 rounded-full"
                         src="{{#if user_info.dataValues.avatar_url}}{{user_info.dataValues.avatar_url}}{{else}}/images/avatar.png{{/if}}"
                         alt="{{user_info.dataValues.avatar_url}}"></img>
                     {{#if (eq user_info.dataValues.id user.id)}}
