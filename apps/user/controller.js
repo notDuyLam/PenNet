@@ -542,7 +542,7 @@ const userController = {
       }
       const page = parseInt(req.query.page) || 1; // Get page number from query parameters
       const filter = {
-        index: page,
+        index: page - 1,
         limit: 5,
       };
       const userId = req.user.id; // Get user ID from authenticated session

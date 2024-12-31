@@ -529,6 +529,7 @@ const postService = {
       ];
       const friendIds = friends.map((friend) => friend.id);
 
+  
       // Lấy bài viết của bạn bè
       const posts = await Post.findAll({
         where: {
