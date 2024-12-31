@@ -42,7 +42,11 @@
                 {{#if this.isFriend}}
                   <button class="bg-blue-500 text-white px-4 py-2 rounded text-lg w-32" data-id="{{this.id}}">Friend</button>
                 {{else}}
-                  <button class="add-friend-btn bg-green-500 text-white px-4 py-2 rounded text-lg w-32" data-id="{{this.id}}">Add Friend</button>
+                  {{#if this.pendingRequest}}
+                    <button class="bg-yellow-500 text-white px-4 py-2 rounded text-md w-32" data-id="{{this.id}}">Request Sent</button>
+                  {{else}}
+                    <button class="add-friend-btn bg-green-500 text-white px-4 py-2 rounded text-lg w-32" data-id="{{this.id}}">Add Friend</button>
+                  {{/if}}
                 {{/if}}
               </td>
               {{#if ../user.isAdmin}}

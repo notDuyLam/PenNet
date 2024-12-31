@@ -282,6 +282,7 @@ const userController = {
         avatar_url: userTarget.avatar_url,
         isFriend: userTarget.isFriend,
         isBanned: userTarget.isBanned,
+        pendingRequest: userTarget.pendingRequest,
       }));
       res.render("search", { query, user, results: filteredResults });
     } catch (error) {
