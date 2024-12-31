@@ -5,7 +5,7 @@ let uploadPhoto;
 try {
   uploadPhoto = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 30_000_000 },
+    limits: { fileSize: 100_000_000 },
     fileFilter: (req, file, cb) => {
       if (file.mimetype.startsWith("image/")) {
         cb(null, true);
