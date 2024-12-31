@@ -17,7 +17,7 @@ document
     }
   });
 
-document.getElementById("edit-button").addEventListener("click", function () {
+document.getElementById("edit-button")?.addEventListener("click", function () {
   document.getElementById("first_name").removeAttribute("readonly");
   document.getElementById("first_name").removeAttribute("disabled");
   document.getElementById("last_name").removeAttribute("readonly");
@@ -32,7 +32,7 @@ document.getElementById("edit-button").addEventListener("click", function () {
 
 document
   .getElementById("save-button")
-  .addEventListener("click", async function () {
+  ?.addEventListener("click", async function () {
     const firstName = document.getElementById("first_name").value;
     const lastName = document.getElementById("last_name").value;
     const dob = document.getElementById("dob").value;
@@ -135,7 +135,7 @@ document.querySelector(".save").addEventListener("click", async function () {
 
 document
   .getElementById("change-password-button")
-  .addEventListener("click", function () {
+  ?.addEventListener("click", function () {
     document.getElementById("profile-form").classList.add("hidden");
     document.getElementById("password-form").classList.remove("hidden");
     document.getElementById("edit-button").classList.add("hidden");
