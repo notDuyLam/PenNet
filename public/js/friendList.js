@@ -1,3 +1,5 @@
+import { sendNotification } from "./notification.js";
+
 // Lấy các phần tử cần thiết
 const showRequestsButton = document.getElementById("show-requests");
 const showFriendsButton = document.getElementById("show-friends");
@@ -60,8 +62,7 @@ requestList.addEventListener("click", function (event) {
                                 <img src="/images/bacham.png" class="w-20 h-20">
                         `;
             friendsList.appendChild(friendDiv);
-            alert("Friend request accepted.");
-            console.log(data);
+            sendNotification("success", "Friend request accepted.");
           }
         })
         .catch((error) => console.error("Error:", error));
@@ -74,9 +75,9 @@ requestList.addEventListener("click", function (event) {
           if (response.ok) {
             // Xóa yêu cầu kết bạn khỏi danh sách
             document.getElementById(requestId).remove();
-            alert("Friend request removed.");
+            sendNotification("success", "Friend request removed.");
           } else {
-            alert("Failed to remove friend request.");
+            sendNotification("error", "Failed to remove friend request.");
           }
         })
         .catch((error) => console.error("Error:", error));
@@ -124,9 +125,9 @@ document.querySelectorAll("#showMenu").forEach((menu) => {
         .then((response) => {
           if (response.ok) {
             document.getElementById(friendId).remove();
-            alert("Friend has been removed.");
+            sendNotification("success", "Friend has been removed.");
           } else {
-            alert("Failed to unfriend.");
+            sendNotification("error", "Failed to unfriend.");
           }
         })
         .catch((error) => console.error("Error:", error));
@@ -136,9 +137,9 @@ document.querySelectorAll("#showMenu").forEach((menu) => {
         .then((response) => {
           if (response.ok) {
             document.getElementById(friendId).remove();
-            alert("User has been blocked.");
+            sendNotification("success", "User has been blocked.");
           } else {
-            alert("Failed to block user.");
+            sendNotification("error", "Failed to block user.");
           }
         })
         .catch((error) => console.error("Error:", error));

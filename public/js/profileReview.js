@@ -1,3 +1,5 @@
+import { sendNotification } from "./notification.js";
+
 $(document).ready(function () {
   // Xử lý sự kiện click vào nút edit review
   $(document).on("click", ".review-edit i", function (e) {
@@ -24,7 +26,7 @@ $(document).ready(function () {
     const content = form.find("#content").val().trim(); // Lấy nội dung comment và xóa khoảng trắng thừa
 
     if (!content) {
-      alert("Comment cannot be empty!");
+      sendNotification("error", "Comment cannot be empty!");
       return;
     }
 
@@ -101,10 +103,10 @@ $(document).ready(function () {
 
         form.closest("#reviews-container").append(newReview);
         form[0].reset(); // Reset form sau khi gửi thành công
+        sendNotification("success", "Comment added successfully!");
       },
       error: function (err) {
-        console.error(err);
-        alert("Failed to add comment.");
+        sendNotification("error", "Failed to add comment!");
       },
     });
   });
@@ -137,8 +139,7 @@ $(document).ready(function () {
           }
         })
         .catch((err) => {
-          console.error(err);
-          alert("Failed to edit comment.");
+          sendNotification("error", "Failed to edit comment!");
           review.siblings(".submit-btn").removeClass("hidden");
           review.attr("contenteditable", "false");
         });
@@ -153,15 +154,15 @@ $(document).ready(function () {
     })
       .then((response) => {
         if (response.ok) {
-          alert("Comment deleted successfully.");
+          sendNotification("success", "Comment deleted successfully.");
           $(this).closest(".comment").remove();
         } else {
-          alert("Failed to delete comment.");
+          sendNotification("error", "Failed to delete comment.");
         }
       })
       .catch((err) => {
         console.error(err);
-        alert("Failed to delete comment.");
+        sendNotification("error", "Failed to delete comment.");
       });
   });
 });

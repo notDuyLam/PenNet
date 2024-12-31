@@ -64,7 +64,9 @@
   </main>
 </div>
 
-<script>
+<script type="module">
+  import { sendNotification } from "/js/notification.js";
+
   $(document).ready(() => {
     $('.add-friend-btn').on('click', function() {
       const userId = $(this).data('id');
@@ -72,10 +74,10 @@
         url: '/users/send-request-friend/' + userId,
         method: 'POST',
         success: function(response) {
-            alert('Friend request sent successfully');
+        sendNotification("success", "Friend request sent successfully");
         },
         error: function(error) {
-          alert('Error sending friend request');
+            sendNotification("error", "Error sending friend request");
         }
       });
     });
@@ -88,14 +90,13 @@
             method: 'DELETE',
           });
           if (response.ok) {
-            alert('User deleted successfully');
-            location.reload();
-          } else {
-            alert('Error deleting user');
-          }
-        } catch (error) {
-          console.error('Error deleting user:', error);
-          alert('Error deleting user');
+              sendNotification("success", "User deleted successfully");
+              location.reload();
+            } else {
+              sendNotification("error", "Error deleting user");
+            }
+          } catch (error) {
+              sendNotification("error", "Error deleting user");
         }
       }
     });
@@ -108,14 +109,13 @@
             method: 'POST',
           });
           if (response.ok) {
-            alert('User banned successfully');
+            sendNotification("success", "Friend request sent successfully");
             location.reload();
           } else {
-            alert('Error banning user');
+            sendNotification("success", "Friend request sent successfully");
           }
         } catch (error) {
-          console.error('Error banning user:', error);
-          alert('Error banning user');
+          sendNotification("success", "Friend request sent successfully");
         }
       }
     });
@@ -128,14 +128,13 @@
             method: 'POST',
           });
           if (response.ok) {
-            alert('User unbanned successfully');
+            sendNotification("success", "User unbanned successfully");
             location.reload();
-          } else {
-            alert('Error unbanning user');
-          }
-        } catch (error) {
-          console.error('Error unbanning user:', error);
-          alert('Error unbanning user');
+            } else {
+            sendNotification("error", "Error unbanning user");
+            }
+          } catch (error) {
+            sendNotification("error", "Error unbanning user");
         }
       }
     });

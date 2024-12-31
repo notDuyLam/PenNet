@@ -1,3 +1,5 @@
+import { sendNotification } from "./notification.js";
+
 function gridClass(length) {
   return length > 1 ? "grid grid-cols-2 gap-4" : "grid grid-cols-1 gap-4";
 }
@@ -20,7 +22,7 @@ document.getElementById("load-more").addEventListener("click", function () {
     .then((response) => response.json())
     .then((data) => {
       if (!data.html || data.html.length === 0) {
-        alert("No more posts to load");
+        sendNotification("error", "No more posts to load");
       } else {
         const morePosts = $(data.html);
         $(document).find(".posts-container").append(morePosts);
@@ -29,5 +31,3 @@ document.getElementById("load-more").addEventListener("click", function () {
     })
     .catch((error) => console.error("Error fetching posts:", error));
 });
-
-

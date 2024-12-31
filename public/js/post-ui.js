@@ -1,3 +1,5 @@
+import { sendNotification } from "./notification.js";
+
 // Like post button logic
 $(document).on("click", ".post-like, .comment-like", function () {
   // Lấy postId từ thuộc tính data-post-id
@@ -32,7 +34,7 @@ $(document).on("click", ".post-like, .comment-like", function () {
     }.bind(this),
     error: function (error) {
       console.error("Failed to like/unlike post:", error);
-      alert("Failed to like/unlike the post. Please try again!");
+      sendNotification("error", "Failed to like/unlike the post");
     },
   });
 });
@@ -73,7 +75,7 @@ $(document).on("click", ".post-comment", function () {
     },
     error: function (error) {
       console.error("Failed to fetch comments:", error);
-      alert("Failed to load comments. Please try again!");
+      sendNotification("error", "Failed to load comments");
     },
   });
 
@@ -116,7 +118,7 @@ $(document).on("click", ".post-comment", function () {
       const content = form.find("#content").val(); // Lấy nội dung comment
 
       if (!content.trim()) {
-        alert("Comment cannot be empty!");
+        sendNotification("error", "Comment cannot be empty!");
         return;
       }
 
@@ -156,7 +158,7 @@ $(document).on("click", ".post-comment", function () {
         },
         error: function (err) {
           console.error(err);
-          alert("Failed to add comment.");
+          sendNotification("error", "Failed to add comment.");
         },
       });
     });
@@ -201,8 +203,7 @@ $(document).on("click", "#edit-post", function (e) {
       data = response;
     },
     error: function (error) {
-      console.error("Failed to fetch post:", error);
-      alert("Failed to load post. Please try again!");
+      sendNotification("error", "Failed to load post");
     },
   });
   const post = data;
@@ -225,7 +226,9 @@ $(document).on("click", "#edit-post", function (e) {
                                     >
                                     <div>
                                         <div>
-                                            ${post.user.first_name} ${post.user.last_name}
+                                            ${post.user.first_name} ${
+    post.user.last_name
+  }
                                         </div>
                                     </div>
                                 </div>
@@ -234,13 +237,26 @@ $(document).on("click", "#edit-post", function (e) {
                                     <select name="access_modifier" id="access_modifier"
                                         class="w-full rounded-md bg-inherit outline-none cursor-pointer"
                                     >
-                                        <option value="public" ${post.access_modifier === "public" ? "selected" : ""}>
+                                        <option value="public" ${
+                                          post.access_modifier === "public"
+                                            ? "selected"
+                                            : ""
+                                        }>
                                             Public
                                         </option>
-                                        <option value="private" ${post.access_modifier === "private" ? "selected" : ""}>
+                                        <option value="private" ${
+                                          post.access_modifier === "private"
+                                            ? "selected"
+                                            : ""
+                                        }>
                                             Private
                                         </option>
-                                        <option value="friends_only" ${post.access_modifier === "friends_only" ? "selected" : ""}>
+                                        <option value="friends_only" ${
+                                          post.access_modifier ===
+                                          "friends_only"
+                                            ? "selected"
+                                            : ""
+                                        }>
                                             Friends Only
                                         </option>
                                     </select>
@@ -346,13 +362,17 @@ $(document).on("click", "#edit-post", function (e) {
         }
       });
 
-      const access_modifier = $('#access_modifier').val();
+      const access_modifier = $("#access_modifier").val();
 
       // removeImageSources: mảng chứa src các ảnh cần xóa
       // formData: chứa các file (ảnh) cần thêm vào
 
-      if(content.length === 0 && visibleImages.length === 0 && access_modifier === post.access_modifier){
-        alert("Nothing has been changed!");
+      if (
+        content.length === 0 &&
+        visibleImages.length === 0 &&
+        access_modifier === post.access_modifier
+      ) {
+        sendNotification("info", "No changes were made to the post.");
         return;
       }
 
@@ -364,8 +384,8 @@ $(document).on("click", "#edit-post", function (e) {
         <div class="w-full h-full fixed top-0 left-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div class="spinner"> </div> 
         </div>`);
-      $('body').append(spinner).addClass('no-scroll');
-      console.log($('body').attr('class'));
+      $("body").append(spinner).addClass("no-scroll");
+      console.log($("body").attr("class"));
 
       fetch(`/posts/${postId}`, {
         method: "PATCH",
@@ -381,36 +401,48 @@ $(document).on("click", "#edit-post", function (e) {
           const postPictures = postElement.find(".picture-container");
           postPictures.empty();
           postPictures.removeClass("grid-cols-2").removeClass("grid-cols-1");
-          postPictures.addClass(`grid-cols-${data.attachments.length > 1? "2" : "1"}`);
+          postPictures.addClass(
+            `grid-cols-${data.attachments.length > 1 ? "2" : "1"}`
+          );
           if (data.attachments.length > 0) {
             let post_pictures = ``;
             for (let i = 0; i < data.attachments.length; i++) {
-              post_pictures += createPostImgElementAfterEdit(data.attachments[i].media_url);
+              post_pictures += createPostImgElementAfterEdit(
+                data.attachments[i].media_url
+              );
             }
             postPictures.append(post_pictures);
           }
           // update access modifier
           let access_modifier;
-          if(data.access_modifier === "public"){
+          if (data.access_modifier === "public") {
             access_modifier = "public";
-          }
-          else if(data.access_modifier === "private"){
+          } else if (data.access_modifier === "private") {
             access_modifier = "private";
-          }
-          else if(data.access_modifier === "friends_only"){
+          } else if (data.access_modifier === "friends_only") {
             access_modifier = "friends-only";
           }
           postElement.find(".access-modifier i").each(function () {
             $(this).addClass("hidden");
-          })
+          });
           console.log(access_modifier);
           console.log(postElement.find(".access-modifier").attr("class"));
-          console.log(postElement.find(".access-modifier").find(`.${access_modifier}`).attr("class"));
-          postElement.find(".access-modifier").find(`.${access_modifier}`).removeClass("hidden");
+          console.log(
+            postElement
+              .find(".access-modifier")
+              .find(`.${access_modifier}`)
+              .attr("class")
+          );
+          postElement
+            .find(".access-modifier")
+            .find(`.${access_modifier}`)
+            .removeClass("hidden");
         })
         .catch((error) => {
-          console.error("Failed to update post:", error);
-          alert("Failed to update the post. Please try again!");
+          sendNotification(
+            "error",
+            "Failed to update the post. Please try again!"
+          );
         })
         .finally(() => {
           edit_post_container.remove(); // Đóng modal sau khi cập nhật thành công
@@ -429,12 +461,15 @@ $(document).on("click", "#delete-post", function (e) {
       url: `/posts/${postId}`,
       method: "DELETE",
       success: function () {
-        alert("Post deleted successfully!");
+        sendNotification("success", "Post deleted successfully!");
         $(`[data-post-id="${postId}"]`).remove();
       },
       error: function (error) {
         console.error("Failed to delete post:", error);
-        alert("Failed to delete the post. Please try again!");
+        sendNotification(
+          "error",
+          "Failed to delete the post. Please try again!"
+        );
       },
     });
   }

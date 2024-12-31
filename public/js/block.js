@@ -1,3 +1,5 @@
+import { sendNotification } from "./notification.js";
+
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".bg-red-100").forEach((button) => {
     button.addEventListener("click", function () {
@@ -10,13 +12,16 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((response) => {
           if (response.ok) {
             tr.remove();
-            alert("User successfully unblocked");
+            sendNotification("success", "User successfully unblocked");
           } else {
-            alert("Failed to unblock user");
+            sendNotification("error", "Failed to unblock user");
           }
         })
         .catch((error) => {
-          alert("An error occurred while trying to unblock the user.");
+          sendNotification(
+            "error",
+            "An error occurred while trying to unblock the user."
+          );
           console.error("Error:", error);
         });
     });
