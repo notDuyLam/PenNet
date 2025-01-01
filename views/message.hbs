@@ -37,9 +37,37 @@
           {{!-- .......... messages boxes ............ --}}
         </div>
 
-        <div id="message-input">
-
+        <div id="message-input" class="items-center">
+        <div id="previewContainer" class="flex flex-wrap gap-2 mt-4 bg-gray-200"></div>
+        
+        <div class="p-4 bg-white border-t flex items-center gap-2">
+          <input
+            id="message-input-content"
+            type="text"
+            placeholder="Message ..."
+            class="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div class="flex flex-col items-center space-y-4">
+            <!-- Nút chọn nhiều ảnh -->
+            <label class="cursor-pointer flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <i class="fa-solid fa-image"></i>
+              <input 
+                id="imageInput" 
+                type="file" 
+                accept="image/*" 
+                multiple 
+                class="hidden" 
+                onchange="handleFilesChange(event)"
+              />
+            </label>
+          </div>
+          <button id="submit-send-message" class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600">
+            Send
+          </button>
         </div>
+      </div>
+
+        
       </div>
     </div>
   </div>

@@ -31,11 +31,13 @@ const conversationController = {
             return res.redirect("/users/login");
         }
 
+        const imageUrls = req.imageUrls;
+
         const conversationId = req.body.conversationId;
         const userId = req.user.id;
         const content = req.body.content;
 
-        const data = await conversationService.createMessage(conversationId, userId, content);
+        const data = await conversationService.createMessage(conversationId, userId, content, imageUrls);
 
         res.status(200).json(data);
     }
