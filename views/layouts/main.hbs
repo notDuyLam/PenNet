@@ -19,11 +19,16 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     />
     <link rel="stylesheet" href="/css/darkmode.css" />
-    <script src="/js/post-ui.js"></script>
+    <script src="/js/post-ui.js" type="module"></script>
+    <script type="module" src="/js/notification.js"></script>
   </head>
 
   <body>
-    <div id="user_id" data-is-admin="{{user.isAdmin}}" style="display: none;">{{user.id}}</div>
+    <div
+      id="user_id"
+      data-is-admin="{{user.isAdmin}}"
+      style="display: none;"
+    >{{user.id}}</div>
     {{{body}}}
   </body>
 

@@ -277,32 +277,47 @@ const userService = {
         },
         attributes: ["id", "first_name", "last_name", "avatar_url", "isBanned"],
       });
-
+  
       if (!friends || friends.length === 0) {
         console.warn("No friends found for the given query.");
         return [];
       }
-
+  
       // Lấy danh sách quan hệ đã được chấp nhận (cả gửi và nhận)
-      const relationships = await UserRela.findAll({
+      const acceptedRelationships = await UserRela.findAll({
         where: {
           [Op.or]: [{ user_from: userId }, { user_to: userId }],
           status: "accepted",
         },
         attributes: ["user_from", "user_to"],
       });
-
+  
+      const pendingRelationships = await UserRela.findAll({
+        where: {
+          [Op.or]: [{ user_from: userId }, { user_to: userId }],
+          status: "pending",
+        },
+        attributes: ["user_from", "user_to"],
+      });
+  
       const friendIds = new Set(
-        relationships.map((rel) =>
+        acceptedRelationships.map((rel) =>
           rel.user_from === userId ? rel.user_to : rel.user_from
         )
       );
-
+  
+      const pendingRequestIds = new Set(
+        pendingRelationships.map((rel) =>
+          rel.user_from === userId ? rel.user_to : rel.user_from
+        )
+      );
+  
       const results = friends.map((friend) => {
         const friendData = friend?.toJSON ? friend.toJSON() : {};
         return {
           ...friendData,
           isFriend: friendIds.has(friendData.id),
+          pendingRequest: pendingRequestIds.has(friendData.id),
         };
       });
       return results;
@@ -686,6 +701,7 @@ const userService = {
             as: "toUser",
             attributes: {
               exclude: [
+                "email",
                 "password_hash",
                 "isVerify",
                 "verificationToken",
@@ -693,13 +709,6 @@ const userService = {
                 "resetPasswordExpires",
               ],
             },
-            include: [
-              {
-                model: UserInfo,
-                as: "userInfo",
-                attributes: ["country"],
-              },
-            ],
           },
         ],
       });
@@ -899,6 +908,32 @@ const userService = {
       return relation !== null;
     } catch (error) {
       throw new Error("Error checking friendship: " + error.message);
+    }
+  },
+  async getNumFollower(userId) {
+    try {
+      const followersCount = await UserRela.count({
+        where: {
+          user_to: userId,
+          status: "accepted",
+        },
+      });
+      return followersCount;
+    } catch (error) {
+      throw new Error("Error fetching follower count: " + error.message);
+    }
+  },
+  async getNumFollowing(userId) {
+    try {
+      const followingCount = await UserRela.count({
+        where: {
+          user_from: userId,
+          status: "accepted",
+        },
+      });
+      return followingCount;
+    } catch (error) {
+      throw new Error("Error fetching following count: " + error.message);
     }
   },
   async addReview(userId, reviewedUserId, content) {

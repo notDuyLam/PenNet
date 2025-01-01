@@ -1,3 +1,5 @@
+import { sendNotification } from "./notification.js";
+
 function gridClass(length) {
   return length > 1 ? "grid grid-cols-2 gap-4" : "grid grid-cols-1 gap-4";
 }
@@ -83,16 +85,15 @@ document
   .querySelector("#post-form")
   .addEventListener("submit", async function (event) {
     event.preventDefault();
-    //alert("Please wait while your post is being submitted...");
-    if(isUpPost){
-        return;
+    if (isUpPost) {
+      return;
     }
     isUpPost = true;
     const spinner = $(`
         <div class="w-full h-full fixed top-0 left-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div class="spinner"> </div> 
         </div>`);
-    $('body').append(spinner).addClass('no-scroll');
+    $("body").append(spinner).addClass("no-scroll");
 
     const form = event.target;
     const formData = new FormData();
@@ -100,13 +101,15 @@ document
     const files = fileInput.files;
     const content = document.querySelector("textarea[name='content']").value;
     // Kiểm tra dữ liệu trước khi gửi về server
-    if(!content && files.length === 0) {
-      alert("Please enter content or upload images");
-      $('body').removeClass('no-scroll');
+    if (!content && files.length === 0) {
+      sendNotification("error", "Please enter content or upload images");
+      $("body").removeClass("no-scroll");
       spinner.remove();
       isUpPost = false;
       return;
     }
+    const access_modifier = $("#access_modifier").val();
+    formData.append("access_modifier", access_modifier);
     formData.append("content", content);
     if (files.length > 0) {
       for (let i = 0; i < files.length; i++) {
@@ -121,18 +124,17 @@ document
 
       if (response.ok) {
         // Handle successful response
-        //alert("Post submitted successfully");
         location.reload();
       } else {
         // Handle error response
-        alert("Error submitting post");
+        sendNotification("error", "Failed to submit post");
       }
-      $('body').removeClass('no-scroll');
+      $("body").removeClass("no-scroll");
       spinner.remove();
       isUpPost = false;
     } catch (error) {
-      alert("Error submitting post", error);
-      $('body').removeClass('no-scroll');
+      sendNotification("error", `Error submitting post`);
+      $("body").removeClass("no-scroll");
       spinner.remove();
       isUpPost = false;
     }

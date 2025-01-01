@@ -33,20 +33,19 @@
         <thead>
           <tr class="border-b">
             <th class="py-4 text-gray-500 text-center">Name</th>
-            <th class="py-4 text-gray-500 text-center">Email</th>
-            <th class="py-4 text-gray-500 text-center">Country</th>
             <th class="py-4 text-gray-500 text-center">Status</th>
           </tr>
         </thead>
         <tbody>
           {{#each blockList}}
           <tr class="border-b hover:bg-gray-50" id="{{this.id}}">
-            <td class="py-4 text-center font-medium">{{this.first_name}} {{this.last_name}}</td>
-            <td class="py-4 text-center text-blue-500">{{this.email}}</td>
-            <td class="py-4 text-center">{{#if this.userInfo.country}}{{this.userInfo.country}}{{else}}N/A{{/if}}</td>
+            <td class="py-4 text-center font-medium flex items-center justify-center space-x-4">
+              <img src="{{this.avatar_url}}" alt="Avatar" class="w-10 h-10 rounded-full">
+              <span>{{this.first_name}} {{this.last_name}}</span>
+            </td>
             <td class="py-4 text-center">
               <button class="bg-red-100 text-red-600 px-4 py-1 rounded-full hover:bg-red-200">
-                Unblock
+              Unblock
               </button>
             </td>
           </tr>
@@ -67,4 +66,4 @@
     </div> --}}
   </div>
 </div>
-<script src="/js/block.js"></script>
+<script src="/js/block.js" type="module"></script>

@@ -1,3 +1,5 @@
+import { sendNotification } from "./notification.js";
+
 document.getElementById("upload-button").addEventListener("click", function () {
   document.getElementById("file-input").click();
 });
@@ -15,7 +17,7 @@ document
     }
   });
 
-document.getElementById("edit-button").addEventListener("click", function () {
+document.getElementById("edit-button")?.addEventListener("click", function () {
   document.getElementById("first_name").removeAttribute("readonly");
   document.getElementById("first_name").removeAttribute("disabled");
   document.getElementById("last_name").removeAttribute("readonly");
@@ -30,7 +32,7 @@ document.getElementById("edit-button").addEventListener("click", function () {
 
 document
   .getElementById("save-button")
-  .addEventListener("click", async function () {
+  ?.addEventListener("click", async function () {
     const firstName = document.getElementById("first_name").value;
     const lastName = document.getElementById("last_name").value;
     const dob = document.getElementById("dob").value;
@@ -73,15 +75,13 @@ document
         });
         document.getElementById("dob").value = dob;
         document.getElementById("country").value = country;
-        alert("Profile updated successfully");
+        sendNotification("success", "Profile updated successfully");
       } else {
         const errorResult = await response.json();
-        console.error("Failed to update profile:", errorResult.message);
-        alert("Failed to update profile: " + errorResult.message);
+        sendNotification("error", "Failed to update profile.");
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred while updating the profile");
+      sendNotification("error", "An error occurred while updating the profile");
     }
   });
 
@@ -120,24 +120,22 @@ document.querySelector(".save").addEventListener("click", async function () {
         console.log(result);
         document.querySelector(".profile-image img").src = result.avatar;
         document.querySelector(".image-avatar").src = result.avatar;
-        alert("Image uploaded successfully");
+        sendNotification("success", "Image uploaded successfully");
         document.getElementById("upload-button").classList.remove("hidden");
         document.querySelector(".save").classList.add("hidden");
       } else {
         const errorResult = await response.json();
-        console.error("Failed to upload image:", errorResult.message);
-        alert("Failed to upload image: " + errorResult.message);
+        sendNotification("error", "Failed to upload image");
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred while uploading the image");
+      sendNotification("error", "An error occurred while uploading the image");
     }
   }
 });
 
 document
   .getElementById("change-password-button")
-  .addEventListener("click", function () {
+  ?.addEventListener("click", function () {
     document.getElementById("profile-form").classList.add("hidden");
     document.getElementById("password-form").classList.remove("hidden");
     document.getElementById("edit-button").classList.add("hidden");
@@ -154,7 +152,10 @@ document
     const confirmPassword = document.getElementById("confirm_password").value;
 
     if (newPassword !== confirmPassword) {
-      alert("New password and confirm password do not match");
+      sendNotification(
+        "error",
+        "New password and confirm password do not match"
+      );
       return;
     }
 
@@ -173,7 +174,7 @@ document
       if (response.ok) {
         const result = await response.json();
         console.log("Password changed successfully:", result);
-        alert("Password changed successfully");
+        sendNotification("success", "Password changed successfully");
         document.getElementById("profile-form").classList.remove("hidden");
         document.getElementById("password-form").classList.add("hidden");
         document.getElementById("edit-button").classList.remove("hidden");
@@ -182,14 +183,13 @@ document
           .classList.remove("hidden");
       } else {
         const errorResult = await response.json();
-        console.log(errorResult);
-
-        console.error("Failed to change password:", errorResult.errorMessage);
-        alert("Failed to change password: " + errorResult.errorMessage);
+        sendNotification("error", "Failed to change password.");
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred while changing the password");
+      sendNotification(
+        "error",
+        "An error occurred while changing the password"
+      );
     }
   });
 

@@ -1,63 +1,85 @@
-<div class="flex flex-col border rounded-lg overflow-hidden">
+<div class="relative z-30">
 
-    <!-- Cover Photo -->
-    <img 
-        class="h-24 w-full object-cover"
-        src="{{#if user.cover_photo}}{{user.cover_photo}}{{else}}/images/cover.png{{/if}}" 
-        alt="cover-photo"
-    />
+    <button id="toggleBtnSideMenu" class="md:hidden p-2 m-2 border rounded focus:outline-none w-9">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+    <div id="sideMenu" class="small-menu hidden md:static md:block flex flex-col border rounded-lg overflow-hidden min-w-[16rem] w-64 bg-white">
 
-    <!-- Avatar -->
-    <img 
-        class="h-16 w-16 rounded-full -mt-8 ml-8 border border-white image-avatar"
-        src="{{#if user.avatar}}{{user.avatar}}{{else}}/images/avatar.png{{/if}}"
-        alt="user-avatar"
-    />
+        <!-- Cover Photo -->
+        <img class="h-24 w-full object-cover"
+            src="{{#if user.cover_photo}}{{user.cover_photo}}{{else}}/images/cover.png{{/if}}" alt="cover-photo" />
 
-    <!-- User Name -->
-    <div class="ml-8 mt-4 font-medium fullName">
-        {{user.first_name}} {{user.last_name}}
-    </div>
-    
-    <p id="user_id" class="hidden">{{user.id}}</p>
+        <!-- Avatar -->
+        <img class="h-16 w-16 rounded-full -mt-8 ml-8 border border-white image-avatar"
+            src="{{#if user.avatar}}{{user.avatar}}{{else}}/images/avatar.png{{/if}}" alt="user-avatar" />
 
-    <!-- Navigation Links -->
-    <div class="flex flex-col justify-between mt-8 ml-8 mb-4">
-        <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
-            <div class="w-4">
-                <i class="fa-solid fa-house"></i>
-            </div>
-            <a href="/" class="ml-4">Home</a>
+        <!-- User Name -->
+        <div class="ml-8 mt-4 font-medium fullName">
+            {{user.first_name}} {{user.last_name}}
         </div>
-        <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
-            <div class="w-4">
-                <i class="fa-solid fa-user"></i>
+
+        <p id="user_id" class="hidden">{{user.id}}</p>
+
+        <!-- Navigation Links -->
+        <div class="flex flex-col justify-between mt-8 ml-8 mb-4">
+            <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+                <div class="w-4">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <a href="/" class="ml-4">Home</a>
             </div>
-            <a href="/users/profile/{{user.id}}" class="ml-4">Profile</a>
-        </div>
-        <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
-            <div class="w-4">
-                <i class="fa-solid fa-comment"></i>
+            <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+                <div class="w-4">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <a href="/users/profile/{{user.id}}" class="ml-4">Profile</a>
             </div>
-            <a href="/conversations" class="ml-4">Message</a>
-        </div>
-        <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
-            <div class="w-4">
-                <i class="fa-solid fa-bell"></i>
+            <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+                <div class="w-4">
+                    <i class="fa-solid fa-comment"></i>
+                </div>
+                <a href="/conversations" class="ml-4">Message</a>
             </div>
-            <a href="/notification" class="ml-4">Notification</a>
-        </div>
-        <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
-            <div class="w-4">
-                <i class="fa-solid fa-user-group"></i>
+            <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+                <div class="w-4">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <a href="/notification" class="ml-4">Notification</a>
             </div>
-            <a href="/users/friends" class="ml-4">Friends</a>
-        </div>
-        <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
-            <div class="w-4">
-                <i class="fa-solid fa-ban"></i>
+            <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+                <div class="w-4">
+                    <i class="fa-solid fa-user-group"></i>
+                </div>
+                <a href="/users/friends" class="ml-4">Friends</a>
             </div>
-            <a href="/users/block" class="ml-4">Block List</a>
+            <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+                <div class="w-4">
+                    <i class="fa-solid fa-ban"></i>
+                </div>
+                <a href="/users/block" class="ml-4">Block List</a>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+        $('#toggleBtnSideMenu').click(function(e) {
+            e.stopPropagation();
+            $('.small-menu:not(#sideMenu)').addClass('hidden');
+            $('.small-menu:not(#sideMenu)').removeClass('absolute');
+
+            $('#sideMenu').toggleClass('hidden');
+            $('#sideMenu').toggleClass('absolute');
+        });
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#sideMenu').length) {
+                if($('#sideMenu').hasClass('hidden')) {
+                    return;
+                }
+                $('#sideMenu').toggleClass('hidden');
+                $('#sideMenu').toggleClass('absolute');
+            }
+        })
+    })
+</script>
