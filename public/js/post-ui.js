@@ -90,13 +90,13 @@ $(document).on("click", ".post-comment", function () {
           .find("#container")
           .append(
             `
-            <div class="cmt flex p-4 border-b" data-comment-id="${comment.id}>
+            <div class="cmt flex p-4 border-b" data-comment-id="${comment.id}">
                 <img class="rounded-full w-12 h-12 mr-4" src="${comment.user.avatar_url}" alt="user-avatar">
                 <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
                     <div class="rounded-xl p-2 pl-4 pr-4 w-full">
                         <div class="font-bold">${comment.user.first_name} ${comment.user.last_name}</div>
                         <div class="w-full flex justify-between items-center">
-                            <div class="w-full">${comment.content}</div>
+                            <div class="comment-content w-full">${comment.content}</div>
                             <button type="submit"
                                 class="submit-btn hidden ml-4 bg-green-500 text-white py-2 px-4 rounded self-end"
                             >
@@ -153,9 +153,9 @@ $(document).on("click", ".post-comment", function () {
             e.preventDefault();
             const content = comment.text().trim();
             $.ajax({
-                url: `/posts/comment/${commentId}`,
+                url: `/posts/comment/${postId}/${commentId}`,
                 method: "PATCH",
-                data: { content, commentId },
+                data: { content },
                 success: function (response) {
                     comment.attr("contenteditable", "false");
                     comment.siblings(".submit-btn").addClass("hidden");
@@ -173,12 +173,12 @@ $(document).on("click", ".post-comment", function () {
     $(document).on("click", ".delete-comment", function () {
         const commentId = $(this).closest(".cmt").data("comment-id");
         $.ajax({
-            url: `/posts/comment/${commentId}`,
+            url: `/posts/comment/${postId}/${commentId}`,
             method: "DELETE",
             success: function (response) {
                 $(this).closest(".cmt").remove();
                 sendNotification("success", "Comment deleted successfully.");
-            },
+            }.bind(this),
             error: function (error) {
                 console.error("Failed to delete comment:", error);
                 sendNotification("error", "Failed to delete comment.");
@@ -220,13 +220,13 @@ $(document).on("click", ".post-comment", function () {
             .find("#container")
             .append(
               `
-                <div class="flex p-4 border-b" data-comment-id="${response.id}>
+                <div class="cmt flex p-4 border-b" data-comment-id="${response.id}">
                   <img class="rounded-full w-12 h-12 mr-4" src="${response.user.avatar_url}" alt="user-avatar">
                   <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
                     <div class="rounded-xl p-2 pl-4 pr-4 w-full">
                       <div class="font-bold">${response.user.first_name} ${response.user.last_name}</div>
                       <div class="w-full flex justify-between items-center">
-                            <div class="w-full">${response.content}</div>
+                            <div class="comment-content w-full">${response.content}</div>
                             <button type="submit"
                                 class="submit-btn hidden ml-4 bg-green-500 text-white py-2 px-4 rounded self-end"
                             >
