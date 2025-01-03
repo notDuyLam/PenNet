@@ -44,10 +44,40 @@ $(document).on("click", ".post-comment", function () {
   const user = {
     name: $(".fullName").first().text(),
     avatar: $(".image-avatar").first().attr("src"),
+    id: +$("#user_id").first().text(),
   };
-
   // Lấy postId từ thuộc tính data-post-id
   const postId = $(this).closest("[data-post-id]").data("post-id");
+
+    // Tạo modal chứa danh sách comment
+    const post_details = $(`
+    <div class="w-full h-full fixed top-0 left-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div class="flex flex-col w-1/2 h-2/3 bg-white rounded">
+            <div class="flex justify-end p-2 pr-4">
+                <button id="close-modal" class="text-gray-500 hover:text-black text-xl">&times;</button>
+            </div>
+            <div id="container" class="flex-grow overflow-y-auto">
+                
+            </div>
+            <div class="flex p-4 border-b">
+                <img class="rounded-full w-12 h-12 mr-4" src="${user.avatar}" alt="user-avatar">
+                <div class="rounded-xl flex-grow flex bg-gray-200 items-center w-full">
+                    <div class="rounded-xl p-2 pl-4 pr-4 flex-grow">
+                        <div class="font-bold">${user.name}</div>
+                        <div data-post-id="${postId}" class="w-full border flex flex-col rounded mb-4 hidden"></div>
+                        <form id="comment-form">
+                            <input 
+                                name="content" id="content" type="text" 
+                                class="w-full p-4 border border-[#ECF0F5] 
+                                rounded-md text-sm text-[#707988]" placeholder="Comment here"
+                            />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `);
 
   // Fetch comments from server
   $.ajax({
@@ -60,15 +90,34 @@ $(document).on("click", ".post-comment", function () {
           .find("#container")
           .append(
             `
-              <div class="flex p-4 border-b">
+            <div class="cmt flex p-4 border-b" data-comment-id="${comment.id}>
                 <img class="rounded-full w-12 h-12 mr-4" src="${comment.user.avatar_url}" alt="user-avatar">
                 <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
-                    <div class="rounded-xl p-2 pl-4 pr-4">
+                    <div class="rounded-xl p-2 pl-4 pr-4 w-full">
                         <div class="font-bold">${comment.user.first_name} ${comment.user.last_name}</div>
-                        <div>${comment.content}</div>
+                        <div class="w-full flex justify-between items-center">
+                            <div class="w-full">${comment.content}</div>
+                            <button type="submit"
+                                class="submit-btn hidden ml-4 bg-green-500 text-white py-2 px-4 rounded self-end"
+                            >
+                                Submit
+                            </button>
+                        </div>
                     </div>
+                    ${(user.id === comment.user.id)
+                        ? `
+                        <div class="edit-comment-btn flex text-xl mr-2 relative">
+                            <i class="fa-solid fa-pen-to-square mr-2 cursor-pointer"></i>
+                            <div class="items absolute right-0 w-24 top-6 p-2 z-10 
+                                bg-white border rounded-xl shadow-lg hidden
+                                group-hover:block">
+                                <div class="edit-comment w-full px-4 hover:bg-gray-200 cursor-pointer">Edit</div>
+                                <div class="delete-comment w-full px-4 hover:bg-gray-200 cursor-pointer">Delete</div>
+                            </div>
+                        </div>`
+                        : ``}
                 </div>
-              </div>
+            </div>
             `
           );
       });
@@ -79,35 +128,63 @@ $(document).on("click", ".post-comment", function () {
     },
   });
 
-  // Tạo modal chứa danh sách comment
-  const post_details = $(`
-        <div class="w-full h-full fixed top-0 left-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div class="flex flex-col w-1/2 h-2/3 bg-white rounded">
-                <div class="flex justify-end p-2 pr-4">
-                    <button id="close-modal" class="text-gray-500 hover:text-black text-xl">&times;</button>
-                </div>
-                <div id="container" class="flex-grow overflow-y-auto">
-                    
-                </div>
-                <div class="flex p-4 border-b">
-                    <img class="rounded-full w-12 h-12 mr-4" src="${user.avatar}" alt="user-avatar">
-                    <div class="rounded-xl flex-grow flex bg-gray-200 items-center w-full">
-                        <div class="rounded-xl p-2 pl-4 pr-4 flex-grow">
-                            <div class="font-bold">${user.name}</div>
-                            <div data-post-id="${postId}" class="w-full border flex flex-col rounded mb-4 hidden"></div>
-                            <form id="comment-form">
-                                <input 
-                                    name="content" id="content" type="text" 
-                                    class="w-full p-4 border border-[#ECF0F5] 
-                                    rounded-md text-sm text-[#707988]" placeholder="Comment here"
-                                />
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `);
+    $(document).on("click", ".edit-comment-btn i", function (e) {
+        $(".items").not($(this).siblings(".items")).addClass("hidden"); // Ẩn tất cả các phần tử .items
+        $(this).siblings(".items").toggleClass("hidden"); // Hiển thị/tắt phần tử .items gần nhất
+        e.stopPropagation();
+    });
+
+    // Xử lý click bên ngoài để đóng các menu .items
+    $(document).on("click", function (e) {
+        if (
+            !$(e.target).closest(".edit-comment-btn").length &&
+            !$(e.target).closest(".items").length
+        ) {
+            $(".items").addClass("hidden");
+        }
+    });
+
+    $(document).on("click", ".edit-comment", function () {
+        const commentId = $(this).closest(".cmt").data("comment-id");
+        const comment = $(this).closest(".cmt").find(".comment-content");
+        comment.attr("contenteditable", "true").focus();
+        comment.siblings(".submit-btn").removeClass("hidden");
+        comment.siblings(".submit-btn").on("click", function (e) {
+            e.preventDefault();
+            const content = comment.text().trim();
+            $.ajax({
+                url: `/posts/comment/${commentId}`,
+                method: "PATCH",
+                data: { content, commentId },
+                success: function (response) {
+                    comment.attr("contenteditable", "false");
+                    comment.siblings(".submit-btn").addClass("hidden");
+                    comment.text(content);
+                    sendNotification("success", "Comment updated successfully.");
+                },
+                error: function (error) {
+                    console.error("Failed to update comment:", error);
+                    sendNotification("error", "Failed to update comment.");
+                },
+            });
+        });
+    });
+
+    $(document).on("click", ".delete-comment", function () {
+        const commentId = $(this).closest(".cmt").data("comment-id");
+        $.ajax({
+            url: `/posts/comment/${commentId}`,
+            method: "DELETE",
+            success: function (response) {
+                $(this).closest(".cmt").remove();
+                sendNotification("success", "Comment deleted successfully.");
+            },
+            error: function (error) {
+                console.error("Failed to delete comment:", error);
+                sendNotification("error", "Failed to delete comment.");
+            },
+        });
+    });
 
   $(post_details)
     .find("#comment-form")
@@ -143,12 +220,28 @@ $(document).on("click", ".post-comment", function () {
             .find("#container")
             .append(
               `
-                <div class="flex p-4 border-b">
+                <div class="flex p-4 border-b" data-comment-id="${response.id}>
                   <img class="rounded-full w-12 h-12 mr-4" src="${response.user.avatar_url}" alt="user-avatar">
                   <div class="rounded-xl flex-grow flex bg-gray-200 justify-between items-center">
-                    <div class="rounded-xl p-2 pl-4 pr-4">
+                    <div class="rounded-xl p-2 pl-4 pr-4 w-full">
                       <div class="font-bold">${response.user.first_name} ${response.user.last_name}</div>
-                      <div>${response.content}</div>
+                      <div class="w-full flex justify-between items-center">
+                            <div class="w-full">${response.content}</div>
+                            <button type="submit"
+                                class="submit-btn hidden ml-4 bg-green-500 text-white py-2 px-4 rounded self-end"
+                            >
+                                Submit
+                            </button>
+                        </div>
+                    </div>
+                    <div class="edit-comment-btn flex text-xl mr-2 relative">
+                        <i class="fa-solid fa-pen-to-square mr-2 cursor-pointer"></i>
+                        <div class="items absolute right-0 w-24 top-6 p-2 z-10 
+                            bg-white border rounded-xl shadow-lg hidden
+                            group-hover:block">
+                            <div class="edit-comment w-full px-4 hover:bg-gray-200 cursor-pointer">Edit</div>
+                            <div class="delete-comment w-full px-4 hover:bg-gray-200 cursor-pointer">Delete</div>
+                        </div>
                     </div>
                   </div>
                 </div>
@@ -333,12 +426,18 @@ $(document).on("click", "#edit-post", function (e) {
       reader.readAsDataURL(file);
     }
   });
+  let p_access_modifier = $("#access_modifier").val();
+  $(document).on("change", "#access_modifier", function () {
+    p_access_modifier = $(this).val();
+  });
+  
 
   $(document)
     .off("click", "#submit-form")
     .on("click", "#submit-form", function () {
       e.preventDefault();
-
+    
+      console.log('p_access_modifier', p_access_modifier);
       // Lấy dữ liệu từ form
       const content = $("#edit-post-form textarea").val();
       // Lấy ảnh
@@ -362,7 +461,8 @@ $(document).on("click", "#edit-post", function (e) {
         }
       });
 
-      const access_modifier = $("#access_modifier").val();
+      console.log('before', $("#access_modifier").val());    
+      const access_modifier = p_access_modifier ||$("#access_modifier").val();
 
       // removeImageSources: mảng chứa src các ảnh cần xóa
       // formData: chứa các file (ảnh) cần thêm vào
@@ -385,7 +485,6 @@ $(document).on("click", "#edit-post", function (e) {
           <div class="spinner"> </div> 
         </div>`);
       $("body").append(spinner).addClass("no-scroll");
-      console.log($("body").attr("class"));
 
       fetch(`/posts/${postId}`, {
         method: "PATCH",
@@ -397,7 +496,6 @@ $(document).on("click", "#edit-post", function (e) {
           const postElement = $(`[data-post-id="${postId}"]`);
           postElement.find(".text-lg").text(content);
           // Update the post attachments on the page
-          console.log(data);
           const postPictures = postElement.find(".picture-container");
           postPictures.empty();
           postPictures.removeClass("grid-cols-2").removeClass("grid-cols-1");
