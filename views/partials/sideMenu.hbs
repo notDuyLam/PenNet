@@ -1,17 +1,20 @@
+{{!-- filepath: /e:/Hoc/Subjects on school/NMCNPM/Project/Source/Penet/views/partials/sideMenu.hbs --}}
 <div class="relative z-30">
-
     <button id="toggleBtnSideMenu" class="md:hidden p-2 m-2 border rounded focus:outline-none w-9">
         <i class="fa-solid fa-bars"></i>
     </button>
     <div id="sideMenu" class="small-menu hidden md:static md:block flex flex-col border rounded-lg overflow-hidden min-w-[16rem] w-[20vw] bg-white">
-
         <!-- Cover Photo -->
         <img class="h-24 w-full object-cover"
             src="{{#if user.cover_photo}}{{user.cover_photo}}{{else}}/images/cover.png{{/if}}" alt="cover-photo" />
 
-        <!-- Avatar -->
-        <img class="h-16 w-16 rounded-full -mt-8 ml-8 border border-white image-avatar"
-            src="{{#if user.avatar}}{{user.avatar}}{{else}}/images/avatar.png{{/if}}" alt="user-avatar" />
+        <!-- Avatar Wrapper -->
+        <div class="relative -mt-8 ml-8">
+            <div class="border-[3px] border-black rounded-full h-[65px] w-[64px]">
+                <img class="h-[60px] w-[60px] rounded-full border-[3px] border-white"
+                    src="{{#if user.avatar}}{{user.avatar}}{{else}}/images/avatar.png{{/if}}" alt="user-avatar" />
+            </div>
+        </div>
 
         <!-- User Name -->
         <div class="ml-8 mt-4 font-medium fullName">
@@ -21,43 +24,43 @@
         <p id="user_id" class="hidden">{{user.id}}</p>
 
         <!-- Navigation Links -->
-        <div class="flex flex-col justify-between mt-8 ml-8 mb-4">
-            <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+        <div class="flex flex-col justify-between mt-8 mb-4 space-y-2 px-4">
+            <a href="/" class="flex items-center p-2 cursor-pointer rounded border border-gray-400 hover:bg-gray-200 {{#if (eq currentTab 'home')}}bg-gray-300{{/if}}">
                 <div class="w-4">
                     <i class="fa-solid fa-house"></i>
                 </div>
-                <a href="/" class="ml-4">Home</a>
-            </div>
-            <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+                <span class="ml-4">Home</span>
+            </a>
+            <a href="/users/profile/{{user.id}}" class="flex items-center p-2 cursor-pointer rounded border border-gray-400 hover:bg-gray-200 {{#if (eq currentTab 'profile')}}bg-gray-300{{/if}}">
                 <div class="w-4">
                     <i class="fa-solid fa-user"></i>
                 </div>
-                <a href="/users/profile/{{user.id}}" class="ml-4">Profile</a>
-            </div>
-            <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+                <span class="ml-4">Profile</span>
+            </a>
+            <a href="/conversations" class="flex items-center p-2 cursor-pointer rounded border border-gray-400 hover:bg-gray-200 {{#if (eq currentTab 'message')}}bg-gray-300{{/if}}">
                 <div class="w-4">
                     <i class="fa-solid fa-comment"></i>
                 </div>
-                <a href="/conversations" class="ml-4">Message</a>
-            </div>
-            <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+                <span class="ml-4">Message</span>
+            </a>
+            <a href="/notification" class="flex items-center p-2 cursor-pointer rounded border border-gray-400 hover:bg-gray-200 {{#if (eq currentTab 'notification')}}bg-gray-300{{/if}}">
                 <div class="w-4">
                     <i class="fa-solid fa-bell"></i>
                 </div>
-                <a href="/notification" class="ml-4">Notification</a>
-            </div>
-            <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+                <span class="ml-4">Notification</span>
+            </a>
+            <a href="/users/friends" class="flex items-center p-2 cursor-pointer rounded border border-gray-400 hover:bg-gray-200 {{#if (eq currentTab 'friends')}}bg-gray-300{{/if}}">
                 <div class="w-4">
                     <i class="fa-solid fa-user-group"></i>
                 </div>
-                <a href="/users/friends" class="ml-4">Friends</a>
-            </div>
-            <div class="flex items-center p-2 cursor-pointer rounded border-b border-gray-400 w-36 max-w-48">
+                <span class="ml-4">Friends</span>
+            </a>
+            <a href="/users/block" class="flex items-center p-2 cursor-pointer rounded border border-gray-400 hover:bg-gray-200 {{#if (eq currentTab 'block')}}bg-gray-300{{/if}}">
                 <div class="w-4">
                     <i class="fa-solid fa-ban"></i>
                 </div>
-                <a href="/users/block" class="ml-4">Block List</a>
-            </div>
+                <span class="ml-4">Block List</span>
+            </a>
         </div>
     </div>
 </div>
