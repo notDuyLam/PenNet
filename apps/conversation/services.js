@@ -2,6 +2,7 @@ const Conversation = require('./model');
 const Participant = require('./participant/model');
 const User = require('../user/model');
 const Message = require('./message/model');
+const Attachment = require('../post/attachment/model');
 
 const { Op, Sequelize } = require("sequelize");
 
@@ -141,6 +142,14 @@ class ConversationService {
             as: 'user',
             attributes: ['first_name', 'avatar_url'],
           },
+          {
+            model: Attachment,
+            as: 'attachments',
+            attributes: ['media_url']
+          }
+        ],
+        order: [
+          ['createdAt', 'ASC'] // Sắp xếp theo createdAt tăng dần
         ]
       });
   
@@ -156,7 +165,43 @@ class ConversationService {
     }
   }
 
-  static async createMessage(conversationId, userId, content) {
+  static async getMessageWithId(conversationId, messageId, userId) {
+    try {
+      const message = await Message.findOne({
+        where: {
+          conversation_id: conversationId,
+          id: messageId,
+        },
+        include: [
+          {
+            model: User,
+            as: 'user',
+            attributes: ['first_name', 'avatar_url'],
+          },
+          {
+            model: Attachment,
+            as: 'attachments',
+            attributes: ['media_url']
+          }
+        ],
+        order: [
+          ['createdAt', 'ASC'] // Sắp xếp theo createdAt tăng dần
+        ]
+      });
+  
+      // Add isSender field to each message
+      const enhancedMessages = {
+        ...message.dataValues, // Extract Sequelize data values
+        isSender: message.user_id === userId,
+      };
+  
+      return enhancedMessages;
+    } catch (error) {
+      throw new Error(`Error retrieving messages from conversation: ${error.message}`);
+    }
+  }
+
+  static async createMessage(conversationId, userId, content, imageUrls) {
     try {
       const message = await Message.create({
         user_id: userId,
@@ -165,6 +210,14 @@ class ConversationService {
         status: "sent"
       });
 
+      if (imageUrls && imageUrls.length > 0) {
+        const attachments = imageUrls.map((url) => ({
+          message_id: message.id,
+          media_url: url,
+        }));
+        await Attachment.bulkCreate(attachments);
+      }
+      
       return message;
     } catch (error) {
       throw new Error(`Error storing message: ${error.message}`);

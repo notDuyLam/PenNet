@@ -75,6 +75,8 @@ const conversationSwitch = async (conversationId, conversationName) => {
       }
   
       const messages = await response.json();
+
+      console.log(messages);
   
       // Select the chat messages container
       const messagesContainer = document.querySelector("#message-list");
@@ -87,71 +89,101 @@ const conversationSwitch = async (conversationId, conversationName) => {
       // Clear any existing messages
       messagesContainer.innerHTML = "";
   
-      // Render messages
-      messages.forEach((message) => {
+      const renderPromises = messages.map(async (message) => {
         const messageElement = document.createElement("div");
-  
+    
         if (message.isSender) {
-          // Sent Message
           messageElement.className = "flex justify-end";
           messageElement.innerHTML = `
             <div class="bg-blue-500 text-white p-3 rounded-lg max-w-md max-w-[200px] break-words overflow-hidden">
               <p>${message.content}</p>
+              ${renderAttachments(message.attachments)}
               <span class="text-xs text-white block mt-1">${new Date(message.createdAt).toLocaleTimeString()}</span>
             </div>
           `;
         } else {
-          // Received Message
           messageElement.className = "flex items-start gap-3";
           messageElement.innerHTML = `
             <img class="w-8 h-8 rounded-full object-cover" src="${message.user.avatar_url}" alt="User Avatar" />
             <div class="bg-gray-200 p-3 rounded-lg max-w-md">
               <h1><b>${message.user.first_name}</b></h1>
               <p class="text-gray-800">${message.content}</p>
+              ${renderAttachments(message.attachments)}
               <span class="text-xs text-gray-500 block mt-1">${new Date(message.createdAt).toLocaleTimeString()}</span>
             </div>
           `;
         }
-  
+    
         messagesContainer.appendChild(messageElement);
       });
-
-      const newMessageInput = `
-        <div class="p-4 bg-white border-t flex items-center gap-2">
-        <input
-            id="message-input-content"
-            type="text"
-            placeholder="Message ..."
-            class="flex-1 border rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <button class="bg-blue-500 text-white px-4 py-2 rounded-full hover:bg-blue-600" onclick="sendMessage(${conversationId})">
-            Send
-        </button>
-        </div>
-        `;
-
+    
+      // Chờ tất cả Promise hoàn tất và sau đó render
+      await Promise.all(renderPromises);
         // Append to messagesContainer
-      document.getElementById('message-input').innerHTML = newMessageInput;
+      document.getElementById('submit-send-message').onclick = ()=>{
+        sendMessage(conversationId);
+      };
+
       setTimeout(()=>{
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        document.getElementById('message-input-content').addEventListener('keydown', function(event) {
+          if (event.key === 'Enter') {
+            sendMessage(conversationId);
+          }
+      });
       }, 500);
     } catch (error) {
       console.error("Error in conversationSwitch:", error);
     }
   };
 
+function renderAttachments(attachments) {
+    if(attachments == undefined) return '';
+    // Giới hạn số lượng ảnh là 5
+    const maxAttachments = 5;
+    const attachmentCount = Math.min(attachments.length, maxAttachments);
+    
+    let attachmentHtml = '';
+    
+    for (let i = 0; i < attachmentCount; i++) {
+        const attachment = attachments[i];
+        
+        if (attachment.media_url) {
+          attachmentHtml += `
+              <a onclick="showImage('${attachment.media_url}')">
+                <img src="${attachment.media_url}" alt="Attachment Image" class="max-w-[200px] max-h-[200px] object-cover rounded mt-2 mr-2" />
+              </a>
+          `;
+        }
+    }
+    
+    return attachmentHtml;
+}
+
 const sendMessage = async (conversationId) => {
     try {
         const content = document.getElementById('message-input-content').value;
+        const files = document.getElementById('imageInput').files;
+
+        console.log(files);
+
+        // if (!content && files && files.length === 0) {
+        //   console.error('Message content or files must not be empty.');
+        //   alert('Bạn phải nhập nội dung tin nhắn hoặc đính kèm ít nhất một file!');
+        //   return null;
+        //}
+
+        const formData = new FormData();
+        formData.append('conversationId', conversationId);
+        formData.append('content', content);
+        
+        Array.from(files).forEach((file, _) => {
+          formData.append("images", file);
+        });
+
         const response = await fetch('/api/conversations/msgs', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                conversationId: conversationId,
-                content: content,
-            }),
+            body: formData,
         });
 
         if (!response.ok) {
@@ -173,6 +205,7 @@ const sendMessage = async (conversationId) => {
         messageElement.innerHTML = `
         <div class="bg-blue-500 text-white p-3 rounded-lg max-w-md">
             <p>${data.content}</p>
+            ${renderAttachments(data.attachments)}
             <span class="text-xs text-white block mt-1">${new Date().toLocaleTimeString()}</span>
         </div>
         `;
@@ -189,19 +222,36 @@ const sendMessage = async (conversationId) => {
     } catch (error) {
         console.error('Failed to send message:', error.message);
         return null;
+    } finally {
+      const previewContainer = document.getElementById('previewContainer');
+      
+      // Reset lại previewContainer và mảng selectedFiles
+      previewContainer.innerHTML = "";
+
+      // Reset giá trị của input file
+      const imageInput = document.getElementById('imageInput');
+      imageInput.value = ""; // Clear the selected files
+
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 }
 
 // Call the function to fetch and render conversations
 fetchConversations();
 
-socket.on('receiveMessage', (data) => {
+socket.on('receiveMessage', async (data) => {
     const messagesContainer = document.querySelector("#message-list");
 
     const messageElement = document.createElement("div");
 
     console.log(data);
     console.log(sentId);
+
+    const temp = await fetch(`/api/conversations/c/${data.conversation_id}/m/${data.id}`);
+    const _temp = await temp.json();
+
+    console.log(_temp);
+
     if (data.id != sentId) {
         // Received Message
         messageElement.className = "flex items-start gap-3";
@@ -210,6 +260,7 @@ socket.on('receiveMessage', (data) => {
             <div class="bg-gray-200 p-3 rounded-lg max-w-md">
             <h1><b>${data.user.first_name}</b></h1>
             <p class="text-gray-800">${data.content}</p>
+            ${renderAttachments(_temp.attachments)}
             <span class="text-xs text-gray-500 block mt-1">${new Date(data.createdAt).toLocaleTimeString()}</span>
             </div>
         `;
@@ -227,3 +278,53 @@ socket.on('receiveMessage', (data) => {
 
     contentElement.innerHTML = truncatedContent;
 });
+
+let selectedFiles = []; // Mảng lưu trữ các file đã chọn
+
+function handleFilesChange(event) {
+  const files = Array.from(event.target.files);
+  const previewContainer = document.getElementById('previewContainer');
+  
+  // Reset lại previewContainer và mảng selectedFiles
+  previewContainer.innerHTML = "";
+  selectedFiles = [];
+
+  // Xử lý từng file
+  files.forEach((file, index) => {
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        // Thêm file vào mảng
+        selectedFiles.push(file);
+
+        // Tạo phần tử chứa ảnh và nút xóa
+        const wrapper = document.createElement("div");
+        wrapper.className = "relative w-16 h-16";
+
+        // Ảnh preview
+        const img = document.createElement("img");
+        img.src = reader.result;
+        img.alt = "Preview";
+        img.className = "w-full h-full object-cover rounded border border-gray-300";
+
+        // Nút xóa
+        const closeButton = document.createElement("button");
+        closeButton.className = "absolute top-1 right-1 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center";
+        closeButton.innerHTML = "&times;";
+        closeButton.onclick = () => {
+          // Xóa file khỏi mảng selectedFiles
+          selectedFiles = selectedFiles.filter((_, fileIndex) => fileIndex !== index);
+          wrapper.remove();
+        };
+
+        // Thêm ảnh và nút xóa vào wrapper
+        wrapper.appendChild(img);
+        wrapper.appendChild(closeButton);
+
+        // Thêm wrapper vào container
+        previewContainer.appendChild(wrapper);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+}
