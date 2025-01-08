@@ -165,6 +165,42 @@ class ConversationService {
     }
   }
 
+  static async getMessageWithId(conversationId, messageId, userId) {
+    try {
+      const message = await Message.findOne({
+        where: {
+          conversation_id: conversationId,
+          id: messageId,
+        },
+        include: [
+          {
+            model: User,
+            as: 'user',
+            attributes: ['first_name', 'avatar_url'],
+          },
+          {
+            model: Attachment,
+            as: 'attachments',
+            attributes: ['media_url']
+          }
+        ],
+        order: [
+          ['createdAt', 'ASC'] // Sắp xếp theo createdAt tăng dần
+        ]
+      });
+  
+      // Add isSender field to each message
+      const enhancedMessages = {
+        ...message.dataValues, // Extract Sequelize data values
+        isSender: message.user_id === userId,
+      };
+  
+      return enhancedMessages;
+    } catch (error) {
+      throw new Error(`Error retrieving messages from conversation: ${error.message}`);
+    }
+  }
+
   static async createMessage(conversationId, userId, content, imageUrls) {
     try {
       const message = await Message.create({

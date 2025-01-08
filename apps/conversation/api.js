@@ -12,6 +12,8 @@ router.get('/', conversationController.getConversationHeaders);
 
 router.get('/msgs/:id', conversationController.getAllMessage);
 
+router.get('/c/:cid/m/:mid', conversationController.getMessage);
+
 router.post('/msgs',
     uploadPhoto.array("images", 5),
     resizeAndUploadImage,

@@ -138,6 +138,7 @@ const conversationSwitch = async (conversationId, conversationName) => {
   };
 
 function renderAttachments(attachments) {
+    if(attachments == undefined) return '';
     // Giới hạn số lượng ảnh là 5
     const maxAttachments = 5;
     const attachmentCount = Math.min(attachments.length, maxAttachments);
@@ -149,7 +150,9 @@ function renderAttachments(attachments) {
         
         if (attachment.media_url) {
           attachmentHtml += `
-            <img src="${attachment.media_url}" alt="Attachment Image" class="max-w-[200px] max-h-[200px] object-cover rounded mt-2 mr-2" />
+              <a onclick="showImage('${attachment.media_url}')">
+                <img src="${attachment.media_url}" alt="Attachment Image" class="max-w-[200px] max-h-[200px] object-cover rounded mt-2 mr-2" />
+              </a>
           `;
         }
     }
@@ -161,6 +164,14 @@ const sendMessage = async (conversationId) => {
     try {
         const content = document.getElementById('message-input-content').value;
         const files = document.getElementById('imageInput').files;
+
+        console.log(files);
+
+        // if (!content && files && files.length === 0) {
+        //   console.error('Message content or files must not be empty.');
+        //   alert('Bạn phải nhập nội dung tin nhắn hoặc đính kèm ít nhất một file!');
+        //   return null;
+        //}
 
         const formData = new FormData();
         formData.append('conversationId', conversationId);
@@ -194,6 +205,7 @@ const sendMessage = async (conversationId) => {
         messageElement.innerHTML = `
         <div class="bg-blue-500 text-white p-3 rounded-lg max-w-md">
             <p>${data.content}</p>
+            ${renderAttachments(data.attachments)}
             <span class="text-xs text-white block mt-1">${new Date().toLocaleTimeString()}</span>
         </div>
         `;
@@ -215,19 +227,31 @@ const sendMessage = async (conversationId) => {
       
       // Reset lại previewContainer và mảng selectedFiles
       previewContainer.innerHTML = "";
+
+      // Reset giá trị của input file
+      const imageInput = document.getElementById('imageInput');
+      imageInput.value = ""; // Clear the selected files
+
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 }
 
 // Call the function to fetch and render conversations
 fetchConversations();
 
-socket.on('receiveMessage', (data) => {
+socket.on('receiveMessage', async (data) => {
     const messagesContainer = document.querySelector("#message-list");
 
     const messageElement = document.createElement("div");
 
     console.log(data);
     console.log(sentId);
+
+    const temp = await fetch(`/api/conversations/c/${data.conversation_id}/m/${data.id}`);
+    const _temp = await temp.json();
+
+    console.log(_temp);
+
     if (data.id != sentId) {
         // Received Message
         messageElement.className = "flex items-start gap-3";
@@ -236,6 +260,7 @@ socket.on('receiveMessage', (data) => {
             <div class="bg-gray-200 p-3 rounded-lg max-w-md">
             <h1><b>${data.user.first_name}</b></h1>
             <p class="text-gray-800">${data.content}</p>
+            ${renderAttachments(_temp.attachments)}
             <span class="text-xs text-gray-500 block mt-1">${new Date(data.createdAt).toLocaleTimeString()}</span>
             </div>
         `;
