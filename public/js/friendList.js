@@ -64,6 +64,7 @@ requestList.addEventListener("click", function (event) {
             friendsList.appendChild(friendDiv);
             sendNotification("success", "Friend request accepted.");
           }
+          location.reload();
         })
         .catch((error) => console.error("Error:", error));
     } else if (button.textContent === "Remove") {
