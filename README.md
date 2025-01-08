@@ -1,53 +1,43 @@
-# Social Media Project - Penet
+## Giới thiệu
 
-## Cấu trúc thư mục
+**PenNet** là một mạng xã hội cho phép người dùng đăng bài và nhắn tin. Với PenNet, bạn có thể dễ dàng kết nối với bạn bè, chia sẻ những khoảnh khắc đáng nhớ và trò chuyện với mọi người.
 
-```plaintext
-project/
-├── apps/
-│   ├── users
-│   └── admins
-├── public/
-│   ├── css
-│   ├── images
-│   |...
-├── views/
-│   ├── login.hbs
-│   ├── home.hbs
-│   |...
-├── app.js
-├── index.routes.js
-├── .env
-├── .env.example
-└── README.md
-```
+### Triển khai dự án
 
-### Chi tiết các thư mục
+Để triển khai dự án này, bạn cần thực hiện các bước sau:
 
-#### `public/`
+1. **Clone repository:**
 
-Thư mục này chứa các tài nguyên tĩnh như CSS, hình ảnh, và các tệp JavaScript công khai.
+   ```sh
+   git clone https://github.com/notDuyLam/PenNet
+   cd penet
+   ```
 
-#### `views/`
+2. **Cài đặt các phụ thuộc:**
 
-Thư mục này chứa các tệp giao diện người dùng được viết bằng Handlebars (hbs).
+   ```sh
+   npm install
+   ```
 
-#### `modules/`
+3. **Cấu hình biến môi trường:**
 
-Thư mục này chứa mã nguồn chính của ứng dụng, bao gồm các module và các thành phần chính.
+   - Tạo file `.env` từ file mẫu `.env.example`:
+     ```sh
+     cp .env.example .env
+     ```
+   - Mở file `.env` và cập nhật các giá trị biến môi trường phù hợp.
 
-#### `app.js`
+4. **Chạy ứng dụng:**
 
-Tệp này là điểm vào chính của ứng dụng, nơi cấu hình và khởi tạo server.
+   ```sh
+   npm start
+   ```
 
-#### `index.routes.js`
+5. **Truy cập ứng dụng:**
+   Mở trình duyệt và truy cập `http://localhost:3000` để xem ứng dụng.
 
-Tệp này định nghĩa các routes chính của ứng dụng, kết nối các yêu cầu HTTP với các hàm xử lý tương ứng. Với mỗi đối tượng người dùng trong apps sẽ có nhiều
+### Ghi chú
 
-#### `.env.example`
-
-Tệp này cung cấp một ví dụ về các biến môi trường cần thiết cho ứng dụng. Người dùng có thể sao chép và đổi tên thành `.env`.
-
-#### `.env`
-
-File này chứa các biến môi trường quan trọng như thông tin kết nối cơ sở dữ liệu, API keys, và các thông tin nhạy cảm khác. **Lưu ý:** Không chia sẻ file này khi công khai dự án.
+- Đảm bảo rằng bạn đã cài đặt Node.js và npm trên máy tính của mình.
+- Kiểm tra các biến môi trường trong file `.env` để đảm bảo chúng đúng với cấu hình của bạn.
+- Nếu gặp lỗi, kiểm tra log của ứng dụng để tìm hiểu nguyên nhân và cách khắc phục.
