@@ -42,23 +42,24 @@
                 <div class="space-y-6 " id="friends-list">
                     <!-- Các bạn bè sẽ được hiển thị ở đây -->
                     {{#each friends}}
-                      <div class="flex flex-row bg-gray-50 p-4 border rounded-lg shadow-md" id="{{this.id}}">
-                          <img src="{{this.avatar_url}}" alt="Alice Smith" class="w-20 h-20 rounded-full mb-3">
-                          <div class="flex flex-col items-start gap-2 relative flex-1 grow">
-                              <div class="relative w-[248px] mt-6 pl-3 font-[Inter-Medium] font-medium text-[20px] leading-normal ">{{this.first_name}} {{this.last_name}}</div>
-                              <div class="relative w-fit pl-3 font-normal text-[#B0B0B0] text-[14px] tracking-normal leading-normal whitespace-nowrap">You are now friends</div>
-                          </div>
-                           <div class="relative">
+                      <a href="/users/profile/{{this.id}}" class="block">
+                        <div class="flex flex-row bg-gray-50 p-4 border rounded-lg shadow-md" id="{{this.id}}">
+                            <img src="{{this.avatar_url}}" alt="Alice Smith" class="w-20 h-20 rounded-full mb-3">
+                            <div class="flex flex-col items-start gap-2 relative flex-1 grow">
+                                <div class="relative w-[248px] mt-6 pl-3 font-[Inter-Medium] font-medium text-[20px] leading-normal ">{{this.first_name}} {{this.last_name}}</div>
+                                <div class="relative w-fit pl-3 font-normal text-[#B0B0B0] text-[14px] tracking-normal leading-normal whitespace-nowrap">You are now friends</div>
+                            </div>
+                            <div class="relative">
                                 <button id="bacham" class="text-gray-600">
                                     <i class="fas fa-ellipsis-v text-4xl mt-5"></i> <!-- Biểu tượng ba chấm -->
                                 </button>
-    
-                               <div id="showMenu" class="absolute right-0 top-10 bg-white border rounded shadow-md hidden" style="display: none;">
+                                <div id="showMenu" class="absolute right-0 top-10 bg-white border rounded shadow-md hidden" style="display: none;">
                                     <button class="block w-full px-4 py-2 text-left hover:bg-gray-100 unfriend-button">Unfriend</button>
                                     <button class="block w-full px-4 py-2 text-left hover:bg-gray-100 block-button">Block</button>
                                 </div>
                             </div>
-                      </div>
+                        </div>
+                      </a>
                     {{/each}}
                     <!-- Thêm các bạn bè khác tại đây -->
                 </div>
