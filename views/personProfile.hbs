@@ -20,9 +20,11 @@
         <div class="flex flex-col border rounded-lg max-h-1/2">
             <div class="profile-image ml-8 flex-grow flex items-center">
                 <div class="relative md:m-8 m-4">
-                    <img class="h-32 w-32 rounded-full"
-                        src="{{#if user_info.dataValues.avatar_url}}{{user_info.dataValues.avatar_url}}{{else}}/images/avatar.png{{/if}}"
-                        alt="{{user_info.dataValues.avatar_url}}"></img>
+                    <div class="border-[4px] border-black rounded-full h-[136px] w-[136px]">
+                        <img class="h-32 w-32 rounded-full border-[4px] border-white"
+                            src="{{#if user_info.dataValues.avatar_url}}{{user_info.dataValues.avatar_url}}{{else}}/images/avatar.png{{/if}}"
+                            alt="{{user_info.dataValues.avatar_url}}">
+                    </div>
                     {{#if (eq user_info.dataValues.id user.id)}}
                     <div id="change-avatar" class="absolute bottom-0 right-0 rounded-full 
                         bg-gray-300 md:h-8 md:w-8 md:text-base h-6 w-6 text-xs flex justify-center items-center cursor-pointer">
