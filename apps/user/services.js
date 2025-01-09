@@ -26,7 +26,7 @@ const userService = {
       await UserInfo.create({
         user_id: newUser.id,
       });
-      // emailHelper.sendVerificationEmail(newUser.email, verificationToken);
+      emailHelper.sendVerificationEmail(newUser.email, verificationToken);
 
       return await User.findOne({
         where: { id: newUser.id },
@@ -136,7 +136,7 @@ const userService = {
       user.resetPasswordToken = token;
       user.resetPasswordExpires = Date.now() + 900000; // 15 minutes
       await user.save();
-      // await emailHelper.sendResetPasswordEmail(user.email, token);
+      await emailHelper.sendResetPasswordEmail(user.email, token);
       return { message: "Token reset email sent" };
     } catch (error) {
       return { message: "Internal server error" };
@@ -268,7 +268,7 @@ const userService = {
     try {
       // Convert query to lowercase for case-insensitive search
       const lowerCaseQuery = query.toLowerCase();
-  
+
       // Tìm kiếm bạn bè theo query
       const friends = await User.findAll({
         where: {
@@ -286,7 +286,12 @@ const userService = {
                 Sequelize.where(
                   Sequelize.fn(
                     "LOWER",
-                    Sequelize.fn("CONCAT", Sequelize.col("first_name"), " ", Sequelize.col("last_name"))
+                    Sequelize.fn(
+                      "CONCAT",
+                      Sequelize.col("first_name"),
+                      " ",
+                      Sequelize.col("last_name")
+                    )
                   ),
                   { [Op.like]: `%${lowerCaseQuery}%` }
                 ),
@@ -297,12 +302,12 @@ const userService = {
         },
         attributes: ["id", "first_name", "last_name", "avatar_url", "isBanned"],
       });
-  
+
       if (!friends || friends.length === 0) {
         console.warn("No friends found for the given query.");
         return [];
       }
-  
+
       // Lấy danh sách quan hệ đã được chấp nhận (cả gửi và nhận)
       const acceptedRelationships = await UserRela.findAll({
         where: {
@@ -311,7 +316,7 @@ const userService = {
         },
         attributes: ["user_from", "user_to"],
       });
-  
+
       const pendingRelationships = await UserRela.findAll({
         where: {
           [Op.or]: [{ user_from: userId }, { user_to: userId }],
@@ -319,19 +324,19 @@ const userService = {
         },
         attributes: ["user_from", "user_to"],
       });
-  
+
       const friendIds = new Set(
         acceptedRelationships.map((rel) =>
           rel.user_from === userId ? rel.user_to : rel.user_from
         )
       );
-  
+
       const pendingRequestIds = new Set(
         pendingRelationships.map((rel) =>
           rel.user_from === userId ? rel.user_to : rel.user_from
         )
       );
-  
+
       const results = friends.map((friend) => {
         const friendData = friend?.toJSON ? friend.toJSON() : {};
         return {
@@ -356,16 +361,16 @@ const userService = {
         },
         attributes: ["user_to"], // Only need user_to
       });
-  
+
       // Extract list of friend IDs
       const friendIds = acceptedFriends.map((rel) => rel.user_to);
-  
+
       // Find all records in UserInfo with user_id in friendIds
       // and date_of_birth matching today, join with User table to get first_name and last_name
       const today = new Date();
       const todayMonth = today.getMonth() + 1; // getMonth() returns 0-11
       const todayDay = today.getDate();
-  
+
       const birthdates = await UserInfo.findAll({
         where: {
           user_id: { [Op.in]: friendIds },
@@ -395,16 +400,16 @@ const userService = {
         ],
         attributes: ["user_id", "date_of_birth"], // Get necessary info from UserInfo table
       });
-  
+
       // Tìm tất cả các post có user_id = userId trong bảng Post
       const userPosts = await Post.findAll({
         where: { user_id: userId },
         attributes: ["id"], // Chỉ cần lấy post_id
       });
-  
+
       // Trích xuất danh sách post_id
       const postIds = userPosts.map((post) => post.id);
-  
+
       // Tìm tất cả các like có post_id thuộc danh sách postIds
       // và user_id khác với userId
       const likes = await Like.findAll({
@@ -425,7 +430,7 @@ const userService = {
           },
         ],
       });
-  
+
       const comments = await Comment.findAll({
         where: {
           post_id: { [Op.in]: postIds },
@@ -444,18 +449,18 @@ const userService = {
           },
         ],
       });
-  
+
       // Lấy danh sách conversation_id từ bảng Participant
       const participantConversations = await Participant.findAll({
         where: { user_id: userId },
         attributes: ["conversation_id"], // Chỉ lấy trường conversation_id
       });
-  
+
       // Trích xuất danh sách conversation_id
       const conversationIds = participantConversations.map(
         (pc) => pc.conversation_id
       );
-  
+
       // Tìm tất cả các Message có conversation_id trùng với danh sách conversationIds
       // và user_id khác với userId
       const messages = await Message.findAll({
@@ -470,7 +475,7 @@ const userService = {
           },
         ],
       });
-  
+
       // Fetch pending friend requests
       const friendRequests = await UserRela.findAll({
         where: {
@@ -478,9 +483,9 @@ const userService = {
           status: "pending",
         },
       });
-  
+
       const notifications = [];
-  
+
       for (const like of likes) {
         const sender = await User.findByPk(like.user_id);
         notifications.push({
@@ -491,7 +496,7 @@ const userService = {
           createdAt: like.createdAt,
         });
       }
-  
+
       for (const comment of comments) {
         const sender = await User.findByPk(comment.user_id);
         notifications.push({
@@ -502,7 +507,7 @@ const userService = {
           createdAt: comment.createdAt,
         });
       }
-  
+
       for (const message of messages) {
         const sender = await User.findByPk(message.user_id);
         notifications.push({
@@ -513,7 +518,7 @@ const userService = {
           createdAt: message.createdAt,
         });
       }
-  
+
       for (const birthday of birthdates) {
         const sender = await User.findByPk(birthday.user_id);
         notifications.push({
@@ -524,7 +529,7 @@ const userService = {
           createdAt: new Date(),
         });
       }
-  
+
       for (const request of friendRequests) {
         const sender = await User.findByPk(request.user_from);
         notifications.push({
@@ -535,10 +540,10 @@ const userService = {
           createdAt: request.createdAt,
         });
       }
-  
+
       // Sort notifications by createdAt
       notifications.sort((a, b) => b.createdAt - a.createdAt);
-  
+
       return notifications;
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -901,7 +906,7 @@ const userService = {
           status: "accepted",
         },
       });
-  
+
       // Count followers where user_from is the userId
       const followingCount = await UserRela.count({
         where: {
@@ -909,13 +914,15 @@ const userService = {
           status: "accepted",
         },
       });
-  
+
       // Sum the counts
       const totalCount = followersCount + followingCount;
-  
+
       return totalCount;
     } catch (error) {
-      throw new Error("Error fetching follower and following count: " + error.message);
+      throw new Error(
+        "Error fetching follower and following count: " + error.message
+      );
     }
   },
   async getNumFollowing(userId) {

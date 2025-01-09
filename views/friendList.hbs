@@ -42,11 +42,12 @@
                 <div class="space-y-6 " id="friends-list">
                     <!-- Các bạn bè sẽ được hiển thị ở đây -->
                     {{#each friends}}
-                      <a href="/users/profile/{{this.id}}" class="block">
                         <div class="flex flex-row bg-gray-50 p-4 border rounded-lg shadow-md" id="{{this.id}}">
                             <img src="{{this.avatar_url}}" alt="Alice Smith" class="w-20 h-20 rounded-full mb-3">
                             <div class="flex flex-col items-start gap-2 relative flex-1 grow">
-                                <div class="relative w-[248px] mt-6 pl-3 font-[Inter-Medium] font-medium text-[20px] leading-normal ">{{this.first_name}} {{this.last_name}}</div>
+                                <a href="/users/profile/{{this.id}}" class="block">
+                                    <div class="relative w-[248px] mt-6 pl-3 font-[Inter-Medium] font-medium text-[20px] leading-normal ">{{this.first_name}} {{this.last_name}}</div>
+                                </a>
                                 <div class="relative w-fit pl-3 font-normal text-[#B0B0B0] text-[14px] tracking-normal leading-normal whitespace-nowrap">You are now friends</div>
                             </div>
                             <div class="relative">
@@ -59,7 +60,7 @@
                                 </div>
                             </div>
                         </div>
-                      </a>
+
                     {{/each}}
                     <!-- Thêm các bạn bè khác tại đây -->
                 </div>
