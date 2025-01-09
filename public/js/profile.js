@@ -117,12 +117,14 @@ document.querySelector(".save").addEventListener("click", async function () {
 
       if (response.ok) {
         const result = await response.json();
-        console.log(result);
-        document.querySelector(".profile-image img").src = result.avatar;
-        document.querySelector(".image-avatar").src = result.avatar;
+        // document.querySelector(".profile-image img").src = result.avatar;
+        // document.querySelector(".image-avatar").src = result.avatar;
         sendNotification("success", "Image uploaded successfully");
         document.getElementById("upload-button").classList.remove("hidden");
         document.querySelector(".save").classList.add("hidden");
+        setTimeout(() => {
+          location.reload();
+        }, 500);
       } else {
         const errorResult = await response.json();
         sendNotification("error", "Failed to upload image");
