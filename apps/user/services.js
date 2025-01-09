@@ -266,14 +266,34 @@ const userService = {
   },
   async searchFriends(userId, query) {
     try {
+      // Convert query to lowercase for case-insensitive search
+      const lowerCaseQuery = query.toLowerCase();
+  
       // Tìm kiếm bạn bè theo query
       const friends = await User.findAll({
         where: {
-          [Op.or]: [
-            { first_name: { [Op.like]: `%${query}%` } },
-            { last_name: { [Op.like]: `%${query}%` } },
+          [Op.and]: [
+            {
+              [Op.or]: [
+                Sequelize.where(
+                  Sequelize.fn("LOWER", Sequelize.col("first_name")),
+                  { [Op.like]: `%${lowerCaseQuery}%` }
+                ),
+                Sequelize.where(
+                  Sequelize.fn("LOWER", Sequelize.col("last_name")),
+                  { [Op.like]: `%${lowerCaseQuery}%` }
+                ),
+                Sequelize.where(
+                  Sequelize.fn(
+                    "LOWER",
+                    Sequelize.fn("CONCAT", Sequelize.col("first_name"), " ", Sequelize.col("last_name"))
+                  ),
+                  { [Op.like]: `%${lowerCaseQuery}%` }
+                ),
+              ],
+            },
+            { id: { [Op.ne]: userId } }, // Loại bỏ id trùng với userId
           ],
-          id: { [Op.ne]: userId }, // Loại bỏ id trùng với userId
         },
         attributes: ["id", "first_name", "last_name", "avatar_url", "isBanned"],
       });
