@@ -894,15 +894,28 @@ const userService = {
   },
   async getNumFollower(userId) {
     try {
+      // Count followers where user_to is the userId
       const followersCount = await UserRela.count({
         where: {
           user_to: userId,
           status: "accepted",
         },
       });
-      return followersCount;
+  
+      // Count followers where user_from is the userId
+      const followingCount = await UserRela.count({
+        where: {
+          user_from: userId,
+          status: "accepted",
+        },
+      });
+  
+      // Sum the counts
+      const totalCount = followersCount + followingCount;
+  
+      return totalCount;
     } catch (error) {
-      throw new Error("Error fetching follower count: " + error.message);
+      throw new Error("Error fetching follower and following count: " + error.message);
     }
   },
   async getNumFollowing(userId) {

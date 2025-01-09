@@ -458,7 +458,7 @@ const userController = {
       const reviewers = await userService.getReviewers(user_id);
       const isFriends = await userService.isFriend(view_id, user_id);
       const followers = await userService.getNumFollower(user_id);
-      const following = await userService.getNumFollowing(user_id);
+      const following = await userService.getNumFollower(user_id);
       res.render("personProfile", {
         user,
         user_info,
