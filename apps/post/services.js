@@ -58,9 +58,15 @@ const postService = {
           }
         } else {
           whereClause.access_modifier = {
-            [Op.in]: ["public", "friends_only", "private"],
+            [Op.in]: ["public"],
           };
         }
+      }
+
+      if (view_id == user_id) {
+        whereClause.access_modifier = {
+          [Op.in]: ["public", "friends_only", "private"],
+        };
       }
 
       const posts = await Post.findAll({
@@ -529,7 +535,6 @@ const postService = {
       ];
       const friendIds = friends.map((friend) => friend.id);
 
-  
       // Lấy bài viết của bạn bè
       const posts = await Post.findAll({
         where: {
