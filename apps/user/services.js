@@ -790,6 +790,17 @@ const userService = {
         },
       });
 
+      const reverseRelation = await UserRela.findOne({
+        where: {
+          user_from: friendId,
+          user_to: userId,
+        },
+      });
+
+      if (reverseRelation) {
+        await reverseRelation.destroy();
+      }
+
       if (!existingRelation) {
         await UserRela.create({
           user_from: userId,
